@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
+    <!-- Mini-jogo de Descanso -->
     <div id="rest-timer-overlay">
         <div class="rest-content">
             <h2 id="rest-time-display">90s</h2>
@@ -24,6 +25,7 @@
         </div>
     </div>
 
+    <!-- NAVEGAÇÃO: ILHA DE VIDRO EXPANSÍVEL -->
     <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
         <div id="island-active-preview">
             <span id="active-icon">🏋️‍♂️</span>
@@ -34,6 +36,10 @@
         <div id="island-menu">
             <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')">
                 <span class="btn-icon">🏋️‍♂️</span> Treinar
+            </button>
+            <!-- NOVO BOTÃO CONSTRUTOR -->
+            <button class="island-btn" onclick="navigateIsland(event, 'view-construtor', '🧪', 'Construtor')">
+                <span class="btn-icon">🧪</span> Construtor
             </button>
             <button class="island-btn" onclick="navigateIsland(event, 'view-evolucao', '📈', 'Progresso')">
                 <span class="btn-icon">📈</span> Progresso
@@ -50,8 +56,10 @@
         </div>
     </nav>
 
+    <!-- Espaçador -->
     <div style="height: 80px;"></div>
 
+    <!-- ABA 1: TREINO -->
     <div id="view-treino" class="view-section active">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
@@ -67,6 +75,86 @@
         </div>
     </div>
 
+    <!-- ABA 2: CONSTRUTOR (NOVA) -->
+    <div id="view-construtor" class="view-section">
+        <div class="goal-container text-center">
+            <h3>🧪 Laboratório de Treino</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Cria ou gera a rotina perfeita adaptada ao teu dia.</p>
+        </div>
+
+        <!-- Opções de Inteligência -->
+        <div class="exercise-card">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Como te sentes hoje? (Fadiga)</label>
+                <div style="display: flex; gap: 5px; margin-top: 8px;">
+                    <button id="btn-fatigue-energized" class="fatigue-btn active" onclick="setFatigue('energized')">🔋 100%</button>
+                    <button id="btn-fatigue-normal" class="fatigue-btn" onclick="setFatigue('normal')">⚡ Normal</button>
+                    <button id="btn-fatigue-tired" class="fatigue-btn" onclick="setFatigue('tired')">🪫 Cansado</button>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Método de Seleção</label>
+                <div style="display: flex; gap: 5px; margin-top: 8px;">
+                    <button id="btn-mode-auto" class="mode-btn active" onclick="setBuilderMode('auto')">🤖 Automático</button>
+                    <button id="btn-mode-manual" class="mode-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
+                </div>
+            </div>
+
+            <!-- Painel Automático -->
+            <div id="auto-focus-panel" class="form-group">
+                <label>Grupo Muscular Alvo</label>
+                <select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;">
+                    <option value="PUSH">Push (Peito, Ombros, Tríceps)</option>
+                    <option value="PULL">Pull (Costas, Bíceps, Posterior)</option>
+                    <option value="LEGS">Legs (Pernas Completas)</option>
+                    <option value="FULL">Full Body (Corpo Inteiro)</option>
+                </select>
+                <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino Inteligente</button>
+            </div>
+        </div>
+
+        <!-- Painel Manual (Grande Biblioteca) -->
+        <div id="manual-library-panel" class="goal-container" style="display: none;">
+            <h3>📚 Grande Biblioteca</h3>
+            <div style="display: flex; gap: 8px; margin: 15px 0;">
+                <select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
+                    <option value="ALL">Músculos (Todos)</option>
+                    <option value="Peito">Peito</option>
+                    <option value="Costas">Costas</option>
+                    <option value="Pernas">Pernas</option>
+                    <option value="Ombros">Ombros</option>
+                    <option value="Braços">Braços</option>
+                </select>
+                <select id="filter-tier" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
+                    <option value="ALL">Grau (Todos)</option>
+                    <option value="S">S-Tier (Melhores)</option>
+                    <option value="A">A-Tier (Ótimos)</option>
+                    <option value="B">B-Tier (Bons)</option>
+                </select>
+            </div>
+            
+            <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
+                <!-- Lista de Exercícios Injetada via JS -->
+            </div>
+        </div>
+
+        <!-- O Treino Atual no Laboratório -->
+        <div class="goal-container" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>📝 O Teu Esboço</h3>
+                <span id="workout-volume-badge" style="background: #334155; padding: 5px 10px; border-radius: 8px; font-size: 11px; color: var(--accent);">0 Séries</span>
+            </div>
+            
+            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <p class="text-center" style="color: var(--muted); font-size: 14px; padding: 20px 0;">Nenhum exercício selecionado ainda. Usa as opções acima!</p>
+            </div>
+            
+            <button class="btn-success" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 12px; border: none; background: var(--success); color: white; font-weight: bold; cursor: pointer; display: none;" id="btn-apply-workout" onclick="applyBuiltWorkout()">▶️ Iniciar Este Treino</button>
+        </div>
+    </div>
+
+    <!-- ABA 3: PROGRESSO -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
         <select id="exercise-select" class="chart-select" onchange="renderChart()">
@@ -84,6 +172,7 @@
         </div>
     </div>
 
+    <!-- ABA 4: CALENDÁRIO -->
     <div id="view-calendario" class="view-section">
         <div class="calendar-header">
             <button onclick="changeMonth(-1)">◀</button>
@@ -114,6 +203,7 @@
         <div class="calendar-grid" id="calendar-grid"></div>
     </div>
 
+    <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
             <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
@@ -206,6 +296,7 @@
         </div>
     </div>
 
+    <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
@@ -241,6 +332,7 @@
         </div>
     </div>
 
+    <!-- Modal Dicas -->
     <div id="exercise-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;padding:20px;z-index:9999;">
         <div style="background:var(--card-bg);padding:20px;border-radius:16px;max-width:500px;width:100%;position:relative;">
             <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
@@ -249,6 +341,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=7"></script>
 </body>
 </html>
