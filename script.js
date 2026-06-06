@@ -64,6 +64,10 @@ function switchMainView(event, id) {
     if (id === 'view-perfil') {
         renderProfile();
     }
+    if (id === 'view-dieta') {
+        // Atualizamos sempre a dieta quando entramos na aba
+        renderDieta();
+    }
 }
 
 function switchWorkout(event, day) {
@@ -544,7 +548,7 @@ function showExerciseVideo(exerciseName) {
     }
 }
 
-// --- Funções do Perfil ---
+// --- Funções do Perfil e Dieta ---
 function renderProfile() {
     document.getElementById('prof-name').value = userProfile.name || '';
     document.getElementById('prof-age').value = userProfile.age || 25;
@@ -558,7 +562,6 @@ function renderProfile() {
 }
 
 function updateProfileData() {
-    // Recolher dados
     userProfile.name = document.getElementById('prof-name').value;
     userProfile.age = parseInt(document.getElementById('prof-age').value) || 25;
     userProfile.gender = document.getElementById('prof-gender').value;
@@ -567,14 +570,11 @@ function updateProfileData() {
     userProfile.activity = parseFloat(document.getElementById('prof-activity').value) || 1.55;
     userProfile.goal = document.getElementById('prof-goal').value;
 
-    // Guardar
     localStorage.setItem('gym_profile', JSON.stringify(userProfile));
 
-    // Atualizar labels dos sliders
     document.getElementById('height-val').innerText = userProfile.height;
     document.getElementById('weight-val').innerText = userProfile.weight;
 
-    // Calcular IMC
     const heightM = userProfile.height / 100;
     const bmi = userProfile.weight / (heightM * heightM);
     document.getElementById('calc-bmi').innerText = bmi.toFixed(1);
@@ -588,7 +588,6 @@ function updateProfileData() {
     document.getElementById('calc-bmi-status').innerText = bmiStatus;
     document.getElementById('calc-bmi-status').style.color = bmiColor;
 
-    // Calcular Calorias (Mifflin-St Jeor)
     let tdee = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age);
     tdee += (userProfile.gender === 'male') ? 5 : -161;
     tdee *= userProfile.activity;
@@ -598,21 +597,61 @@ function updateProfileData() {
 
     document.getElementById('calc-cals').innerText = Math.round(tdee);
 
-    // Animador do Avatar
     const avatar = document.getElementById('dynamic-avatar');
-    // Escala Y baseada na altura (170cm = 1.0)
     let scaleY = 1 + ((userProfile.height - 170) / 170) * 0.7; 
-    
-    // Escala X baseada no IMC em vez de peso puro para ser mais realista
-    // IMC normal ~24 = 1.0
     let scaleX = 1 + ((bmi - 24) / 24) * 0.6;
     
-    // Limites de segurança visual
     scaleX = Math.max(0.6, Math.min(scaleX, 1.8));
     scaleY = Math.max(0.7, Math.min(scaleY, 1.4));
 
     avatar.style.transform = `scale(${scaleX}, ${scaleY})`;
+
+    // Atualiza a dieta sempre que o perfil muda
+    renderDieta();
+}
+
+function renderDieta() {
+    let tdee = parseInt(document.getElementById('calc-cals').innerText) || 0;
+    let weight = userProfile.weight;
+    let goal = userProfile.goal;
+
+    if (tdee === 0) return;
+
+    // Proteína: 2.2g por kg
+    let protein = Math.round(weight * 2.2);
+    
+    // Gordura: 1g por kg (ou 0.8g se cut)
+    let fat = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0));
+    
+    // Hidratos: Calorias restantes (1g Prot = 4kcal, 1g Fat = 9kcal)
+    let proteinCals = protein * 4;
+    let fatCals = fat * 9;
+    let leftoverCals = tdee - (proteinCals + fatCals);
+    let carbs = Math.max(0, Math.round(leftoverCals / 4));
+
+    document.getElementById('macro-pro').innerText = protein + 'g';
+    document.getElementById('macro-car').innerText = carbs + 'g';
+    document.getElementById('macro-fat').innerText = fat + 'g';
+
+    // Água: 35ml por kg + 500ml se for ativo
+    let waterMl = (weight * 35);
+    if(userProfile.activity >= 1.55) waterMl += 500;
+    document.getElementById('water-goal').innerText = (waterMl / 1000).toFixed(1) + ' L';
+
+    // Lógica do Conselheiro
+    let advice = "";
+    if (goal === 'cut') {
+        advice = "💡 Foco total no défice calórico! Privilegia alimentos com muito volume e poucas calorias (ex: vegetais, melancia, morangos) para manter a saciedade. A proteína alta vai garantir que manténs a massa muscular enquanto queimas gordura.";
+    } else if (goal === 'bulk') {
+        advice = "💡 Estás em modo de construção! Se tiveres dificuldade em comer todas essas calorias, opta por alimentos densos como manteiga de amendoim, azeite, frutos secos e batidos líquidos. Não descures o teu descanso!";
+    } else {
+        advice = "💡 Manutenção e recomposição: O equilíbrio perfeito. O teu objetivo é treinar pesado para dar o estímulo aos músculos, usando estas calorias para recuperar. Mantém a consistência!";
+    }
+    
+    document.getElementById('diet-advisor').innerText = advice;
 }
 
 // Inicia a aplicação
 renderWorkout();
+// Garante que o perfil e a dieta são carregados no início
+renderProfile();
