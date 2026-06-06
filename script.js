@@ -48,12 +48,32 @@ let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || {
     goal: 'maintain'
 };
 
-function switchMainView(event, id) {
+// --- NAVEGAÇÃO DA ILHA DINÂMICA ---
+function toggleIsland() {
+    const island = document.getElementById('glass-island');
+    island.classList.toggle('collapsed');
+}
+
+function navigateIsland(event, id, icon, text) {
+    // Impede que o clique no botão feche e abra a ilha imediatamente
+    event.stopPropagation();
+
+    // Atualiza a pré-visualização da cápsula
+    document.getElementById('active-icon').innerText = icon;
+    document.getElementById('active-text').innerText = text;
+
+    // Fecha a ilha
+    document.getElementById('glass-island').classList.add('collapsed');
+
+    // Esconde todas as secções e mostra a ativa
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.main-nav button').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
 
+    // Atualiza o botão ativo no menu
+    document.querySelectorAll('.island-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // Triggers de atualização de dados
     if (id === 'view-evolucao') {
         setupChartSelect();
         updateGlobalStats();
@@ -65,11 +85,11 @@ function switchMainView(event, id) {
         renderProfile();
     }
     if (id === 'view-dieta') {
-        // Atualizamos sempre a dieta quando entramos na aba
         renderDieta();
     }
 }
 
+// --- LÓGICA DO TREINO ---
 function switchWorkout(event, day) {
     currentDay = day;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -155,6 +175,7 @@ function checkSet(day, exIdx, s) {
     startTimer(90);
 }
 
+// --- LÓGICA DO MINI-JOGO DE DESCANSO ---
 function startTimer(seconds) {
     clearInterval(timerInterval);
     clearInterval(gameInterval);
@@ -270,6 +291,7 @@ function saveCurrentWorkout() {
     }
 }
 
+// --- PROGRESSO E ESTATÍSTICAS ---
 function setupChartSelect() {
     const select = document.getElementById('exercise-select');
     select.innerHTML = '<option value="">Escolhe um exercício...</option>';
@@ -391,6 +413,7 @@ function updateGlobalStats() {
     `;
 }
 
+// --- CALENDÁRIO ---
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     grid.innerHTML = '';
@@ -494,6 +517,7 @@ function changeMonth(direction) {
     renderCalendar();
 }
 
+// --- DICAS E VÍDEOS ---
 function shareWorkout() {
     const text = `💪 Acabei o treino de ${currentDay}!`;
     if (navigator.share) {
@@ -548,7 +572,7 @@ function showExerciseVideo(exerciseName) {
     }
 }
 
-// --- Funções do Perfil e Dieta ---
+// --- PERFIL E DIETA ---
 function renderProfile() {
     document.getElementById('prof-name').value = userProfile.name || '';
     document.getElementById('prof-age').value = userProfile.age || 25;
@@ -606,7 +630,6 @@ function updateProfileData() {
 
     avatar.style.transform = `scale(${scaleX}, ${scaleY})`;
 
-    // Atualiza a dieta sempre que o perfil muda
     renderDieta();
 }
 
@@ -617,13 +640,8 @@ function renderDieta() {
 
     if (tdee === 0) return;
 
-    // Proteína: 2.2g por kg
     let protein = Math.round(weight * 2.2);
-    
-    // Gordura: 1g por kg (ou 0.8g se cut)
     let fat = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0));
-    
-    // Hidratos: Calorias restantes (1g Prot = 4kcal, 1g Fat = 9kcal)
     let proteinCals = protein * 4;
     let fatCals = fat * 9;
     let leftoverCals = tdee - (proteinCals + fatCals);
@@ -633,12 +651,10 @@ function renderDieta() {
     document.getElementById('macro-car').innerText = carbs + 'g';
     document.getElementById('macro-fat').innerText = fat + 'g';
 
-    // Água: 35ml por kg + 500ml se for ativo
     let waterMl = (weight * 35);
     if(userProfile.activity >= 1.55) waterMl += 500;
     document.getElementById('water-goal').innerText = (waterMl / 1000).toFixed(1) + ' L';
 
-    // Lógica do Conselheiro
     let advice = "";
     if (goal === 'cut') {
         advice = "💡 Foco total no défice calórico! Privilegia alimentos com muito volume e poucas calorias (ex: vegetais, melancia, morangos) para manter a saciedade. A proteína alta vai garantir que manténs a massa muscular enquanto queimas gordura.";
@@ -653,5 +669,4 @@ function renderDieta() {
 
 // Inicia a aplicação
 renderWorkout();
-// Garante que o perfil e a dieta são carregados no início
 renderProfile();
