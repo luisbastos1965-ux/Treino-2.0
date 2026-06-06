@@ -28,7 +28,14 @@ let currentDay = 'PUSH';
 let history = JSON.parse(localStorage.getItem('gym_history')) || [];
 let currentCalendarDate = new Date();
 let chartInstance;
+
+// Variáveis do Mini-Jogo
 let timerInterval;
+let gameInterval;
+let gameTicks = 0;
+let barbellY = 50;
+let barbellVelocity = 0;
+let score = 0;
 
 function switchMainView(event, id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -50,7 +57,6 @@ function switchWorkout(event, day) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
 
-    // Esconde todos e mostra só o do dia atual
     ['PUSH', 'PULL', 'LEGS'].forEach(d => {
         document.getElementById(`plan-${d}`).style.display = (d === day) ? 'block' : 'none';
     });
@@ -133,29 +139,69 @@ function checkSet(day, exIdx, s) {
 
 function startTimer(seconds) {
     clearInterval(timerInterval);
-    const banner = document.getElementById('timer-banner');
-    const display = document.getElementById('timer-display');
-    banner.style.display = 'block';
+    clearInterval(gameInterval);
 
+    const overlay = document.getElementById('rest-timer-overlay');
+    const display = document.getElementById('rest-time-display');
+    const scoreDisplay = document.getElementById('game-score');
+    const barbell = document.getElementById('barbell');
+    
+    overlay.style.display = 'flex';
+    
     let timeLeft = seconds;
-    display.innerText = timeLeft;
-
+    display.innerText = timeLeft + 's';
+    
+    barbellY = 50;
+    barbellVelocity = 0;
+    score = 0;
+    gameTicks = 0;
+    scoreDisplay.innerText = score;
+    
     timerInterval = setInterval(() => {
         timeLeft--;
-        display.innerText = timeLeft;
+        display.innerText = timeLeft + 's';
         if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            banner.style.display = 'none';
-            alert('Descanso terminado!');
+            endTimer();
         }
     }, 1000);
+
+    gameInterval = setInterval(() => {
+        barbellVelocity += 0.8; 
+        barbellY += barbellVelocity;
+        
+        if (barbellY > 90) { barbellY = 90; barbellVelocity = 0; }
+        if (barbellY < 10) { barbellY = 10; barbellVelocity = 0; }
+        
+        barbell.style.top = barbellY + '%';
+        
+        if (barbellY >= 30 && barbellY <= 70) {
+            gameTicks++;
+            if(gameTicks % 30 === 0) {
+                score++;
+                scoreDisplay.innerText = score;
+            }
+        }
+    }, 30);
+}
+
+function jumpBarbell() {
+    barbellVelocity = -7; 
+}
+
+function skipTimer() {
+    endTimer();
+}
+
+function endTimer() {
+    clearInterval(timerInterval);
+    clearInterval(gameInterval);
+    document.getElementById('rest-timer-overlay').style.display = 'none';
 }
 
 function saveCurrentWorkout() {
-    // 1. Primeira confirmação: Evitar cliques acidentais
     const confirmSave = confirm(`Tens a certeza que queres gravar o teu treino de ${currentDay}?`);
     if (!confirmSave) {
-        return; // Se o utilizador cancelar, a função para por aqui
+        return; 
     }
 
     const dateObj = new Date();
@@ -167,7 +213,6 @@ function saveCurrentWorkout() {
         exercises: {}
     };
 
-    // Recolhe os dados dos inputs
     workoutData[currentDay].forEach((ex, exIdx) => {
         const exName = ex.name;
         const sets = [];
@@ -186,29 +231,22 @@ function saveCurrentWorkout() {
         workoutLog.exercises[exName] = sets;
     });
 
-    // 2. Evitar Duplicação: Verifica se já existe um treino gravado hoje
     const existingIndex = history.findIndex(h => h.date === todayString);
 
     if (existingIndex !== -1) {
-        // Se já existir, pergunta se quer substituir
         const confirmOverwrite = confirm("Já existe um treino gravado hoje. Queres substituir os dados anteriores pelos novos?");
         if (!confirmOverwrite) {
-            return; // Se não quiser substituir, cancela a gravação
+            return; 
         }
-        // Substitui o treino existente
         history[existingIndex] = workoutLog;
     } else {
-        // Se não existir, adiciona um novo
         history.push(workoutLog);
     }
 
-    // Grava no armazenamento do telemóvel/browser
     localStorage.setItem('gym_history', JSON.stringify(history));
     
-    // Feedback visual
     alert('Treino gravado com sucesso! 💪');
 
-    // Atualiza as estatísticas globais caso o utilizador vá para a aba de evolução a seguir
     if (document.getElementById('view-evolucao').classList.contains('active')) {
         updateGlobalStats();
     }
@@ -492,5 +530,4 @@ function showExerciseVideo(exerciseName) {
     }
 }
 
-// Inicia a aplicação
 renderWorkout();
