@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
-    <div id="timer-banner">
-        ⏳ Descanso: <span id="timer-display">90</span>s
+    <div id="rest-timer-overlay">
+        <div class="rest-content">
+            <h2 id="rest-time-display">90s</h2>
+            <p class="rest-subtitle">Recuperação Ativa: Toca no quadro para manter a barra na zona verde!</p>
+            
+            <div id="minigame-container" onclick="jumpBarbell()">
+                <div id="safe-zone"></div>
+                <div id="barbell">🏋️‍♂️</div>
+            </div>
+            
+            <div class="score-board">Pontos: <span id="game-score">0</span></div>
+            <button class="skip-timer-btn" onclick="skipTimer()">Saltar Descanso</button>
+        </div>
     </div>
 
     <div class="main-nav">
@@ -96,6 +107,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 </html>
