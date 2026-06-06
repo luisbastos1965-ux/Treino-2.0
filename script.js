@@ -55,25 +55,18 @@ function toggleIsland() {
 }
 
 function navigateIsland(event, id, icon, text) {
-    // Impede que o clique no botão feche e abra a ilha imediatamente
     event.stopPropagation();
 
-    // Atualiza a pré-visualização da cápsula
     document.getElementById('active-icon').innerText = icon;
     document.getElementById('active-text').innerText = text;
-
-    // Fecha a ilha
     document.getElementById('glass-island').classList.add('collapsed');
 
-    // Esconde todas as secções e mostra a ativa
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 
-    // Atualiza o botão ativo no menu
     document.querySelectorAll('.island-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
 
-    // Triggers de atualização de dados
     if (id === 'view-evolucao') {
         setupChartSelect();
         updateGlobalStats();
@@ -665,6 +658,51 @@ function renderDieta() {
     }
     
     document.getElementById('diet-advisor').innerText = advice;
+}
+
+// --- SISTEMA DE BACKUP ---
+function exportData() {
+    const data = {
+        history: history,
+        profile: userProfile
+    };
+    const dataStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    const date = new Date().toISOString().split('T')[0];
+    a.download = `gym_tracker_backup_${date}.json`;
+    a.href = url;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (data.history) {
+                history = data.history;
+                localStorage.setItem('gym_history', JSON.stringify(history));
+            }
+            if (data.profile) {
+                userProfile = data.profile;
+                localStorage.setItem('gym_profile', JSON.stringify(userProfile));
+            }
+            
+            alert('✅ Backup carregado com sucesso! A página vai recarregar para aplicar os dados.');
+            location.reload(); // Recarrega a app para injetar todos os dados importados no ecrã
+        } catch (error) {
+            alert('❌ Erro ao ler o ficheiro. Confirma se é o ficheiro de backup correto.');
+        }
+    };
+    reader.readAsText(file);
 }
 
 // Inicia a aplicação
