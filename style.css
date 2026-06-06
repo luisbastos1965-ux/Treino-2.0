@@ -28,13 +28,12 @@ body {
     top: 15px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(30, 41, 59, 0.75); /* Fundo escuro translúcido */
+    background: rgba(30, 41, 59, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 9000;
     overflow: hidden;
-    /* Animação com um ligeiro efeito elástico no final */
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -83,7 +82,7 @@ body {
     flex-direction: column;
     padding: 15px;
     opacity: 0;
-    transition: opacity 0.3s ease 0.1s; /* Atraso subtil para aparecer depois de expandir */
+    transition: opacity 0.3s ease 0.1s;
     pointer-events: none;
     height: 100%;
     gap: 5px;
@@ -204,7 +203,7 @@ body {
     width: 100%;
 }
 
-/* --- Separadores do Treino (Tabs Push/Pull/Legs) --- */
+/* --- Separadores do Treino --- */
 .tabs {
     display: flex;
     gap: 10px;
@@ -453,7 +452,7 @@ canvas {
     color: white;
 }
 
-/* --- PERFIL & DIETA UI --- */
+/* --- PERFIL UI --- */
 .avatar-container {
     display: flex;
     flex-direction: column;
@@ -557,4 +556,125 @@ canvas {
     flex: 1;
     margin: 0 5px;
     border: 1px solid #1e293b;
+}
+
+/* --- UI DO CONSTRUTOR DE TREINO --- */
+.fatigue-btn, .mode-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--bg-color);
+    color: var(--muted);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.fatigue-btn.active, .mode-btn.active {
+    background: #334155;
+    border-color: var(--accent);
+    color: white;
+}
+
+.lib-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-color);
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+}
+
+.lib-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.lib-item-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+.lib-item-badges {
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.badge.tier-s { background: #f59e0b; color: black; }
+.badge.tier-a { background: var(--success); color: white; }
+.badge.tier-b { background: var(--accent); color: black; }
+.badge.muscle { background: #334155; color: var(--muted); }
+
+.add-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.built-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #334155;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.built-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.built-item-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+.built-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.set-input {
+    width: 50px;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    background: var(--bg-color);
+    color: white;
+    text-align: center;
+    font-size: 14px;
+}
+
+.remove-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
 }
