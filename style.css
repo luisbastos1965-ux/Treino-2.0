@@ -107,13 +107,15 @@ body {
     width: 100%;
 }
 
+/* --- Menu de Navegação --- */
 .main-nav {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     background: #000;
     padding: 5px;
     border-radius: 12px;
     margin-bottom: 20px;
+    overflow-x: auto; /* Evita quebra em ecrãs muito pequenos */
 }
 
 .main-nav button,
@@ -126,6 +128,7 @@ body {
     color: var(--muted);
     cursor: pointer;
     font-weight: bold;
+    min-width: 70px;
 }
 
 .main-nav button.active,
@@ -360,4 +363,102 @@ canvas {
     border-radius: 10px;
     background: var(--card-bg);
     color: white;
+}
+
+/* --- UI DO PERFIL --- */
+.avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 250px;
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+#dynamic-avatar {
+    width: 120px;
+    height: 200px;
+    transform-origin: bottom center; /* Impede que cresça para baixo */
+    transition: transform 0.2s ease-out; /* Suavidade na animação do slider */
+}
+
+#avatar-shadow {
+    width: 80px;
+    height: 10px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.profile-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-form .form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.profile-form .form-row .form-group {
+    flex: 1;
+}
+
+.profile-form label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: bold;
+}
+
+.profile-form input[type="text"],
+.profile-form input[type="number"],
+.profile-form select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #334155;
+    color: white;
+    font-size: 15px;
+}
+
+.accent-text {
+    color: var(--accent);
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Sliders Bonitos */
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: #334155;
+    outline: none;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+}
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
 }
