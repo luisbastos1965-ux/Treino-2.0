@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -24,13 +24,33 @@
         </div>
     </div>
 
-    <div class="main-nav">
-        <button class="active" onclick="switchMainView(event,'view-treino')">Treinar</button>
-        <button onclick="switchMainView(event,'view-evolucao')">Progresso</button>
-        <button onclick="switchMainView(event,'view-calendario')">Calendário</button>
-        <button onclick="switchMainView(event,'view-perfil')">Perfil</button>
-        <button onclick="switchMainView(event,'view-dieta')">Dieta</button>
-    </div>
+    <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
+        <div id="island-active-preview">
+            <span id="active-icon">🏋️‍♂️</span>
+            <span id="active-text">Treinar</span>
+            <span class="chevron">▼</span>
+        </div>
+        
+        <div id="island-menu">
+            <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')">
+                <span class="btn-icon">🏋️‍♂️</span> Treinar
+            </button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-evolucao', '📈', 'Progresso')">
+                <span class="btn-icon">📈</span> Progresso
+            </button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-calendario', '📅', 'Calendário')">
+                <span class="btn-icon">📅</span> Calendário
+            </button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-perfil', '👤', 'Perfil')">
+                <span class="btn-icon">👤</span> Perfil
+            </button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-dieta', '🍽️', 'Dieta')">
+                <span class="btn-icon">🍽️</span> Dieta
+            </button>
+        </div>
+    </nav>
+
+    <div style="height: 80px;"></div>
 
     <div id="view-treino" class="view-section active">
         <div class="tabs">
@@ -175,7 +195,6 @@
     </div>
 
     <div id="view-dieta" class="view-section">
-        
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
             <p class="text-center" style="color:var(--muted); font-size: 12px; margin-top:5px;">Calculados com base no teu Perfil e Objetivo.</p>
@@ -208,7 +227,6 @@
                 Preenche o teu perfil na aba "Perfil" para receberes conselhos.
             </div>
         </div>
-
     </div>
 
     <div id="exercise-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;padding:20px;z-index:9999;">
@@ -219,6 +237,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>
