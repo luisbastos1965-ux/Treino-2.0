@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="timer-banner">
+        ⏳ Descanso: <span id="timer-display">90</span>s
+    </div>
+
+    <div class="main-nav">
+        <button class="active" onclick="switchMainView(event,'view-treino')">Treinar</button>
+        <button onclick="switchMainView(event,'view-evolucao')">Progresso</button>
+        <button onclick="switchMainView(event,'view-calendario')">Calendário</button>
+    </div>
+
+    <div id="view-treino" class="view-section active">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
+            <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
+            <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
+        </div>
+
+        <div id="workout-container"></div>
+
+        <div class="footer-action">
+            <button class="btn-secondary" onclick="shareWorkout()">Partilhar</button>
+            <button class="btn-primary" onclick="saveCurrentWorkout()">Gravar Treino</button>
+        </div>
+    </div>
+
+    <div id="view-evolucao" class="view-section">
+        <h2>📈 Progresso</h2>
+        <select id="exercise-select" class="chart-select" onchange="renderChart()">
+            <option value="">Escolhe um exercício...</option>
+        </select>
+        <canvas id="progressChart"></canvas>
+
+        <div id="pr-display" class="goal-container">
+            <h3>🏆 PRs</h3>
+            <p style="margin-top:10px;color:var(--muted);">Seleciona um exercício.</p>
+        </div>
+
+        <div id="global-stats" class="goal-container">
+            <h3>📊 Estatísticas Globais</h3>
+        </div>
+
+        <div id="coach-box" class="goal-container">
+            <h3>🧠 Coach</h3>
+            <p id="coach-message" style="margin-top:10px;color:var(--muted);line-height:1.6;">
+                Seleciona um exercício para veres a análise.
+            </p>
+        </div>
+    </div>
+
+    <div id="view-calendario" class="view-section">
+        <div class="calendar-header">
+            <button onclick="changeMonth(-1)">◀</button>
+            <h2 id="calendar-title"></h2>
+            <button onclick="changeMonth(1)">▶</button>
+        </div>
+
+        <div class="weekdays">
+            <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
+        </div>
+
+        <div class="goal-container">
+            <h3>🎯 Meta Semanal: 6 Treinos</h3>
+            <p style="margin-top:10px;color:var(--muted);"><span id="weekly-count">0</span>/6</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="weekly-progress"></div>
+            </div>
+        </div>
+
+        <div class="goal-container">
+            <h3>📅 Meta Mensal: 24 Treinos</h3>
+            <p style="margin-top:10px;color:var(--muted);"><span id="monthly-count">0</span>/24</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="monthly-progress"></div>
+            </div>
+        </div>
+
+        <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
+
+    <div id="exercise-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;padding:20px;z-index:9999;">
+        <div style="background:var(--card-bg);padding:20px;border-radius:16px;max-width:500px;width:100%;position:relative;">
+            <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
+            <h2 id="modal-title" style="margin-bottom:15px;"></h2>
+            <p id="modal-content" style="line-height:1.6;color:var(--muted);"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
