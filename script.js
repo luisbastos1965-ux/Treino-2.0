@@ -37,6 +37,17 @@ let barbellY = 50;
 let barbellVelocity = 0;
 let score = 0;
 
+// Variável do Perfil
+let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || {
+    name: '',
+    age: 25,
+    gender: 'male',
+    height: 170,
+    weight: 70,
+    activity: '1.55',
+    goal: 'maintain'
+};
+
 function switchMainView(event, id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -49,6 +60,9 @@ function switchMainView(event, id) {
     }
     if (id === 'view-calendario') {
         renderCalendar();
+    }
+    if (id === 'view-perfil') {
+        renderProfile();
     }
 }
 
@@ -530,4 +544,75 @@ function showExerciseVideo(exerciseName) {
     }
 }
 
+// --- Funções do Perfil ---
+function renderProfile() {
+    document.getElementById('prof-name').value = userProfile.name || '';
+    document.getElementById('prof-age').value = userProfile.age || 25;
+    document.getElementById('prof-gender').value = userProfile.gender || 'male';
+    document.getElementById('prof-height').value = userProfile.height || 170;
+    document.getElementById('prof-weight').value = userProfile.weight || 70;
+    document.getElementById('prof-activity').value = userProfile.activity || '1.55';
+    document.getElementById('prof-goal').value = userProfile.goal || 'maintain';
+    
+    updateProfileData();
+}
+
+function updateProfileData() {
+    // Recolher dados
+    userProfile.name = document.getElementById('prof-name').value;
+    userProfile.age = parseInt(document.getElementById('prof-age').value) || 25;
+    userProfile.gender = document.getElementById('prof-gender').value;
+    userProfile.height = parseInt(document.getElementById('prof-height').value) || 170;
+    userProfile.weight = parseInt(document.getElementById('prof-weight').value) || 70;
+    userProfile.activity = parseFloat(document.getElementById('prof-activity').value) || 1.55;
+    userProfile.goal = document.getElementById('prof-goal').value;
+
+    // Guardar
+    localStorage.setItem('gym_profile', JSON.stringify(userProfile));
+
+    // Atualizar labels dos sliders
+    document.getElementById('height-val').innerText = userProfile.height;
+    document.getElementById('weight-val').innerText = userProfile.weight;
+
+    // Calcular IMC
+    const heightM = userProfile.height / 100;
+    const bmi = userProfile.weight / (heightM * heightM);
+    document.getElementById('calc-bmi').innerText = bmi.toFixed(1);
+
+    let bmiStatus = "Normal";
+    let bmiColor = "var(--success)";
+    if (bmi < 18.5) { bmiStatus = "Baixo Peso"; bmiColor = "var(--accent)"; }
+    else if (bmi >= 25 && bmi < 30) { bmiStatus = "Excesso de Peso"; bmiColor = "#f59e0b"; }
+    else if (bmi >= 30) { bmiStatus = "Obesidade"; bmiColor = "var(--danger)"; }
+    
+    document.getElementById('calc-bmi-status').innerText = bmiStatus;
+    document.getElementById('calc-bmi-status').style.color = bmiColor;
+
+    // Calcular Calorias (Mifflin-St Jeor)
+    let tdee = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age);
+    tdee += (userProfile.gender === 'male') ? 5 : -161;
+    tdee *= userProfile.activity;
+
+    if (userProfile.goal === 'cut') tdee -= 500;
+    if (userProfile.goal === 'bulk') tdee += 300;
+
+    document.getElementById('calc-cals').innerText = Math.round(tdee);
+
+    // Animador do Avatar
+    const avatar = document.getElementById('dynamic-avatar');
+    // Escala Y baseada na altura (170cm = 1.0)
+    let scaleY = 1 + ((userProfile.height - 170) / 170) * 0.7; 
+    
+    // Escala X baseada no IMC em vez de peso puro para ser mais realista
+    // IMC normal ~24 = 1.0
+    let scaleX = 1 + ((bmi - 24) / 24) * 0.6;
+    
+    // Limites de segurança visual
+    scaleX = Math.max(0.6, Math.min(scaleX, 1.8));
+    scaleY = Math.max(0.7, Math.min(scaleY, 1.4));
+
+    avatar.style.transform = `scale(${scaleX}, ${scaleY})`;
+}
+
+// Inicia a aplicação
 renderWorkout();
