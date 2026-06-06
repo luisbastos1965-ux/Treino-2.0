@@ -5,10 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
+    <!-- BEAST MODE OVERLAY (Foco Imersivo) -->
+    <div id="beast-mode-overlay">
+        <div class="beast-header">
+            <button onclick="exitBeastMode()" class="beast-exit">✖ Sair</button>
+            <span id="beast-progress-text">Ex 1/5 - Série 1/3</span>
+        </div>
+        
+        <div class="beast-body">
+            <h2 id="beast-exercise-name" class="beast-title">Supino Inclinado</h2>
+            <div id="beast-history-badge" class="history-badge" style="margin: 10px auto; font-size:14px;">Última: -</div>
+            
+            <div class="beast-inputs">
+                <div class="beast-input-group">
+                    <label>KG</label>
+                    <input type="number" id="beast-weight" placeholder="0">
+                </div>
+                <div class="beast-input-group">
+                    <label>REPS</label>
+                    <input type="number" id="beast-reps" placeholder="0">
+                </div>
+                <div class="beast-input-group">
+                    <label>RIR</label>
+                    <select id="beast-rir">
+                        <option value="0">0</option>
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3+</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="beast-complete-btn" onclick="completeBeastSet()">💥 CONCLUIR SÉRIE</button>
+        </div>
+        
+        <div class="beast-footer">
+            <button onclick="prevBeastExercise()">◀ Anterior</button>
+            <button onclick="nextBeastExercise()">Próximo ▶</button>
+        </div>
+    </div>
+
+    <!-- Mini-jogo de Descanso -->
     <div id="rest-timer-overlay">
         <div class="rest-content">
             <h2 id="rest-time-display">90s</h2>
@@ -24,6 +65,7 @@
         </div>
     </div>
 
+    <!-- NAVEGAÇÃO: ILHA DE VIDRO EXPANSÍVEL -->
     <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
         <div id="island-active-preview">
             <span id="active-icon">🏋️‍♂️</span>
@@ -53,14 +95,18 @@
         </div>
     </nav>
 
+    <!-- Espaçador -->
     <div style="height: 80px;"></div>
 
+    <!-- ABA 1: TREINO -->
     <div id="view-treino" class="view-section active">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
             <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
             <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
         </div>
+
+        <button onclick="startBeastMode()" style="width: 100%; background: #f97316; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(249,115,22,0.3); cursor: pointer;">🦍 ENTRAR EM BEAST MODE</button>
 
         <div id="workout-container"></div>
 
@@ -70,6 +116,7 @@
         </div>
     </div>
 
+    <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
         <div class="goal-container text-center">
             <h3>🧪 Laboratório de Treino</h3>
@@ -142,6 +189,7 @@
         </div>
     </div>
 
+    <!-- ABA 3: PROGRESSO -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
 
@@ -150,7 +198,6 @@
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Fritado!</p>
             
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
-                
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -165,7 +212,6 @@
                         <rect id="hm-quads-r" x="53" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
                     </svg>
                 </div>
-
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -204,6 +250,7 @@
         </div>
     </div>
 
+    <!-- ABA 4: CALENDÁRIO -->
     <div id="view-calendario" class="view-section">
         <div class="calendar-header">
             <button onclick="changeMonth(-1)">◀</button>
@@ -234,6 +281,7 @@
         <div class="calendar-grid" id="calendar-grid"></div>
     </div>
 
+    <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
             <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
@@ -326,6 +374,7 @@
         </div>
     </div>
 
+    <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
@@ -361,6 +410,7 @@
         </div>
     </div>
 
+    <!-- Modal Dicas -->
     <div id="exercise-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;padding:20px;z-index:9999;">
         <div style="background:var(--card-bg);padding:20px;border-radius:16px;max-width:500px;width:100%;position:relative;">
             <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
@@ -369,6 +419,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=8"></script>
+    <script src="script.js?v=9"></script>
 </body>
 </html>
