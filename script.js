@@ -65,7 +65,6 @@ function getLastPerformance(exerciseName) {
     return null;
 }
 
-// NOVA FUNÇÃO RENDERWORKOUT: Renderiza tudo de uma vez
 function renderWorkout() {
     const container = document.getElementById('workout-container');
     container.innerHTML = '';
@@ -152,8 +151,13 @@ function startTimer(seconds) {
     }, 1000);
 }
 
-// NOVA FUNÇÃO SAVECURRENTWORKOUT: Procura os IDs pelo dia correto
 function saveCurrentWorkout() {
+    // 1. Primeira confirmação: Evitar cliques acidentais
+    const confirmSave = confirm(`Tens a certeza que queres gravar o teu treino de ${currentDay}?`);
+    if (!confirmSave) {
+        return; // Se o utilizador cancelar, a função para por aqui
+    }
+
     const dateObj = new Date();
     const todayString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 
@@ -163,6 +167,7 @@ function saveCurrentWorkout() {
         exercises: {}
     };
 
+    // Recolhe os dados dos inputs
     workoutData[currentDay].forEach((ex, exIdx) => {
         const exName = ex.name;
         const sets = [];
@@ -181,9 +186,32 @@ function saveCurrentWorkout() {
         workoutLog.exercises[exName] = sets;
     });
 
-    history.push(workoutLog);
+    // 2. Evitar Duplicação: Verifica se já existe um treino gravado hoje
+    const existingIndex = history.findIndex(h => h.date === todayString);
+
+    if (existingIndex !== -1) {
+        // Se já existir, pergunta se quer substituir
+        const confirmOverwrite = confirm("Já existe um treino gravado hoje. Queres substituir os dados anteriores pelos novos?");
+        if (!confirmOverwrite) {
+            return; // Se não quiser substituir, cancela a gravação
+        }
+        // Substitui o treino existente
+        history[existingIndex] = workoutLog;
+    } else {
+        // Se não existir, adiciona um novo
+        history.push(workoutLog);
+    }
+
+    // Grava no armazenamento do telemóvel/browser
     localStorage.setItem('gym_history', JSON.stringify(history));
-    alert('Treino gravado!');
+    
+    // Feedback visual
+    alert('Treino gravado com sucesso! 💪');
+
+    // Atualiza as estatísticas globais caso o utilizador vá para a aba de evolução a seguir
+    if (document.getElementById('view-evolucao').classList.contains('active')) {
+        updateGlobalStats();
+    }
 }
 
 function setupChartSelect() {
