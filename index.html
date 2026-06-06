@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
-    <!-- Mini-jogo de Descanso -->
     <div id="rest-timer-overlay">
         <div class="rest-content">
             <h2 id="rest-time-display">90s</h2>
@@ -25,7 +24,6 @@
         </div>
     </div>
 
-    <!-- NAVEGAÇÃO: ILHA DE VIDRO EXPANSÍVEL -->
     <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
         <div id="island-active-preview">
             <span id="active-icon">🏋️‍♂️</span>
@@ -37,7 +35,6 @@
             <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')">
                 <span class="btn-icon">🏋️‍♂️</span> Treinar
             </button>
-            <!-- NOVO BOTÃO CONSTRUTOR -->
             <button class="island-btn" onclick="navigateIsland(event, 'view-construtor', '🧪', 'Construtor')">
                 <span class="btn-icon">🧪</span> Construtor
             </button>
@@ -56,10 +53,8 @@
         </div>
     </nav>
 
-    <!-- Espaçador -->
     <div style="height: 80px;"></div>
 
-    <!-- ABA 1: TREINO -->
     <div id="view-treino" class="view-section active">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
@@ -75,14 +70,12 @@
         </div>
     </div>
 
-    <!-- ABA 2: CONSTRUTOR (NOVA) -->
     <div id="view-construtor" class="view-section">
         <div class="goal-container text-center">
             <h3>🧪 Laboratório de Treino</h3>
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Cria ou gera a rotina perfeita adaptada ao teu dia.</p>
         </div>
 
-        <!-- Opções de Inteligência -->
         <div class="exercise-card">
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Como te sentes hoje? (Fadiga)</label>
@@ -101,7 +94,6 @@
                 </div>
             </div>
 
-            <!-- Painel Automático -->
             <div id="auto-focus-panel" class="form-group">
                 <label>Grupo Muscular Alvo</label>
                 <select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;">
@@ -114,7 +106,6 @@
             </div>
         </div>
 
-        <!-- Painel Manual (Grande Biblioteca) -->
         <div id="manual-library-panel" class="goal-container" style="display: none;">
             <h3>📚 Grande Biblioteca</h3>
             <div style="display: flex; gap: 8px; margin: 15px 0;">
@@ -134,12 +125,9 @@
                 </select>
             </div>
             
-            <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
-                <!-- Lista de Exercícios Injetada via JS -->
-            </div>
+            <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;"></div>
         </div>
 
-        <!-- O Treino Atual no Laboratório -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>📝 O Teu Esboço</h3>
@@ -154,9 +142,53 @@
         </div>
     </div>
 
-    <!-- ABA 3: PROGRESSO -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
+
+        <div class="goal-container text-center">
+            <h3>🔥 Mapa de Calor Muscular</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Fritado!</p>
+            
+            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+                
+                <div style="position: relative;">
+                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
+                    <svg viewBox="0 0 100 200" width="90" height="180">
+                        <circle cx="50" cy="20" r="14" fill="#334155" />
+                        <circle id="hm-ombros-l" cx="28" cy="48" r="10" fill="#334155" style="transition: fill 0.5s;" />
+                        <circle id="hm-ombros-r" cx="72" cy="48" r="10" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-peito" d="M35 45 h30 v25 h-30 z" fill="#334155" rx="6" style="transition: fill 0.5s;" />
+                        <path id="hm-core" d="M38 73 h24 v35 h-24 z" fill="#334155" rx="4" style="transition: fill 0.5s;" />
+                        <rect id="hm-biceps-l" x="18" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-biceps-r" x="72" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-quads-l" x="35" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-quads-r" x="53" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                    </svg>
+                </div>
+
+                <div style="position: relative;">
+                    <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div>
+                    <svg viewBox="0 0 100 200" width="90" height="180">
+                        <circle cx="50" cy="20" r="14" fill="#334155" />
+                        <path id="hm-costas" d="M30 45 h40 v40 l-12 25 h-16 l-12 -25 z" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-triceps-l" x="18" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-triceps-r" x="72" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-femorais-l" x="35" y="112" width="12" height="40" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-femorais-r" x="53" y="112" width="12" height="40" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-gemeos-l" x="36" y="155" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                        <rect id="hm-gemeos-r" x="54" y="155" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 10px; color: var(--muted);">
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #334155; border-radius: 2px;"></div> Descansado</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #f97316; border-radius: 2px;"></div> Médio</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></div> Fritado</div>
+            </div>
+        </div>
+
         <select id="exercise-select" class="chart-select" onchange="renderChart()">
             <option value="">Escolhe um exercício...</option>
         </select>
@@ -172,7 +204,6 @@
         </div>
     </div>
 
-    <!-- ABA 4: CALENDÁRIO -->
     <div id="view-calendario" class="view-section">
         <div class="calendar-header">
             <button onclick="changeMonth(-1)">◀</button>
@@ -203,7 +234,6 @@
         <div class="calendar-grid" id="calendar-grid"></div>
     </div>
 
-    <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
             <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
@@ -285,7 +315,7 @@
 
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Segurança e Backup</h3>
-            <p style="font-size: 12px; color: var(--muted); margin: 10px 0;">Guarda um ficheiro com o teu histórico de treinos e perfil. Carrega em "Importar" para restaurar os dados noutro dispositivo.</p>
+            <p style="font-size: 12px; color: var(--muted); margin: 10px 0;">Guarda um ficheiro com o teu histórico de treinos e perfil.</p>
             <div style="display:flex; gap:10px; justify-content: center; margin-top: 15px;">
                 <button class="btn-primary" onclick="exportData()" style="flex:1; padding: 12px; border-radius: 10px;">📥 Exportar</button>
                 <label class="btn-secondary" style="flex:1; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0;">
@@ -296,7 +326,6 @@
         </div>
     </div>
 
-    <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
@@ -332,7 +361,6 @@
         </div>
     </div>
 
-    <!-- Modal Dicas -->
     <div id="exercise-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;padding:20px;z-index:9999;">
         <div style="background:var(--card-bg);padding:20px;border-radius:16px;max-width:500px;width:100%;position:relative;">
             <button onclick="closeModal()" style="position:absolute;top:10px;right:10px;background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
@@ -341,6 +369,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 </html>
