@@ -1,0 +1,292 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --accent: #38bdf8;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --success: #22c55e;
+    --danger: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background: var(--bg-color);
+    color: var(--text);
+    padding: 15px;
+    padding-bottom: 110px;
+}
+
+.main-nav {
+    display: flex;
+    gap: 10px;
+    background: #000;
+    padding: 5px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.main-nav button,
+.tab-btn {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.main-nav button.active,
+.tab-btn.active {
+    background: var(--card-bg);
+    color: var(--text);
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.view-section {
+    display: none;
+}
+
+.view-section.active {
+    display: block;
+}
+
+.exercise-card {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 15px;
+}
+
+.exercise-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.history-badge {
+    background: #334155;
+    color: var(--accent);
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 12px;
+    font-size: 12px;
+}
+
+.exercise-buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.exercise-tip-btn,
+.exercise-video-btn {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.exercise-tip-btn {
+    background: #334155;
+    color: white;
+}
+
+.exercise-video-btn {
+    background: var(--accent);
+    color: black;
+}
+
+.set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    background: #334155;
+    padding: 8px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.set-row.done {
+    border-left: 4px solid var(--success);
+    opacity: 0.7;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.input-group input,
+.input-group select {
+    width: 60px;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    background: var(--bg-color);
+    color: white;
+    text-align: center;
+}
+
+.input-group label {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.check-btn {
+    border: none;
+    background: var(--success);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.footer-action {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-color);
+    display: flex;
+    gap: 10px;
+    padding: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-primary {
+    flex: 2;
+    background: var(--success);
+    color: white;
+}
+
+.btn-secondary {
+    flex: 1;
+    background: #334155;
+    color: white;
+}
+
+.goal-container {
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #334155;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header button {
+    border: none;
+    background: var(--card-bg);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.weekdays,
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.weekdays {
+    margin-bottom: 8px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.day-box {
+    min-height: 60px;
+    background: #334155;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day-box.trained {
+    background: var(--success);
+    font-weight: bold;
+}
+
+.day-box.empty {
+    background: transparent;
+}
+
+canvas {
+    background: var(--card-bg);
+    padding: 10px;
+    border-radius: 16px;
+    margin-top: 20px;
+}
+
+.chart-select {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: white;
+}
+
+#timer-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--accent);
+    color: black;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    display: none;
+    z-index: 999;
+}
