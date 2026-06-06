@@ -1,29 +1,72 @@
-const workoutData = {
+// ==========================================
+// PARTE 1: BASES DE DADOS E VARIÁVEIS GLOBAIS
+// ==========================================
+
+let workoutData = {
     PUSH: [
         { name: 'Supino Inclinado c/ Halteres', sets: 3 },
         { name: 'Supino Plano na Máquina (Chest Press)', sets: 3 },
         { name: 'Press Militar c/ Halteres (Sentado)', sets: 3 },
         { name: 'Elevações Laterais na Polia', sets: 4 },
-        { name: 'Tríceps à Testa com Barra EZ ou Halteres (Skullcrushers)', sets: 3 },
-        { name: 'Tríceps na Polia com Corda (Pushdowns)', sets: 3 }
+        { name: 'Tríceps à Testa com Barra EZ', sets: 3 },
+        { name: 'Tríceps na Polia com Corda', sets: 3 }
     ],
     PULL: [
-        { name: 'Puxada Vertical na Polia Alta (Lat Pulldown) com pega aberta', sets: 3 },
-        { name: 'Remada Sentada com Cabo (Pega Romena/Neutro)', sets: 3 },
+        { name: 'Puxada Vertical na Polia Alta', sets: 3 },
+        { name: 'Remada Sentada com Cabo', sets: 3 },
         { name: 'Remada Inclinada c/ Halteres', sets: 3 },
-        { name: 'Cruzamentos Inversos na Polia ou Voos Posteriores (Rear Delt Fly)', sets: 4 },
-        { name: 'Curl de Bíceps Inclinado com Halteres', sets: 3 },
-        { name: 'Curl Martelo (Hammer Curl) com Halteres', sets: 3 }
+        { name: 'Voos Posteriores (Rear Delt Fly)', sets: 4 },
+        { name: 'Curl de Bíceps Inclinado c/ Halteres', sets: 3 },
+        { name: 'Curl Martelo (Hammer Curl)', sets: 3 }
     ],
     LEGS: [
         { name: 'Leg Press 45º', sets: 4 },
-        { name: 'Peso Morto Romeno (RDL) com Barra ou Halteres', sets: 3 },
-        { name: 'Extensão de Pernas (Leg Extension)', sets: 3 },
-        { name: 'Flexão de Pernas Sentado ou Deitado (Leg Curl)', sets: 3 },
-        { name: 'Elevação de Gémeos em Pé (Calf Raises)', sets: 4 }
-    ]
+        { name: 'Peso Morto Romeno (RDL)', sets: 3 },
+        { name: 'Extensão de Pernas', sets: 3 },
+        { name: 'Flexão de Pernas (Leg Curl)', sets: 3 },
+        { name: 'Elevação de Gémeos em Pé', sets: 4 }
+    ],
+    CUSTOM: [] // Onde vamos guardar o treino gerado no Construtor
 };
 
+// A GRANDE BIBLIOTECA DE EXERCÍCIOS
+const exerciseLibrary = [
+    // --- PEITO ---
+    { name: "Supino Plano com Barra", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Supino Inclinado c/ Halteres", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Chest Press na Máquina", muscle: "Peito", tier: "A", type: "machine", defaultSets: 3 },
+    { name: "Peck Deck / Voador", muscle: "Peito", tier: "B", type: "machine", defaultSets: 3 },
+    { name: "Crossover na Polia (Cabos)", muscle: "Peito", tier: "A", type: "machine", defaultSets: 4 },
+    
+    // --- COSTAS ---
+    { name: "Elevações (Pull-ups)", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Puxada Vertical na Polia Alta", muscle: "Costas", tier: "S", type: "machine", defaultSets: 3 },
+    { name: "Remada com Barra (Barbell Row)", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Remada Sentada com Cabo", muscle: "Costas", tier: "A", type: "machine", defaultSets: 3 },
+    { name: "Pullover na Polia Alta", muscle: "Costas", tier: "B", type: "machine", defaultSets: 3 },
+
+    // --- PERNAS ---
+    { name: "Agachamento Livre (Barra)", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Leg Press 45º", muscle: "Pernas", tier: "S", type: "machine", defaultSets: 4 },
+    { name: "Peso Morto Romeno (RDL)", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Extensão de Pernas (Leg Ext)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 },
+    { name: "Mesa Flexora (Leg Curl)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 },
+    { name: "Bulgarian Split Squats", muscle: "Pernas", tier: "A", type: "free", defaultSets: 3 },
+    { name: "Elevação de Gémeos", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 },
+
+    // --- OMBROS ---
+    { name: "Press Militar (Barra ou Halteres)", muscle: "Ombros", tier: "S", type: "free", defaultSets: 3 },
+    { name: "Elevações Laterais", muscle: "Ombros", tier: "S", type: "free", defaultSets: 4 },
+    { name: "Voos Posteriores (Rear Delt Fly)", muscle: "Ombros", tier: "A", type: "machine", defaultSets: 4 },
+    
+    // --- BRAÇOS ---
+    { name: "Curl de Bíceps c/ Barra", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 },
+    { name: "Curl Martelo (Hammer Curl)", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 },
+    { name: "Tríceps à Testa (Skullcrushers)", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 },
+    { name: "Tríceps Pushdown (Polia)", muscle: "Braços", tier: "S", type: "machine", defaultSets: 3 }
+];
+
+// Estado Principal
 let currentDay = 'PUSH';
 let history = JSON.parse(localStorage.getItem('gym_history')) || [];
 let currentCalendarDate = new Date();
@@ -37,16 +80,20 @@ let barbellY = 50;
 let barbellVelocity = 0;
 let score = 0;
 
+// Estado do Construtor de Treinos
+let builderState = {
+    fatigue: 'energized', // 'energized', 'normal', 'tired'
+    mode: 'auto',         // 'auto', 'manual'
+    routine: []           // Exercícios selecionados
+};
+
 // Variável do Perfil
 let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || {
-    name: '',
-    age: 25,
-    gender: 'male',
-    height: 170,
-    weight: 70,
-    activity: '1.55',
-    goal: 'maintain'
+    name: '', age: 25, gender: 'male', height: 170, weight: 70, activity: '1.55', goal: 'maintain'
 };
+// ==========================================
+// PARTE 2: NAVEGAÇÃO, TREINO, GRAVAÇÃO E JOGO
+// ==========================================
 
 // --- NAVEGAÇÃO DA ILHA DINÂMICA ---
 function toggleIsland() {
@@ -56,7 +103,6 @@ function toggleIsland() {
 
 function navigateIsland(event, id, icon, text) {
     event.stopPropagation();
-
     document.getElementById('active-icon').innerText = icon;
     document.getElementById('active-text').innerText = text;
     document.getElementById('glass-island').classList.add('collapsed');
@@ -67,29 +113,22 @@ function navigateIsland(event, id, icon, text) {
     document.querySelectorAll('.island-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
 
-    if (id === 'view-evolucao') {
-        setupChartSelect();
-        updateGlobalStats();
-    }
-    if (id === 'view-calendario') {
-        renderCalendar();
-    }
-    if (id === 'view-perfil') {
-        renderProfile();
-    }
-    if (id === 'view-dieta') {
-        renderDieta();
-    }
+    if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); }
+    if (id === 'view-calendario') { renderCalendar(); }
+    if (id === 'view-perfil') { renderProfile(); }
+    if (id === 'view-dieta') { renderDieta(); }
+    if (id === 'view-construtor') { updateBuilderUI(); }
 }
 
 // --- LÓGICA DO TREINO ---
 function switchWorkout(event, day) {
     currentDay = day;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if(event) event.target.classList.add('active');
 
-    ['PUSH', 'PULL', 'LEGS'].forEach(d => {
-        document.getElementById(`plan-${d}`).style.display = (d === day) ? 'block' : 'none';
+    ['PUSH', 'PULL', 'LEGS', 'CUSTOM'].forEach(d => {
+        const planDiv = document.getElementById(`plan-${d}`);
+        if(planDiv) planDiv.style.display = (d === day) ? 'block' : 'none';
     });
 }
 
@@ -106,8 +145,16 @@ function renderWorkout() {
     const container = document.getElementById('workout-container');
     container.innerHTML = '';
 
-    ['PUSH', 'PULL', 'LEGS'].forEach(day => {
-        let displayStyle = day === 'PUSH' ? 'block' : 'none';
+    // Agora incluímos o dia "CUSTOM" que vem do construtor
+    ['PUSH', 'PULL', 'LEGS', 'CUSTOM'].forEach(day => {
+        let displayStyle = day === currentDay ? 'block' : 'none';
+        
+        // Se for o CUSTOM e estiver vazio, mostramos uma mensagem
+        if (day === 'CUSTOM' && workoutData.CUSTOM.length === 0) {
+            container.innerHTML += `<div id="plan-CUSTOM" style="display: ${displayStyle}; text-align:center; padding: 30px; color: var(--muted);">Vai à aba Construtor para criares o teu treino de hoje!</div>`;
+            return;
+        }
+
         let dayHTML = `<div id="plan-${day}" style="display: ${displayStyle};">`;
 
         workoutData[day].forEach((ex, exIdx) => {
@@ -117,7 +164,6 @@ function renderWorkout() {
                 : ``;
 
             let setsHTML = '';
-
             for (let s = 1; s <= ex.sets; s++) {
                 const pW = lastPerf && lastPerf[s - 1] ? lastPerf[s - 1].weight : '';
                 const pR = lastPerf && lastPerf[s - 1] ? lastPerf[s - 1].reps : '';
@@ -168,6 +214,52 @@ function checkSet(day, exIdx, s) {
     startTimer(90);
 }
 
+// --- GRAVAÇÃO DE TREINOS ---
+function saveCurrentWorkout() {
+    const confirmSave = confirm(`Tens a certeza que queres gravar o teu treino de ${currentDay}?`);
+    if (!confirmSave) return; 
+
+    const dateObj = new Date();
+    const todayString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+
+    const workoutLog = {
+        date: todayString,
+        day: currentDay,
+        exercises: {}
+    };
+
+    workoutData[currentDay].forEach((ex, exIdx) => {
+        const sets = [];
+        for (let s = 1; s <= ex.sets; s++) {
+            const weightInput = document.getElementById(`weight-${currentDay}-${exIdx}-${s}`);
+            const repsInput = document.getElementById(`reps-${currentDay}-${exIdx}-${s}`);
+            const rirInput = document.getElementById(`rir-${currentDay}-${exIdx}-${s}`);
+
+            const weight = parseFloat(weightInput.value || weightInput.placeholder || 0);
+            const reps = parseInt(repsInput.value || repsInput.placeholder || 0);
+            const rir = parseInt(rirInput.value || 0);
+
+            sets.push({ weight, reps, rir });
+        }
+        workoutLog.exercises[ex.name] = sets;
+    });
+
+    const existingIndex = history.findIndex(h => h.date === todayString);
+    if (existingIndex !== -1) {
+        const confirmOverwrite = confirm("Já existe um treino gravado hoje. Queres substituir os dados anteriores pelos novos?");
+        if (!confirmOverwrite) return; 
+        history[existingIndex] = workoutLog;
+    } else {
+        history.push(workoutLog);
+    }
+
+    localStorage.setItem('gym_history', JSON.stringify(history));
+    alert('Treino gravado com sucesso! 💪');
+    if (document.getElementById('view-evolucao').classList.contains('active')) {
+        updateGlobalStats();
+    }
+}
+
 // --- LÓGICA DO MINI-JOGO DE DESCANSO ---
 function startTimer(seconds) {
     clearInterval(timerInterval);
@@ -182,19 +274,13 @@ function startTimer(seconds) {
     
     let timeLeft = seconds;
     display.innerText = timeLeft + 's';
-    
-    barbellY = 50;
-    barbellVelocity = 0;
-    score = 0;
-    gameTicks = 0;
+    barbellY = 50; barbellVelocity = 0; score = 0; gameTicks = 0;
     scoreDisplay.innerText = score;
     
     timerInterval = setInterval(() => {
         timeLeft--;
         display.innerText = timeLeft + 's';
-        if (timeLeft <= 0) {
-            endTimer();
-        }
+        if (timeLeft <= 0) endTimer();
     }, 1000);
 
     gameInterval = setInterval(() => {
@@ -208,105 +294,218 @@ function startTimer(seconds) {
         
         if (barbellY >= 30 && barbellY <= 70) {
             gameTicks++;
-            if(gameTicks % 30 === 0) {
-                score++;
-                scoreDisplay.innerText = score;
-            }
+            if(gameTicks % 30 === 0) { score++; scoreDisplay.innerText = score; }
         }
     }, 30);
 }
 
-function jumpBarbell() {
-    barbellVelocity = -7; 
-}
-
-function skipTimer() {
-    endTimer();
-}
-
+function jumpBarbell() { barbellVelocity = -7; }
+function skipTimer() { endTimer(); }
 function endTimer() {
     clearInterval(timerInterval);
     clearInterval(gameInterval);
     document.getElementById('rest-timer-overlay').style.display = 'none';
 }
+// ==========================================
+// PARTE 3: CONSTRUTOR, PROGRESSO, PERFIL E BACKUP
+// ==========================================
 
-function saveCurrentWorkout() {
-    const confirmSave = confirm(`Tens a certeza que queres gravar o teu treino de ${currentDay}?`);
-    if (!confirmSave) {
-        return; 
-    }
+// --- CONSTRUTOR DE TREINOS (LABORATÓRIO) ---
+function setFatigue(level) {
+    builderState.fatigue = level;
+    document.querySelectorAll('.fatigue-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`btn-fatigue-${level}`).classList.add('active');
+}
 
-    const dateObj = new Date();
-    const todayString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+function setBuilderMode(mode) {
+    builderState.mode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`btn-mode-${mode}`).classList.add('active');
 
-    const workoutLog = {
-        date: todayString,
-        day: currentDay,
-        exercises: {}
-    };
-
-    workoutData[currentDay].forEach((ex, exIdx) => {
-        const exName = ex.name;
-        const sets = [];
-
-        for (let s = 1; s <= ex.sets; s++) {
-            const weightInput = document.getElementById(`weight-${currentDay}-${exIdx}-${s}`);
-            const repsInput = document.getElementById(`reps-${currentDay}-${exIdx}-${s}`);
-            const rirInput = document.getElementById(`rir-${currentDay}-${exIdx}-${s}`);
-
-            const weight = parseFloat(weightInput.value || weightInput.placeholder || 0);
-            const reps = parseInt(repsInput.value || repsInput.placeholder || 0);
-            const rir = parseInt(rirInput.value || 0);
-
-            sets.push({ weight, reps, rir });
-        }
-        workoutLog.exercises[exName] = sets;
-    });
-
-    const existingIndex = history.findIndex(h => h.date === todayString);
-
-    if (existingIndex !== -1) {
-        const confirmOverwrite = confirm("Já existe um treino gravado hoje. Queres substituir os dados anteriores pelos novos?");
-        if (!confirmOverwrite) {
-            return; 
-        }
-        history[existingIndex] = workoutLog;
+    if (mode === 'auto') {
+        document.getElementById('auto-focus-panel').style.display = 'block';
+        document.getElementById('manual-library-panel').style.display = 'none';
     } else {
-        history.push(workoutLog);
-    }
-
-    localStorage.setItem('gym_history', JSON.stringify(history));
-    
-    alert('Treino gravado com sucesso! 💪');
-
-    if (document.getElementById('view-evolucao').classList.contains('active')) {
-        updateGlobalStats();
+        document.getElementById('auto-focus-panel').style.display = 'none';
+        document.getElementById('manual-library-panel').style.display = 'block';
+        renderLibrary();
     }
 }
+
+function generateWorkout() {
+    const focus = document.getElementById('auto-focus-select').value;
+    const fatigue = builderState.fatigue;
+    builderState.routine = []; // Limpar o esboço atual
+
+    // Lógica de Mapeamento do Foco
+    let targetMuscles = [];
+    if (focus === 'PUSH') targetMuscles = ['Peito', 'Ombros', 'Braços']; // Braços aqui = Tríceps, o gerador filtra depois
+    if (focus === 'PULL') targetMuscles = ['Costas', 'Ombros', 'Braços']; // Braços = Bíceps
+    if (focus === 'LEGS') targetMuscles = ['Pernas'];
+    if (focus === 'FULL') targetMuscles = ['Pernas', 'Peito', 'Costas', 'Ombros'];
+
+    targetMuscles.forEach(muscle => {
+        // Filtrar a biblioteca por músculo
+        let pool = exerciseLibrary.filter(ex => ex.muscle === muscle);
+        
+        // Ajuste no número de séries e escolha do exercício baseado na fadiga
+        let selectedEx;
+        if (fatigue === 'tired') {
+            // Cansado: Prefere Máquinas, Grau A ou B. Menos fadiga do sistema nervoso.
+            const machines = pool.filter(ex => ex.type === 'machine');
+            selectedEx = machines.length > 0 ? machines[Math.floor(Math.random() * machines.length)] : pool[0];
+            
+            // Reduz 1 série por estar cansado
+            let sets = Math.max(2, selectedEx.defaultSets - 1);
+            builderState.routine.push({ name: selectedEx.name, sets: sets });
+        } 
+        else if (fatigue === 'energized') {
+            // Energizado: Pega sempre nos S-Tier e Pesos Livres primeiro
+            const sTiers = pool.filter(ex => ex.tier === 'S');
+            selectedEx = sTiers.length > 0 ? sTiers[Math.floor(Math.random() * sTiers.length)] : pool[0];
+            builderState.routine.push({ name: selectedEx.name, sets: selectedEx.defaultSets });
+        } 
+        else {
+            // Normal: Mistura aleatória dos melhores
+            selectedEx = pool[Math.floor(Math.random() * pool.length)];
+            builderState.routine.push({ name: selectedEx.name, sets: selectedEx.defaultSets });
+        }
+
+        // Adicionar um segundo exercício para músculos grandes se for focado
+        if (focus !== 'FULL' && (muscle === 'Peito' || muscle === 'Costas' || muscle === 'Pernas')) {
+            let secondEx = pool.filter(ex => ex.name !== selectedEx.name)[0];
+            if (secondEx) {
+                let sets = fatigue === 'tired' ? Math.max(2, secondEx.defaultSets - 1) : secondEx.defaultSets;
+                builderState.routine.push({ name: secondEx.name, sets: sets });
+            }
+        }
+    });
+
+    // Se for Push/Pull/Arms, forçar filtragem específica (ex: PUSH só puxa Tríceps da aba Braços)
+    if (focus === 'PUSH') {
+        builderState.routine = builderState.routine.filter(ex => !ex.name.includes('Bíceps') && !ex.name.includes('Curl'));
+    }
+    if (focus === 'PULL') {
+        builderState.routine = builderState.routine.filter(ex => !ex.name.includes('Tríceps'));
+    }
+
+    updateBuilderUI();
+    alert('✨ Treino Inteligente gerado com sucesso! Verifica o Esboço abaixo.');
+}
+
+function renderLibrary() {
+    const filterMuscle = document.getElementById('filter-muscle').value;
+    const filterTier = document.getElementById('filter-tier').value;
+    const list = document.getElementById('library-list');
+    list.innerHTML = '';
+
+    let filtered = exerciseLibrary;
+    if (filterMuscle !== 'ALL') filtered = filtered.filter(ex => ex.muscle === filterMuscle);
+    if (filterTier !== 'ALL') filtered = filtered.filter(ex => ex.tier === filterTier);
+
+    filtered.forEach(ex => {
+        list.innerHTML += `
+        <div class="lib-item">
+            <div class="lib-item-info">
+                <span class="lib-item-title">${ex.name}</span>
+                <div class="lib-item-badges">
+                    <span class="badge muscle">${ex.muscle}</span>
+                    <span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}-Tier</span>
+                </div>
+            </div>
+            <button class="add-btn" onclick="addExerciseToBuilder('${ex.name}', ${ex.defaultSets})">+</button>
+        </div>`;
+    });
+}
+
+function addExerciseToBuilder(name, sets) {
+    builderState.routine.push({ name, sets });
+    updateBuilderUI();
+}
+
+function removeExerciseFromBuilder(index) {
+    builderState.routine.splice(index, 1);
+    updateBuilderUI();
+}
+
+function updateBuilderSets(index, value) {
+    builderState.routine[index].sets = parseInt(value) || 1;
+    updateBuilderUI(false); // Falso para não perder o foco do teclado
+}
+
+function updateBuilderUI(rebuildList = true) {
+    const list = document.getElementById('builder-routine-list');
+    const badge = document.getElementById('workout-volume-badge');
+    const applyBtn = document.getElementById('btn-apply-workout');
+
+    let totalSets = 0;
+    
+    if (rebuildList) list.innerHTML = '';
+
+    if (builderState.routine.length === 0) {
+        list.innerHTML = `<p class="text-center" style="color: var(--muted); font-size: 14px; padding: 20px 0;">Nenhum exercício selecionado ainda.</p>`;
+        badge.innerText = `0 Séries`;
+        applyBtn.style.display = 'none';
+        return;
+    }
+
+    builderState.routine.forEach((item, idx) => {
+        totalSets += parseInt(item.sets);
+        if (rebuildList) {
+            list.innerHTML += `
+            <div class="built-item">
+                <div class="built-item-info">
+                    <span class="built-item-title">${idx + 1}. ${item.name}</span>
+                </div>
+                <div class="built-item-controls">
+                    <span style="font-size: 10px; color: var(--muted);">SÉRIES</span>
+                    <input type="number" class="set-input" value="${item.sets}" onchange="updateBuilderSets(${idx}, this.value)">
+                    <button class="remove-btn" onclick="removeExerciseFromBuilder(${idx})">✖</button>
+                </div>
+            </div>`;
+        }
+    });
+
+    badge.innerText = `${totalSets} Séries Totais`;
+    badge.style.color = totalSets > 24 ? 'var(--danger)' : 'var(--accent)';
+    applyBtn.style.display = 'block';
+}
+
+function applyBuiltWorkout() {
+    if (builderState.routine.length === 0) return;
+
+    // Guarda na variável global 'CUSTOM'
+    workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine));
+
+    // Adiciona o botão "CUSTOM" na UI do treino, se não existir
+    const tabsContainer = document.querySelector('#view-treino .tabs');
+    if (!document.getElementById('tab-custom')) {
+        tabsContainer.innerHTML += `<button id="tab-custom" class="tab-btn" onclick="switchWorkout(event,'CUSTOM')">LAB 🧪</button>`;
+    }
+
+    // Muda a interface para o ecrã de treino
+    navigateIsland({ currentTarget: document.querySelectorAll('.island-btn')[0], stopPropagation: () => {} }, 'view-treino', '🏋️‍♂️', 'Treinar');
+    
+    // Clica virtualmente na tab do Laboratório e desenha o treino
+    const customTab = document.getElementById('tab-custom');
+    if (customTab) customTab.click();
+    renderWorkout();
+}
+
 
 // --- PROGRESSO E ESTATÍSTICAS ---
 function setupChartSelect() {
     const select = document.getElementById('exercise-select');
     select.innerHTML = '<option value="">Escolhe um exercício...</option>';
     const uniqueExercises = new Set();
-
-    history.forEach(log => {
-        Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex));
-    });
-
-    uniqueExercises.forEach(ex => {
-        select.innerHTML += `<option value="${ex}">${ex}</option>`;
-    });
+    history.forEach(log => { Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); });
+    uniqueExercises.forEach(ex => { select.innerHTML += `<option value="${ex}">${ex}</option>`; });
 }
 
 function renderChart() {
     const exercise = document.getElementById('exercise-select').value;
     if (!exercise) return;
-
-    const labels = [];
-    const data = [];
-    const reps = [];
-
+    const labels = [], data = [], reps = [];
     history.forEach(log => {
         if (log.exercises[exercise]) {
             labels.push(log.date);
@@ -315,254 +514,130 @@ function renderChart() {
         }
     });
 
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-
+    if (chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('progressChart').getContext('2d');
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels,
-            datasets: [{
-                label: 'Carga (kg)',
-                data,
-                borderColor: '#38bdf8',
-                backgroundColor: 'rgba(56,189,248,0.2)',
-                fill: true,
-                tension: 0.3
-            }]
+            datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }]
         }
     });
 
     const maxWeight = Math.max(...data);
     const maxReps = Math.max(...reps);
     const estimated1RM = Math.round(maxWeight * (1 + maxReps / 30));
-
     let totalVolume = 0;
     history.forEach(log => {
-        if (log.exercises[exercise]) {
-            log.exercises[exercise].forEach(set => {
-                totalVolume += set.weight * set.reps;
-            });
-        }
+        if (log.exercises[exercise]) log.exercises[exercise].forEach(set => totalVolume += set.weight * set.reps);
     });
 
-    let coach = '';
-    if (data.length >= 3) {
-        const last = data[data.length - 1];
-        const previous = data[data.length - 2];
-        if (last > previous) {
-            coach = '📈 Excelente progressão recente.';
-        } else {
-            coach = '⚠️ Sem progressão recente. Considera ajustar volume ou recuperação.';
-        }
-    } else {
-        coach = '📊 Ainda há poucos dados para análise.';
-    }
+    let coach = data.length >= 3 
+        ? (data[data.length - 1] > data[data.length - 2] ? '📈 Excelente progressão recente.' : '⚠️ Sem progressão recente. Considera ajustar volume.') 
+        : '📊 Poucos dados para análise.';
 
     document.getElementById('coach-message').innerText = coach;
     document.getElementById('pr-display').innerHTML = `
-        <h3>🏆 PRs</h3>
-        <br>
+        <h3>🏆 PRs</h3><br>
         <p><strong>Maior carga:</strong> ${maxWeight} kg</p>
         <p><strong>Maior reps:</strong> ${maxReps}</p>
         <p><strong>1RM estimado:</strong> ${estimated1RM} kg</p>
-        <p><strong>Volume acumulado:</strong> ${Math.round(totalVolume)} kg</p>
-    `;
+        <p><strong>Volume acumulado:</strong> ${Math.round(totalVolume)} kg</p>`;
 }
 
 function updateGlobalStats() {
-    let totalWorkouts = history.length;
-    let totalSets = 0;
-    let totalVolume = 0;
-    let exercisesDone = {};
-
+    let totalWorkouts = history.length, totalSets = 0, totalVolume = 0, exercisesDone = {};
     history.forEach(log => {
         Object.entries(log.exercises).forEach(([exercise, sets]) => {
-            if (!exercisesDone[exercise]) {
-                exercisesDone[exercise] = 0;
-            }
+            if (!exercisesDone[exercise]) exercisesDone[exercise] = 0;
             exercisesDone[exercise]++;
             totalSets += sets.length;
-            sets.forEach(set => {
-                totalVolume += set.weight * set.reps;
-            });
+            sets.forEach(set => totalVolume += set.weight * set.reps);
         });
     });
-
-    let favoriteExercise = 'Nenhum';
-    if (Object.keys(exercisesDone).length > 0) {
-        favoriteExercise = Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b);
-    }
-
+    let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum';
     document.getElementById('global-stats').innerHTML = `
-        <h3>📊 Estatísticas Globais</h3>
-        <br>
-        <p><strong>Total de treinos:</strong> ${totalWorkouts}</p>
-        <p><strong>Total de séries:</strong> ${totalSets}</p>
+        <h3>📊 Estatísticas Globais</h3><br>
+        <p><strong>Total treinos:</strong> ${totalWorkouts}</p>
+        <p><strong>Total séries:</strong> ${totalSets}</p>
         <p><strong>Volume total:</strong> ${Math.round(totalVolume)} kg</p>
-        <p><strong>Exercício favorito:</strong> ${favoriteExercise}</p>
-    `;
+        <p><strong>Ex. favorito:</strong> ${fav}</p>`;
 }
 
 // --- CALENDÁRIO ---
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     grid.innerHTML = '';
-    const title = document.getElementById('calendar-title');
-
-    const year = currentCalendarDate.getFullYear();
-    const month = currentCalendarDate.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const year = currentCalendarDate.getFullYear(), month = currentCalendarDate.getMonth();
+    const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
+    let startDay = firstDay.getDay(); startDay = startDay === 0 ? 6 : startDay - 1;
 
-    let startDay = firstDay.getDay();
-    startDay = startDay === 0 ? 6 : startDay - 1;
+    const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    document.getElementById('calendar-title').innerText = `${monthNames[month]} ${year}`;
 
-    const monthNames = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-
-    title.innerText = `${monthNames[month]} ${year}`;
-
-    for (let i = 0; i < startDay; i++) {
-        grid.innerHTML += '<div class="day-box empty"></div>';
-    }
-
+    for (let i = 0; i < startDay; i++) grid.innerHTML += '<div class="day-box empty"></div>';
     for (let day = 1; day <= daysInMonth; day++) {
-        const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const trained = history.some(h => h.date === dateString);
-
-        grid.innerHTML += `
-        <div class="day-box ${trained ? 'trained' : ''}" onclick="toggleTrainingDay('${dateString}')">
-            ${day}
-        </div>`;
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const trained = history.some(h => h.date === dateStr);
+        grid.innerHTML += `<div class="day-box ${trained ? 'trained' : ''}" onclick="toggleTrainingDay('${dateStr}')">${day}</div>`;
     }
-
-    updateWeeklyGoal();
-    updateMonthlyGoal();
+    updateWeeklyGoal(); updateMonthlyGoal();
 }
 
 function toggleTrainingDay(dateString) {
     const existing = history.find(h => h.date === dateString);
-
     if (existing) {
         if (existing.exercises && Object.keys(existing.exercises).length > 0) {
-            const confirmDelete = confirm("⚠️ Este dia tem um treino gravado com séries reais. Tens a certeza que queres APAGAR todos os dados deste dia?");
-            if (!confirmDelete) return;
+            if (!confirm("⚠️ APAGAR todos os dados deste dia?")) return;
         }
         history = history.filter(h => h.date !== dateString);
     } else {
-        history.push({
-            date: dateString,
-            day: 'MANUAL',
-            exercises: {}
-        });
+        history.push({ date: dateString, day: 'MANUAL', exercises: {} });
     }
-
     localStorage.setItem('gym_history', JSON.stringify(history));
-    renderCalendar();
-    if (document.getElementById('view-evolucao').classList.contains('active')) {
-        updateGlobalStats();
-    }
+    renderCalendar(); updateGlobalStats();
 }
 
 function updateWeeklyGoal() {
-    const now = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(now.getDate() - 7);
+    const now = new Date(), sevenDaysAgo = new Date(); sevenDaysAgo.setDate(now.getDate() - 7);
     let weekly = 0;
-
     history.forEach(log => {
-        const date = new Date(log.date);
-        if (date >= sevenDaysAgo && date <= now) {
-            weekly++;
-        }
+        const d = new Date(log.date);
+        if (d >= sevenDaysAgo && d <= now) weekly++;
     });
-
     document.getElementById('weekly-count').innerText = weekly;
     document.getElementById('weekly-progress').style.width = `${Math.min(weekly, 6) / 6 * 100}%`;
 }
 
 function updateMonthlyGoal() {
-    const year = currentCalendarDate.getFullYear();
-    const month = currentCalendarDate.getMonth();
+    const year = currentCalendarDate.getFullYear(), month = currentCalendarDate.getMonth();
     let monthly = 0;
-
     history.forEach(log => {
-        const date = new Date(log.date);
-        if (date.getFullYear() === year && date.getMonth() === month) {
-            monthly++;
-        }
+        const d = new Date(log.date);
+        if (d.getFullYear() === year && d.getMonth() === month) monthly++;
     });
-
-    const goal = 24;
     document.getElementById('monthly-count').innerText = monthly;
-    document.getElementById('monthly-progress').style.width = `${Math.min(monthly, goal) / goal * 100}%`;
+    document.getElementById('monthly-progress').style.width = `${Math.min(monthly, 24) / 24 * 100}%`;
 }
 
-function changeMonth(direction) {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
-    renderCalendar();
-}
+function changeMonth(direction) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction); renderCalendar(); }
 
-// --- DICAS E VÍDEOS ---
+// --- DICAS, VÍDEOS E PARTILHA ---
 function shareWorkout() {
     const text = `💪 Acabei o treino de ${currentDay}!`;
-    if (navigator.share) {
-        navigator.share({ text });
-    } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
+    navigator.share ? navigator.share({ text }) : window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
 
 function showExerciseTips(exerciseName) {
-    const tips = {
-        'Supino Inclinado c/ Halteres': 'Mantém o peito estufado e foca-te em aproximar os bíceps no topo da subida. Controla bem a descida.',
-        'Supino Plano na Máquina (Chest Press)': 'Aproveita a estabilidade da máquina para ir até à falha total em segurança. Mantém a tensão constante no peito.',
-        'Press Militar c/ Halteres (Sentado)': 'Para proteger a articulação, os cotovelos devem estar a cerca de 45 graus (ligeiramente à frente da linha do tronco), e não totalmente apontados para os lados.',
-        'Elevações Laterais na Polia': 'Pensa em "empurrar o peso para longe", em direção às paredes, e não apenas em levantá-lo. Passa o cabo por trás de ti para alongar mais.',
-        'Tríceps à Testa com Barra EZ ou Halteres (Skullcrushers)': 'Deixa os cotovelos passarem ligeiramente a linha da testa para trás. Isto mantém a tensão contínua na cabeça longa do tríceps.',
-        'Tríceps na Polia com Corda (Pushdowns)': 'Mantém o peito alto e "prega" os cotovelos às costelas. No final da extensão, afasta as mãos ligeiramente para uma contração máxima.',
-        'Puxada Vertical na Polia Alta (Lat Pulldown) com pega aberta': 'Puxa imaginando que queres encostar os cotovelos aos quadris. As tuas mãos são apenas "ganchos", a força vem das costas.',
-        'Remada Sentada com Cabo (Pega Romena/Neutro)': 'Deixa as omoplatas alongarem à frente, mas na puxada espreme-as firmemente uma contra a outra antes de os braços dobrarem.',
-        'Remada Inclinada c/ Halteres': 'O teu peito nunca pode descolar do banco (evita batota lombar). Puxa os halteres em direção à anca varrendo os cotovelos rentes ao corpo.',
-        'Cruzamentos Inversos na Polia ou Voos Posteriores (Rear Delt Fly)': 'Movimento curto e muito controlado. Foca-te em afastar as costas da mão para os lados. Não tentes juntar as costas ao centro.',
-        'Curl de Bíceps Inclinado com Halteres': 'Mantém os cotovelos a apontar para o chão o tempo todo e deixa o braço esticar por completo na descida para potenciar o alongamento.',
-        'Curl Martelo (Hammer Curl) com Halteres': 'Aperta os halteres com muita força e não deixes os cotovelos balançarem para a frente durante a subida. Isola o braquial.',
-        'Leg Press 45º': 'Apoia bem a lombar e garante que a descida é controlada (cerca de 2 a 3 segundos). Nunca bloqueies os joelhos de forma brusca no topo do movimento.',
-        'Peso Morto Romeno (RDL) com Barra ou Halteres': 'O segredo é a anca. Imagina que queres fechar uma gaveta atrás de ti com os glúteos. O movimento termina assim que os femorais atingem o alongamento máximo.',
-        'Extensão de Pernas (Leg Extension)': 'Agarra as pegas laterais com força para cravar a bacia no banco. Em cada repetição, aguenta 1 segundo no topo com os joelhos esticados.',
-        'Flexão de Pernas Sentado ou Deitado (Leg Curl)': 'Pressiona a zona pélvica contra o banco durante todo o exercício. Controla rigorosamente a descida para não deixares o peso cair com a gravidade.',
-        'Elevação de Gémeos em Pé (Calf Raises)': 'A magia está na pausa. Faz 2 segundos de pausa total na posição mais baixa (calcanhar perto do chão) para forçar o músculo a trabalhar sem o "efeito mola" do tendão de Aquiles.'
-    };
-
     document.getElementById('modal-title').innerText = exerciseName;
-    document.getElementById('modal-content').innerText = tips[exerciseName] || 'Sem dicas disponíveis.';
+    document.getElementById('modal-content').innerText = "Mantém a boa postura e controla o movimento excêntrico (a descida). Regista a carga real e não sacrifiques a técnica por ego!";
     document.getElementById('exercise-modal').style.display = 'flex';
 }
-
-function closeModal() {
-    document.getElementById('exercise-modal').style.display = 'none';
-}
+function closeModal() { document.getElementById('exercise-modal').style.display = 'none'; }
 
 function showExerciseVideo(exerciseName) {
-    const videos = {
-        'Supino Inclinado c/ Halteres': 'https://www.youtube.com/results?search_query=supino+inclinado+halteres',
-        'Peso Morto Romeno (RDL) com Barra ou Halteres': 'https://www.youtube.com/results?search_query=romanian+deadlift',
-        'Leg Press 45º': 'https://www.youtube.com/results?search_query=leg+press+tutorial'
-    };
-
-    const url = videos[exerciseName];
-    if (url) {
-        window.open(url, '_blank');
-    } else {
-        alert('Vídeo ainda não disponível.');
-    }
+    window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(exerciseName)}+tutorial`, '_blank');
 }
 
 // --- PERFIL E DIETA ---
@@ -574,7 +649,6 @@ function renderProfile() {
     document.getElementById('prof-weight').value = userProfile.weight || 70;
     document.getElementById('prof-activity').value = userProfile.activity || '1.55';
     document.getElementById('prof-goal').value = userProfile.goal || 'maintain';
-    
     updateProfileData();
 }
 
@@ -596,8 +670,7 @@ function updateProfileData() {
     const bmi = userProfile.weight / (heightM * heightM);
     document.getElementById('calc-bmi').innerText = bmi.toFixed(1);
 
-    let bmiStatus = "Normal";
-    let bmiColor = "var(--success)";
+    let bmiStatus = "Normal", bmiColor = "var(--success)";
     if (bmi < 18.5) { bmiStatus = "Baixo Peso"; bmiColor = "var(--accent)"; }
     else if (bmi >= 25 && bmi < 30) { bmiStatus = "Excesso de Peso"; bmiColor = "#f59e0b"; }
     else if (bmi >= 30) { bmiStatus = "Obesidade"; bmiColor = "var(--danger)"; }
@@ -605,106 +678,61 @@ function updateProfileData() {
     document.getElementById('calc-bmi-status').innerText = bmiStatus;
     document.getElementById('calc-bmi-status').style.color = bmiColor;
 
-    let tdee = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age);
-    tdee += (userProfile.gender === 'male') ? 5 : -161;
+    let tdee = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age) + (userProfile.gender === 'male' ? 5 : -161);
     tdee *= userProfile.activity;
-
     if (userProfile.goal === 'cut') tdee -= 500;
     if (userProfile.goal === 'bulk') tdee += 300;
 
     document.getElementById('calc-cals').innerText = Math.round(tdee);
 
     const avatar = document.getElementById('dynamic-avatar');
-    let scaleY = 1 + ((userProfile.height - 170) / 170) * 0.7; 
-    let scaleX = 1 + ((bmi - 24) / 24) * 0.6;
-    
-    scaleX = Math.max(0.6, Math.min(scaleX, 1.8));
-    scaleY = Math.max(0.7, Math.min(scaleY, 1.4));
-
+    let scaleX = Math.max(0.6, Math.min(1 + ((bmi - 24) / 24) * 0.6, 1.8));
+    let scaleY = Math.max(0.7, Math.min(1 + ((userProfile.height - 170) / 170) * 0.7, 1.4));
     avatar.style.transform = `scale(${scaleX}, ${scaleY})`;
-
-    renderDieta();
 }
 
 function renderDieta() {
     let tdee = parseInt(document.getElementById('calc-cals').innerText) || 0;
-    let weight = userProfile.weight;
-    let goal = userProfile.goal;
-
     if (tdee === 0) return;
-
+    let weight = userProfile.weight;
+    
     let protein = Math.round(weight * 2.2);
-    let fat = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0));
-    let proteinCals = protein * 4;
-    let fatCals = fat * 9;
-    let leftoverCals = tdee - (proteinCals + fatCals);
-    let carbs = Math.max(0, Math.round(leftoverCals / 4));
+    let fat = Math.round(weight * (userProfile.goal === 'cut' ? 0.8 : 1.0));
+    let carbs = Math.max(0, Math.round((tdee - (protein * 4 + fat * 9)) / 4));
 
     document.getElementById('macro-pro').innerText = protein + 'g';
     document.getElementById('macro-car').innerText = carbs + 'g';
     document.getElementById('macro-fat').innerText = fat + 'g';
 
-    let waterMl = (weight * 35);
-    if(userProfile.activity >= 1.55) waterMl += 500;
+    let waterMl = (weight * 35) + (userProfile.activity >= 1.55 ? 500 : 0);
     document.getElementById('water-goal').innerText = (waterMl / 1000).toFixed(1) + ' L';
-
-    let advice = "";
-    if (goal === 'cut') {
-        advice = "💡 Foco total no défice calórico! Privilegia alimentos com muito volume e poucas calorias (ex: vegetais, melancia, morangos) para manter a saciedade. A proteína alta vai garantir que manténs a massa muscular enquanto queimas gordura.";
-    } else if (goal === 'bulk') {
-        advice = "💡 Estás em modo de construção! Se tiveres dificuldade em comer todas essas calorias, opta por alimentos densos como manteiga de amendoim, azeite, frutos secos e batidos líquidos. Não descures o teu descanso!";
-    } else {
-        advice = "💡 Manutenção e recomposição: O equilíbrio perfeito. O teu objetivo é treinar pesado para dar o estímulo aos músculos, usando estas calorias para recuperar. Mantém a consistência!";
-    }
-    
-    document.getElementById('diet-advisor').innerText = advice;
 }
 
 // --- SISTEMA DE BACKUP ---
 function exportData() {
-    const data = {
-        history: history,
-        profile: userProfile
-    };
-    const dataStr = JSON.stringify(data, null, 2);
+    const dataStr = JSON.stringify({ history, profile: userProfile }, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    
     const a = document.createElement('a');
-    const date = new Date().toISOString().split('T')[0];
-    a.download = `gym_tracker_backup_${date}.json`;
-    a.href = url;
-    a.click();
-    URL.revokeObjectURL(url);
+    a.download = `gym_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.href = url; a.click(); URL.revokeObjectURL(url);
 }
 
 function importData(event) {
     const file = event.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            
-            if (data.history) {
-                history = data.history;
-                localStorage.setItem('gym_history', JSON.stringify(history));
-            }
-            if (data.profile) {
-                userProfile = data.profile;
-                localStorage.setItem('gym_profile', JSON.stringify(userProfile));
-            }
-            
-            alert('✅ Backup carregado com sucesso! A página vai recarregar para aplicar os dados.');
-            location.reload(); // Recarrega a app para injetar todos os dados importados no ecrã
-        } catch (error) {
-            alert('❌ Erro ao ler o ficheiro. Confirma se é o ficheiro de backup correto.');
-        }
+            if (data.history) { history = data.history; localStorage.setItem('gym_history', JSON.stringify(history)); }
+            if (data.profile) { userProfile = data.profile; localStorage.setItem('gym_profile', JSON.stringify(userProfile)); }
+            alert('✅ Backup carregado com sucesso!'); location.reload();
+        } catch (error) { alert('❌ Erro ao ler o ficheiro.'); }
     };
     reader.readAsText(file);
 }
 
-// Inicia a aplicação
+// Iniciar a aplicação
 renderWorkout();
 renderProfile();
