@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker - Ultra Edition 3.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 
@@ -23,7 +23,10 @@
         
         <div class="beast-body">
             <h2 id="beast-exercise-name" class="beast-title">Supino Inclinado</h2>
-            <div id="beast-history-badge" class="history-badge" style="margin: 10px auto; font-size: 14px;">Última: -</div>
+            <div id="beast-history-badge" class="history-badge" style="margin: 10px auto 5px; font-size: 14px;">Última: -</div>
+            
+            <!-- NOVO: Sugestão do Smart Coach para Sobrecarga Progressiva -->
+            <div id="beast-smart-suggestion" style="color: var(--success); font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 8px rgba(34,197,94,0.3); display: none;">🎯 Coach: Tenta 82.5kg (+2.5kg)</div>
             
             <button id="warmup-btn" class="beast-action-btn" style="background:#3b82f6; margin: 10px auto; display: block; width: 100%; max-width: 350px; font-size: 14px; padding: 10px;" onclick="openWarmup()">🔥 Gerar Aquecimento Ideal</button>
             
@@ -607,6 +610,6 @@
     </div>
 
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=17"></script>
+    <script src="script.js?v=18"></script>
 </body>
 </html>
