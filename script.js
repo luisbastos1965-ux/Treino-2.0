@@ -1256,3 +1256,76 @@ function openWarmup() {
 function closeWarmup() {
     document.getElementById('warmup-modal').style.display = 'none';
 }
+
+// ==========================================
+// PARTE 9: RASTREIO CORPORAL AVANÇADO 📏
+// ==========================================
+
+// Sobrescrever a função de renderizar o perfil para injetar os novos dados
+const originalRenderProfile = renderProfile;
+renderProfile = function() {
+    originalRenderProfile();
+    
+    // Garante que o objeto de medidas existe
+    if (!userProfile.measurements) {
+        userProfile.measurements = { arm: '', chest: '', waist: '', leg: '' };
+    }
+    
+    document.getElementById('meas-arm').value = userProfile.measurements.arm || '';
+    document.getElementById('meas-chest').value = userProfile.measurements.chest || '';
+    document.getElementById('meas-waist').value = userProfile.measurements.waist || '';
+    document.getElementById('meas-leg').value = userProfile.measurements.leg || '';
+    
+    calculateBodyFat();
+};
+
+// Sobrescrever a função de gravar perfil para incluir as medidas
+const originalUpdateProfileData = updateProfileData;
+updateProfileData = function() {
+    if (!userProfile.measurements) userProfile.measurements = {};
+    
+    userProfile.measurements.arm = document.getElementById('meas-arm').value;
+    userProfile.measurements.chest = document.getElementById('meas-chest').value;
+    userProfile.measurements.waist = document.getElementById('meas-waist').value;
+    userProfile.measurements.leg = document.getElementById('meas-leg').value;
+    
+    // Chama o original que já grava tudo na memória (localStorage)
+    originalUpdateProfileData();
+    calculateBodyFat();
+};
+
+// Fórmula Relative Fat Mass (RFM)
+function calculateBodyFat() {
+    const waistStr = document.getElementById('meas-waist').value;
+    const waist = parseFloat(waistStr);
+    const height = userProfile.height;
+    const gender = userProfile.gender;
+    const bfDisplay = document.getElementById('calc-bf');
+    
+    if (waist > 0 && height > 0) {
+        let rfm = 0;
+        if (gender === 'male') {
+            rfm = 64 - (20 * (height / waist));
+        } else {
+            rfm = 76 - (20 * (height / waist));
+        }
+        
+        // Limitar entre 3% (Mínimo biológico) e 50%
+        rfm = Math.max(3, Math.min(rfm, 50));
+        bfDisplay.innerText = rfm.toFixed(1) + '%';
+        
+        // Colorir o resultado dependendo de quão 'Seco' estás
+        if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') {
+            bfDisplay.style.color = '#38bdf8'; // Azul (Seco/Atlético)
+        } else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') {
+            bfDisplay.style.color = 'var(--success)'; // Verde (Saudável)
+        } else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') {
+            bfDisplay.style.color = '#f59e0b'; // Amarelo (Acima da média)
+        } else {
+            bfDisplay.style.color = 'var(--danger)'; // Vermelho (Alerta)
+        }
+    } else {
+        bfDisplay.innerText = '--%';
+        bfDisplay.style.color = 'var(--accent)';
+    }
+}
