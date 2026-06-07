@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Tracker - Ultra Edition</title>
+    <title>Gym Tracker - Ultra Edition 3.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 
@@ -273,19 +273,32 @@
             <!-- Legenda de Cores -->
             <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 10px; color: var(--muted);">
                 <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #334155; border-radius: 2px;"></div> Descansado</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve (1-6)</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #f97316; border-radius: 2px;"></div> Médio (7-12)</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></div> Fritado (13+)</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #f97316; border-radius: 2px;"></div> Médio</div>
+                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></div> Fritado</div>
+            </div>
+        </div>
+
+        <!-- MODO RPG: NÍVEIS MUSCULARES -->
+        <div class="goal-container" style="margin-top: 20px;">
+            <h3 class="text-center">🎮 Modo RPG: Níveis Musculares</h3>
+            <p class="text-center" style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ganha XP com cada quilo levantado. Sobe os teus atributos!</p>
+            
+            <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <!-- Lista de RPG preenchida pelo JS -->
+                <div style="text-align: center; color: var(--muted); font-size: 13px;">A calcular Níveis...</div>
             </div>
         </div>
 
         <!-- Seletor de Gráfico e Visualização -->
-        <select id="exercise-select" class="chart-select" onchange="renderChart()">
-            <option value="">Escolhe um exercício...</option>
-        </select>
-        
-        <canvas id="progressChart"></canvas>
-        <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
+        <div style="margin-top: 20px;">
+            <select id="exercise-select" class="chart-select" onchange="renderChart()">
+                <option value="">Escolhe um exercício...</option>
+            </select>
+            
+            <canvas id="progressChart"></canvas>
+            <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
+        </div>
 
         <div id="pr-display" class="goal-container">
             <h3>🏆 PRs</h3>
@@ -594,6 +607,6 @@
     </div>
 
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=16"></script>
+    <script src="script.js?v=17"></script>
 </body>
 </html>
