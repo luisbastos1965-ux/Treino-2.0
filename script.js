@@ -929,3 +929,103 @@ function openPlateMath(targetWeightStr) {
 function closePlateMath() {
     document.getElementById('plate-math-modal').style.display = 'none';
 }
+
+// ==========================================
+// PARTE 5: ROTINAS GUARDADAS (OS TEUS CLÁSSICOS)
+// ==========================================
+
+let savedRoutines = JSON.parse(localStorage.getItem('gym_saved_routines')) || [];
+
+// Modificar a função de mudar de modo no Laboratório para incluir os "Salvos"
+const originalSetBuilderMode = setBuilderMode;
+setBuilderMode = function(mode) {
+    builderState.mode = mode;
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`btn-mode-${mode}`).classList.add('active');
+
+    document.getElementById('auto-focus-panel').style.display = 'none';
+    document.getElementById('manual-library-panel').style.display = 'none';
+    document.getElementById('saved-routines-panel').style.display = 'none';
+
+    if (mode === 'auto') {
+        document.getElementById('auto-focus-panel').style.display = 'block';
+    } else if (mode === 'manual') {
+        document.getElementById('manual-library-panel').style.display = 'block';
+        renderLibrary();
+    } else if (mode === 'saved') {
+        document.getElementById('saved-routines-panel').style.display = 'block';
+        renderSavedRoutines();
+    }
+};
+
+// Modificar a UI do construtor para mostrar/esconder o botão de guardar
+const originalUpdateBuilderUI = updateBuilderUI;
+updateBuilderUI = function(rebuildList = true) {
+    originalUpdateBuilderUI(rebuildList);
+    
+    const actionBtns = document.getElementById('builder-action-buttons');
+    const oldApplyBtn = document.getElementById('btn-apply-workout');
+    
+    if (oldApplyBtn) oldApplyBtn.style.display = 'none'; // Esconder o botão antigo isolado
+    
+    if (builderState.routine.length > 0) {
+        actionBtns.style.display = 'flex';
+    } else {
+        actionBtns.style.display = 'none';
+    }
+};
+
+function saveCurrentRoutine() {
+    if (builderState.routine.length === 0) return;
+    
+    const routineName = prompt("Que nome queres dar a esta rotina épica? (ex: Peito Fritado)");
+    if (!routineName) return;
+
+    savedRoutines.push({
+        name: routineName,
+        routine: JSON.parse(JSON.stringify(builderState.routine))
+    });
+
+    localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines));
+    alert('✅ Rotina guardada com sucesso! Podes encontrá-la na aba "Salvos".');
+}
+
+function renderSavedRoutines() {
+    const list = document.getElementById('saved-routines-list');
+    list.innerHTML = '';
+
+    if (savedRoutines.length === 0) {
+        list.innerHTML = `<p class="text-center" style="color: var(--muted); font-size: 14px; padding: 20px 0;">Ainda não tens rotinas guardadas. Constrói uma e clica em "Guardar".</p>`;
+        return;
+    }
+
+    savedRoutines.forEach((item, index) => {
+        let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0);
+        
+        list.innerHTML += `
+        <div class="built-item" style="border: 1px solid #334155;">
+            <div class="built-item-info">
+                <span class="built-item-title" style="color: var(--accent); font-size: 16px;">${item.name}</span>
+                <span style="font-size: 11px; color: var(--muted);">${item.routine.length} Exercícios | ${totalSets} Séries</span>
+            </div>
+            <div class="built-item-controls" style="gap: 5px;">
+                <button class="add-btn" style="width: auto; padding: 0 10px;" onclick="loadSavedRoutine(${index})">CARREGAR</button>
+                <button class="remove-btn" onclick="deleteSavedRoutine(${index})">✖</button>
+            </div>
+        </div>`;
+    });
+}
+
+function loadSavedRoutine(index) {
+    builderState.routine = JSON.parse(JSON.stringify(savedRoutines[index].routine));
+    updateBuilderUI();
+    alert(`⚡ Rotina "${savedRoutines[index].name}" carregada para o Esboço!`);
+}
+
+function deleteSavedRoutine(index) {
+    if (confirm("Tens a certeza que queres apagar esta rotina?")) {
+        savedRoutines.splice(index, 1);
+        localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines));
+        renderSavedRoutines();
+    }
+}
