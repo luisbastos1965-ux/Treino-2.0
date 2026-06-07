@@ -1539,3 +1539,95 @@ updateGlobalStats = function() {
 
 // Forçar o cálculo imediato se a página for recarregada diretamente nessa aba
 setTimeout(calculateRPGStats, 500);
+
+// ==========================================
+// PARTE 12: SOBRECARGA PROGRESSIVA AUTOMÁTICA
+// ==========================================
+
+function checkProgressiveOverload(exerciseName) {
+    const suggestionPanel = document.getElementById('beast-smart-suggestion');
+    if (!suggestionPanel) return;
+
+    // 1. Procurar a última execução deste exercício no histórico geral
+    let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
+    let lastSetFound = null;
+
+    // Lemos do mais recente para o mais antigo
+    for (let i = history.length - 1; i >= 0; i--) {
+        const session = history[i];
+        if (session.exercises) {
+            const match = session.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase());
+            if (match && match.setsDetails && match.setsDetails.length > 0) {
+                // Pegamos na melhor série (normalmente a primeira ou com mais carga)
+                lastSetFound = match.setsDetails[0];
+                break;
+            }
+        }
+    }
+
+    // 2. Se não houver histórico, tentamos ver se há alguma carga planeada no treino atual
+    if (!lastSetFound) {
+        suggestionPanel.style.display = 'none';
+        return;
+    }
+
+    // 3. Aplicar o Algoritmo do Smart Coach com base no RIR anterior
+    const lastWeight = parseFloat(lastSetFound.w || 0);
+    const lastReps = parseInt(lastSetFound.r || 0);
+    const lastRir = parseInt(lastSetFound.rir || 0);
+
+    if (isNaN(lastWeight) || lastWeight === 0) {
+        suggestionPanel.style.display = 'none';
+        return;
+    }
+
+    let message = "";
+    suggestionPanel.style.background = "rgba(34,197,94,0.1)";
+    suggestionPanel.style.color = "var(--success)";
+    suggestionPanel.style.padding = "10px";
+    suggestionPanel.style.borderRadius = "10px";
+    suggestionPanel.style.border = "1px solid rgba(34,197,94,0.2)";
+
+    if (lastRir >= 3) {
+        // Estava muito fácil (3+ repetições em falta) -> Sobe 5kg ou adiciona reps
+        const newWeight = lastWeight + 5;
+        message = `🧠 Smart Coach: Última vez foi fácil (RIR 3+). Tenta subir para ${newWeight}kg (+5kg) ou faz +2 Reps!`;
+    } else if (lastRir === 2) {
+        // Estava controlado (2 repetições em falta) -> Sobe 2.5kg
+        const newWeight = lastWeight + 2.5;
+        message = `🧠 Smart Coach: Progressão ideal detetada. Tenta carregar ${newWeight}kg (+2.5kg) hoje!`;
+    } else if (lastRir === 1) {
+        // Perto do limite -> Manter carga e focar na execução ou tentar +1 repetição
+        message = `🧠 Smart Coach: Estavas perto do limite (RIR 1). Mantém os ${lastWeight}kg e tenta esmagar mais 1 repetição.`;
+    } else {
+        // Falha total (RIR 0) -> Consolidar carga antiga antes de subir
+        suggestionPanel.style.background = "rgba(245,158,11,0.1)";
+        suggestionPanel.style.color = "#f59e0b";
+        suggestionPanel.style.border = "1px solid rgba(245,158,11,0.2)";
+        message = `🧠 Smart Coach: Treino ao limite da falha (RIR 0). Repete os ${lastWeight}kg com técnica perfeita antes de subir.`;
+    }
+
+    suggestionPanel.innerText = message;
+    suggestionPanel.style.display = 'block';
+
+    // Se o Coach de Voz estiver ligado, ele avisa-te do plano antes do aquecimento
+    if (typeof voiceCoachActive !== 'undefined' && voiceCoachActive && (lastRir >= 2)) {
+        setTimeout(() => {
+            speakVoiceCoach(`Dica do treinador. Estás mais forte. Tenta aumentar a carga neste exercício hoje.`);
+        }, 1500);
+    }
+}
+
+// 4. Injetar a verificação de sobrecarga no ciclo de renderização do Beast Mode de forma segura
+if (typeof renderBeastMode === 'function') {
+    const originalRenderBeastMode = renderBeastMode;
+    renderBeastMode = function() {
+        originalRenderBeastMode();
+        
+        const exercises = workoutData[currentDay];
+        const ex = exercises[beastState.exIdx];
+        if (ex && ex.name) {
+            checkProgressiveOverload(ex.name);
+        }
+    };
+}
