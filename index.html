@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -22,7 +22,10 @@
             
             <div class="beast-inputs">
                 <div class="beast-input-group">
-                    <label>KG</label>
+                    <label style="display:flex; align-items:center; gap:5px;">
+                        KG 
+                        <button class="plate-calc-btn" onclick="openPlateMath(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder)">🧮</button>
+                    </label>
                     <input type="number" id="beast-weight" placeholder="0">
                 </div>
                 <div class="beast-input-group">
@@ -419,6 +422,33 @@
         </div>
     </div>
 
-    <script src="script.js?v=9"></script>
+    <!-- NOVO: Modal Calculadora de Discos -->
+    <div id="plate-math-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(5px);justify-content:center;align-items:center;padding:20px;z-index:10002;">
+        <div style="background:var(--card-bg);padding:30px;border-radius:20px;width:100%;max-width:350px;text-align:center;position:relative;">
+            <button onclick="closePlateMath()" style="position:absolute;top:10px;right:15px;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;">✖</button>
+            
+            <h3 style="margin-bottom:5px; color:white;">Calculadora de Discos</h3>
+            <p style="color:var(--accent); font-weight:bold; font-size:28px; margin-bottom:20px;"><span id="plate-target-weight">100</span> KG</p>
+            
+            <p style="font-size:12px; color:var(--muted); margin-bottom:15px;">Assumindo barra olímpica de 20kg</p>
+            
+            <!-- Representação Visual da Barra -->
+            <div style="display:flex; align-items:center; justify-content:center; height:120px; margin-bottom:20px;">
+                <div style="width:20px; height:15px; background:#94a3b8; border-radius:2px;"></div><!-- ponta -->
+                <div id="visual-plates" style="display:flex; align-items:center; gap:2px;">
+                    <!-- Discos Injetados aqui -->
+                </div>
+                <div style="width:60px; height:15px; background:#64748b; margin-left:2px; position:relative;">
+                    <div style="position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:10px; color:#cbd5e1;">BARRA</div>
+                </div><!-- centro barra -->
+            </div>
+
+            <div id="plate-math-result" style="background:#0f172a; padding:15px; border-radius:12px; text-align:left;">
+                <!-- Resultados descritivos -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=10"></script>
 </body>
 </html>
