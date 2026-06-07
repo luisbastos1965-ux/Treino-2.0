@@ -1631,3 +1631,75 @@ if (typeof renderBeastMode === 'function') {
         }
     };
 }
+
+// ==========================================
+// PARTE 13: ECOSSISTEMA WEARABLE E METABOLISMO DINÂMICO ⌚
+// ==========================================
+
+function updateWearableData() {
+    const stepsInput = document.getElementById('wearable-steps').value;
+    const workoutCalsInput = document.getElementById('wearable-cals').value;
+    
+    const steps = parseInt(stepsInput) || 0;
+    const workoutCals = parseInt(workoutCalsInput) || 0;
+    
+    // Estimativa conservadora baseada em ciência desportiva: 1 passo ≈ 0.04 kcal
+    const stepsCals = steps * 0.04;
+    const extraCals = stepsCals + workoutCals;
+    
+    // Recalcular BMR a limpo para evitar duplicação de atividade
+    let weight = parseFloat(userProfile.weight) || 70;
+    let height = parseFloat(userProfile.height) || 170;
+    let age = parseInt(userProfile.age) || 25;
+    let gender = userProfile.gender || 'male';
+    
+    // Equação de Mifflin-St Jeor
+    let bmr = 10 * weight + 6.25 * height - 5 * age + (gender === 'male' ? 5 : -161);
+    
+    // TDEE Dinâmico: BMR (funções vitais) + NEAT baseline (20% para a vida normal) + Wearable Data real
+    let dynamicTDEE = (bmr * 1.2) + extraCals;
+    
+    // Ajustar pelo objetivo oficial do utilizador
+    const goal = userProfile.goal || 'maintain';
+    if (goal === 'cut') dynamicTDEE -= 500;
+    if (goal === 'bulk') dynamicTDEE += 300;
+    
+    const tdeeDisplay = document.getElementById('dynamic-tdee');
+    if (tdeeDisplay) {
+        tdeeDisplay.innerText = Math.round(dynamicTDEE) + ' Kcal';
+    }
+    
+    // Recalcular macros de performance baseados neste novo TDEE Dinâmico
+    let pro = weight * 2.2; // 2.2g de proteína por kg de peso
+    let fat = weight * 1.0; // 1g de gordura saudável por kg
+    let proCals = pro * 4;
+    let fatCals = fat * 9;
+    let carbCals = dynamicTDEE - proCals - fatCals;
+    let carb = Math.max(0, carbCals / 4); // O resto da energia vem dos hidratos
+    
+    // Injetar nos visores coloridos da Aba Dieta
+    const proDisplay = document.getElementById('macro-pro');
+    const fatDisplay = document.getElementById('macro-fat');
+    const carDisplay = document.getElementById('macro-car');
+    
+    if (proDisplay) proDisplay.innerText = Math.round(pro) + 'g';
+    if (fatDisplay) fatDisplay.innerText = Math.round(fat) + 'g';
+    if (carDisplay) carDisplay.innerText = Math.round(carb) + 'g';
+    
+    // Hidratação dinâmica com base na transpiração do treino
+    let baseWater = weight * 0.035; // 35ml base por kg
+    let extraWater = (workoutCals > 0) ? 0.8 : 0; // Mais 800ml se treinou pesado
+    let waterGoalDisplay = document.getElementById('water-goal');
+    if (waterGoalDisplay) {
+        waterGoalDisplay.innerText = (baseWater + extraWater).toFixed(1) + ' L';
+    }
+}
+
+// Intercetar a função original de renderização de perfil para manter a dieta sempre sincronizada com o smartwatch
+if (typeof renderProfile === 'function') {
+    const originalRenderProfileForWearable = renderProfile;
+    renderProfile = function() {
+        originalRenderProfileForWearable();
+        setTimeout(updateWearableData, 200); // Executa logo após desenhar o perfil para atualizar a Aba da Dieta
+    };
+}
