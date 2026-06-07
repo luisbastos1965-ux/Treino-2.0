@@ -803,3 +803,54 @@ canvas {
     font-weight: bold;
     cursor: pointer;
 }
+
+/* --- CALCULADORA DE DISCOS (PLATE MATH) --- */
+.plate-calc-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: transform 0.2s;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.plate-calc-btn:active {
+    transform: scale(0.9);
+}
+
+.plate-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #1e293b;
+}
+
+.plate-row:last-child {
+    border-bottom: none;
+}
+
+.plate-info {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.plate-color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.plate-qty {
+    background: #334155;
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
