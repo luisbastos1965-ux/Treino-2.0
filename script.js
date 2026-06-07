@@ -1415,3 +1415,127 @@ function copyFlexText() {
         alert('Não foi possível copiar automaticamente. Tira um print ao ecrã!');
     });
 }
+
+// ==========================================
+// PARTE 11: MODO RPG - LEVEL UP MUSCULAR 🎮
+// ==========================================
+
+function calculateRPGStats() {
+    // XP Base por músculo (1 kg levantado = 1 XP)
+    const muscleXP = {
+        'Peito': 0,
+        'Costas': 0,
+        'Pernas': 0,
+        'Ombros': 0,
+        'Braços': 0,
+        'Core': 0
+    };
+
+    // Lê o histórico de treinos guardados
+    let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
+    
+    // Soma o volume total para cada músculo
+    history.forEach(session => {
+        if(session.exercises) {
+            session.exercises.forEach(ex => {
+                let volume = 0;
+                if(ex.setsDetails) {
+                    ex.setsDetails.forEach(set => {
+                        if(set.w > 0 && set.r > 0) {
+                            volume += (parseFloat(set.w) * parseInt(set.r));
+                        }
+                    });
+                }
+                
+                // Mapeia o exercício para o grupo muscular correto
+                let muscle = ex.muscle || categorizeMuscleByNameRPG(ex.name);
+                
+                if (muscleXP[muscle] !== undefined) {
+                    muscleXP[muscle] += volume;
+                } else if (muscleXP['Braços'] !== undefined && (muscle === 'Bíceps' || muscle === 'Tríceps')) {
+                    muscleXP['Braços'] += volume;
+                }
+            });
+        }
+    });
+
+    renderRPGStats(muscleXP);
+}
+
+// Pequeno algoritmo para adivinhar o músculo caso não esteja definido no histórico
+function categorizeMuscleByNameRPG(name) {
+    if (!name) return 'Geral';
+    const n = name.toLowerCase();
+    if(n.includes('supino') || n.includes('peito') || n.includes('crucifixo') || n.includes('fly')) return 'Peito';
+    if(n.includes('remada') || n.includes('puxada') || n.includes('costas') || n.includes('pull')) return 'Costas';
+    if(n.includes('agachamento') || n.includes('leg') || n.includes('extensora') || n.includes('flexora') || n.includes('panturrilha')) return 'Pernas';
+    if(n.includes('desenvolvimento') || n.includes('ombro') || n.includes('elevação') || n.includes('militar')) return 'Ombros';
+    if(n.includes('rosca') || n.includes('tríceps') || n.includes('bíceps') || n.includes('curl') || n.includes('testa')) return 'Braços';
+    if(n.includes('abdom') || n.includes('prancha') || n.includes('core')) return 'Core';
+    return 'Geral';
+}
+
+// A Matemática do Level Up
+function getLevelAndProgress(xp) {
+    // Fórmula: Level = Raiz Quadrada de (XP / 500) + 1
+    // Exemplo: 0 XP = Lvl 1 | 1500 XP = Lvl 2 | 4000 XP = Lvl 3 | 12000 XP = Lvl 5
+    let level = Math.floor(Math.sqrt(xp / 500)) + 1;
+    
+    let currentLevelXP = Math.pow(level - 1, 2) * 500;
+    let nextLevelXP = Math.pow(level, 2) * 500;
+    
+    let xpIntoLevel = xp - currentLevelXP;
+    let xpRequired = nextLevelXP - currentLevelXP;
+    let progress = (xpIntoLevel / xpRequired) * 100;
+    
+    return { level, progress, xpIntoLevel, xpRequired };
+}
+
+function renderRPGStats(muscleXP) {
+    const container = document.getElementById('rpg-stats-container');
+    if(!container) return;
+    
+    container.innerHTML = '';
+    
+    // Cores temáticas para cada grupo
+    const colors = {
+        'Peito': '#38bdf8',
+        'Costas': '#22c55e',
+        'Pernas': '#f59e0b',
+        'Ombros': '#ef4444',
+        'Braços': '#a855f7',
+        'Core': '#f43f5e'
+    };
+
+    for (let muscle in muscleXP) {
+        let xp = muscleXP[muscle];
+        let stats = getLevelAndProgress(xp);
+        let color = colors[muscle] || '#94a3b8';
+        
+        container.innerHTML += `
+        <div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: bold; color: white; font-size: 14px;">${muscle}</span>
+                <span style="color: ${color}; font-weight: bold; font-size: 14px; text-shadow: 0 0 8px ${color}60;">Lvl ${stats.level}</span>
+            </div>
+            <div class="progress-bar" style="height: 8px; background: #1e293b; margin-bottom: 5px; border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; width: ${stats.progress}%; background: ${color}; box-shadow: 0 0 10px ${color}80; transition: width 1s ease-out;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--muted);">
+                <span>${Math.round(stats.xpIntoLevel)} XP</span>
+                <span>${Math.round(stats.xpRequired)} XP p/ Lvl ${stats.level + 1}</span>
+            </div>
+        </div>
+        `;
+    }
+}
+
+// Injetar o cálculo automático sempre que a aba de Evolução é carregada
+const originalUpdateGlobalStats = (typeof updateGlobalStats === 'function') ? updateGlobalStats : function(){};
+updateGlobalStats = function() {
+    originalUpdateGlobalStats();
+    calculateRPGStats();
+};
+
+// Forçar o cálculo imediato se a página for recarregada diretamente nessa aba
+setTimeout(calculateRPGStats, 500);
