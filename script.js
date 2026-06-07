@@ -1135,3 +1135,87 @@ function startTimer(seconds) {
         }
     }, 30);
 }
+
+// ==========================================
+// PARTE 7: SUPERSÉRIES E DROP SETS 🔥📉
+// ==========================================
+
+// Substituímos a função original para suportar parâmetros de "Skip Rest" e "Drop Set"
+completeBeastSet = function(skipRest = false, isDropSet = false) {
+    if ("vibrate" in navigator) navigator.vibrate(200);
+
+    const exercises = workoutData[currentDay];
+    const ex = exercises[beastState.exIdx];
+
+    // 1. Recolher os dados do Ecrã
+    const bw = document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder;
+    const br = document.getElementById('beast-reps').value || document.getElementById('beast-reps').placeholder;
+    const brir = document.getElementById('beast-rir').value;
+
+    let mainW = document.getElementById(`weight-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    let mainR = document.getElementById(`reps-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    let mainRir = document.getElementById(`rir-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    let row = document.getElementById(`row-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+
+    // Se for um Drop Set extra e a linha visual ainda não existir, o JS cria-a por trás
+    if (!row) {
+        const exCards = document.querySelectorAll('#workout-container .exercise-card');
+        if(exCards[beastState.exIdx]) {
+            const newRow = document.createElement('div');
+            newRow.className = 'set-row done';
+            newRow.id = `row-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`;
+            newRow.innerHTML = `
+                <span style="font-weight:bold; color:var(--accent); width:20px;">D${beastState.setIdx}</span>
+                <div class="input-group"><input type="number" id="weight-${currentDay}-${beastState.exIdx}-${beastState.setIdx}" value="${bw}"></div>
+                <div class="input-group"><input type="number" id="reps-${currentDay}-${beastState.exIdx}-${beastState.setIdx}" value="${br}"></div>
+                <div class="input-group">
+                    <select id="rir-${currentDay}-${beastState.exIdx}-${beastState.setIdx}">
+                        <option value="${brir}">${brir}</option>
+                    </select>
+                </div>
+                <button class="check-btn" style="background:var(--success)">✔</button>
+            `;
+            exCards[beastState.exIdx].appendChild(newRow);
+        }
+    } else {
+        if (mainW) mainW.value = bw;
+        if (mainR) mainR.value = br;
+        if (mainRir) mainRir.value = brir;
+        row.classList.add('done');
+    }
+
+    // 2. Avançar Série e Regras Especiais
+    if (isDropSet) {
+        ex.sets++; // Aumenta o limite global de séries do exercício atual invisivelmente
+        beastState.setIdx++;
+    } else {
+        beastState.setIdx++;
+        if (beastState.setIdx > ex.sets) {
+            beastState.exIdx++;
+            beastState.setIdx = 1;
+        }
+    }
+
+    // 3. Navegar para o descanso ou saltar direto
+    if (beastState.exIdx < exercises.length) {
+        if (skipRest) {
+            renderBeastMode();
+        } else {
+            startTimer(90);
+            renderBeastMode();
+        }
+    } else {
+        alert('MISSÃO CUMPRIDA! 🦍 Bom trabalho. Grava o teu treino!');
+        exitBeastMode();
+    }
+};
+
+function triggerDropSet() {
+    if (voiceCoachActive) speakVoiceCoach("Drop set ativado. Tira algum peso e continua, sem desculpas!");
+    completeBeastSet(true, true);
+}
+
+function triggerSuperset() {
+    if (voiceCoachActive) speakVoiceCoach("Supersérie concluída. Passa imediatamente para o próximo movimento, não há tempo a perder!");
+    completeBeastSet(true, false);
+}
