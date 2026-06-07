@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker - Ultra Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
 
@@ -417,6 +417,37 @@
             </div>
         </div>
 
+        <!-- RASTREIO CORPORAL (FITA MÉTRICA) -->
+        <div class="goal-container text-center" style="margin-bottom: 20px;">
+            <h3>📏 Rastreio Corporal</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 5px; margin-bottom: 15px;">A balança engana. Regista as tuas medidas reais (cm).</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
+                <div class="form-group">
+                    <label style="font-size: 12px;">💪 Braços</label>
+                    <input type="number" id="meas-arm" placeholder="ex: 38" oninput="updateProfileData()">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 12px;">🫁 Peito</label>
+                    <input type="number" id="meas-chest" placeholder="ex: 105" oninput="updateProfileData()">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 12px;">⚡ Cintura</label>
+                    <input type="number" id="meas-waist" placeholder="ex: 82" oninput="updateProfileData()">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 12px;">🦵 Pernas</label>
+                    <input type="number" id="meas-leg" placeholder="ex: 60" oninput="updateProfileData()">
+                </div>
+            </div>
+            
+            <!-- Estimativa de Massa Gorda -->
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
+                <div style="color: var(--muted); font-size: 12px;">Massa Gorda Estimada (Fórmula RFM)</div>
+                <div id="calc-bf" style="font-size: 28px; font-weight: bold; color: var(--accent); margin-top: 5px;">--%</div>
+            </div>
+        </div>
+
         <!-- SISTEMA LOCAL DE BACKUP INTEGRAL -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Segurança e Backup Local</h3>
@@ -519,6 +550,6 @@
     </div>
 
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=14"></script>
+    <script src="script.js?v=15"></script>
 </body>
 </html>
