@@ -1703,3 +1703,82 @@ if (typeof renderProfile === 'function') {
         setTimeout(updateWearableData, 200); // Executa logo após desenhar o perfil para atualizar a Aba da Dieta
     };
 }
+
+// ==========================================
+// PARTE 14: BIBLIOTECA VISUAL PRIVADA 🎥
+// ==========================================
+
+let currentModalExercise = "";
+
+// Redefinir a abertura do modal para injetar vídeos
+openModal = function(title, content) {
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-content').innerText = content;
+    currentModalExercise = title;
+    
+    document.getElementById('custom-video-input').value = ""; // Limpa a caixa de texto
+    
+    renderVideoFrame(title);
+    
+    document.getElementById('exercise-modal').style.display = 'flex';
+};
+
+// Fechar modal - garantindo que o vídeo para de tocar
+closeModal = function() {
+    document.getElementById('exercise-modal').style.display = 'none';
+    document.getElementById('modal-video-container').innerHTML = '<span style="color: var(--muted); font-size: 12px;">Carregando...</span>';
+};
+
+function saveCustomVideo() {
+    const inputLink = document.getElementById('custom-video-input').value.trim();
+    if (!inputLink) return;
+    
+    // Converte links normais do youtube para links de 'embed'
+    let embedLink = inputLink;
+    if (inputLink.includes('watch?v=')) {
+        embedLink = inputLink.replace('watch?v=', 'embed/');
+        // Limpa trechos extra do link como &t= ou &list=
+        if(embedLink.includes('&')) embedLink = embedLink.split('&')[0];
+    } else if (inputLink.includes('youtu.be/')) {
+        embedLink = inputLink.replace('youtu.be/', 'youtube.com/embed/');
+        if(embedLink.includes('?')) embedLink = embedLink.split('?')[0];
+    }
+    
+    // Vai buscar a biblioteca de vídeos guardada ou cria uma nova
+    let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {};
+    videoLibrary[currentModalExercise] = embedLink;
+    
+    localStorage.setItem('gym_tracker_videos', JSON.stringify(videoLibrary));
+    
+    renderVideoFrame(currentModalExercise);
+    
+    // Pequeno feedback tátil e visual
+    document.getElementById('custom-video-input').value = "";
+    document.getElementById('custom-video-input').placeholder = "Gravado com sucesso!";
+    if ("vibrate" in navigator) navigator.vibrate(50);
+}
+
+function renderVideoFrame(exerciseName) {
+    let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {};
+    const container = document.getElementById('modal-video-container');
+    
+    if (videoLibrary[exerciseName]) {
+        // Se houver vídeo, cria o Iframe
+        container.innerHTML = `
+            <iframe width="100%" height="100%" 
+                src="${videoLibrary[exerciseName]}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        `;
+    } else {
+        // Se não houver, mostra estado vazio
+        container.innerHTML = `
+            <div style="text-align: center;">
+                <span style="font-size: 30px; display: block; margin-bottom: 5px;">🎥</span>
+                <span style="color: var(--muted); font-size: 12px;">Sem vídeo. Cola um link abaixo!</span>
+            </div>
+        `;
+    }
+}
