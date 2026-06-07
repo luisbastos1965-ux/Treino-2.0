@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker - Ultra Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=12">
+    <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
+    <!-- ==========================================
+         OVERLAYS GLOBAIS (BEAST MODE E MINIGAME)
+         ========================================== -->
+
+    <!-- BEAST MODE OVERLAY (Foco Imersivo Total) -->
     <div id="beast-mode-overlay">
         <div class="beast-header">
             <button onclick="exitBeastMode()" class="beast-exit">✖ Sair</button>
@@ -43,7 +48,12 @@
                 </div>
             </div>
             
-            <button class="beast-complete-btn" onclick="completeBeastSet()">💥 CONCLUIR SÉRIE</button>
+            <button class="beast-complete-btn" onclick="completeBeastSet(false, false)">💥 CONCLUIR SÉRIE</button>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%; max-width: 350px;">
+                <button class="beast-action-btn dropset" onclick="triggerDropSet()">📉 Drop Set</button>
+                <button class="beast-action-btn superset" onclick="triggerSuperset()">🔗 Supersérie</button>
+            </div>
         </div>
         
         <div class="beast-footer">
@@ -52,6 +62,7 @@
         </div>
     </div>
 
+    <!-- MINI-JOGO DE DESCANSO / TIMER OVERLAY -->
     <div id="rest-timer-overlay">
         <div class="rest-content">
             <h2 id="rest-time-display">90s</h2>
@@ -68,6 +79,9 @@
     </div>
 
 
+    <!-- ==========================================
+         MENU DE NAVEGAÇÃO (DYNAMIC ISLAND DE VIDRO)
+         ========================================== -->
     <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
         <div id="island-active-preview">
             <span id="active-icon">🏋️‍♂️</span>
@@ -97,9 +111,13 @@
         </div>
     </nav>
 
+    <!-- Espaçador de segurança para o topo fixo da Ilha -->
     <div style="height: 80px;"></div>
 
 
+    <!-- ==========================================
+         ABA 1: ROTINA DE TREINO DIÁRIO
+         ========================================== -->
     <div id="view-treino" class="view-section active">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
@@ -118,6 +136,9 @@
     </div>
 
 
+    <!-- ==========================================
+         ABA 2: CONSTRUTOR / LABORATÓRIO DE TREINOS
+         ========================================== -->
     <div id="view-construtor" class="view-section">
         <div class="goal-container text-center">
             <h3>🧪 Laboratório de Treino</h3>
@@ -125,6 +146,7 @@
         </div>
 
         <div class="exercise-card">
+            <!-- Nível de Fadiga -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Como te sentes hoje? (Fadiga)</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
@@ -134,6 +156,7 @@
                 </div>
             </div>
 
+            <!-- Modo de Criação -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Método de Seleção</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
@@ -143,6 +166,7 @@
                 </div>
             </div>
 
+            <!-- Painel Automático -->
             <div id="auto-focus-panel" class="form-group">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Grupo Muscular Alvo</label>
                 <select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;">
@@ -154,6 +178,7 @@
                 <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino Inteligente</button>
             </div>
 
+            <!-- Painel Manual (Biblioteca Completa) -->
             <div id="manual-library-panel" style="display: none;">
                 <div style="display: flex; gap: 8px; margin: 15px 0;">
                     <select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
@@ -174,11 +199,13 @@
                 <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;"></div>
             </div>
 
+            <!-- Painel de Treinos Guardados -->
             <div id="saved-routines-panel" style="display: none; margin-top: 15px;">
                 <div id="saved-routines-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
         </div>
 
+        <!-- Esboço da Rotina Atual -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>📝 O Teu Esboço</h3>
@@ -197,14 +224,19 @@
     </div>
 
 
+    <!-- ==========================================
+         ABA 3: PROGRESSO E MAPA DE CALOR
+         ========================================== -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
 
+        <!-- MAPA DE CALOR MUSCULAR ANATÓMICO -->
         <div class="goal-container text-center">
             <h3>🔥 Mapa de Calor Muscular</h3>
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Músculo Fritado!</p>
             
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+                <!-- SVG Frente -->
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -220,6 +252,7 @@
                     </svg>
                 </div>
 
+                <!-- SVG Costas -->
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -235,6 +268,7 @@
                 </div>
             </div>
             
+            <!-- Legenda de Cores -->
             <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 10px; color: var(--muted);">
                 <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #334155; border-radius: 2px;"></div> Descansado</div>
                 <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve (1-6)</div>
@@ -243,6 +277,7 @@
             </div>
         </div>
 
+        <!-- Seletor de Gráfico e Visualização -->
         <select id="exercise-select" class="chart-select" onchange="renderChart()">
             <option value="">Escolhe um exercício...</option>
         </select>
@@ -261,6 +296,9 @@
     </div>
 
 
+    <!-- ==========================================
+         ABA 4: CALENDÁRIO HISTÓRICO E METAS
+         ========================================== -->
     <div id="view-calendario" class="view-section">
         <div class="calendar-header">
             <button onclick="changeMonth(-1)">◀</button>
@@ -274,6 +312,7 @@
 
         <div class="calendar-grid" id="calendar-grid"></div>
 
+        <!-- Metas em Barras de Progresso -->
         <div class="goal-container">
             <h3>🎯 Meta Semanal: 6 Treinos</h3>
             <p style="margin-top:10px;color:var(--muted); font-size:14px;"><span id="weekly-count">0</span> / 6 Concluídos</p>
@@ -292,6 +331,9 @@
     </div>
 
 
+    <!-- ==========================================
+         ABA 5: PERFIL DO UTILIZADOR E METABOLISMO
+         ========================================== -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
             <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
@@ -355,6 +397,7 @@
             </div>
         </div>
 
+        <!-- ID CARD COM RESULTADOS BIOMÉTRICOS -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📊 O Teu ID Card</h3>
             <div style="display: flex; justify-content: space-around; margin-top: 15px;">
@@ -371,6 +414,7 @@
             </div>
         </div>
 
+        <!-- SISTEMA LOCAL DE BACKUP INTEGRAL -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Segurança e Backup Local</h3>
             <p style="font-size: 12px; color: var(--muted); margin: 10px 0;">Guarda um ficheiro JSON local com todo o histórico e perfil.</p>
@@ -385,6 +429,9 @@
     </div>
 
 
+    <!-- ==========================================
+         ABA 6: DIETA AUTOMÁTICA E HIDRATAÇÃO
+         ========================================== -->
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
@@ -421,6 +468,11 @@
     </div>
 
 
+    <!-- ==========================================
+         MODAIS SECUNDÁRIOS DE SUPORTE
+         ========================================== -->
+
+    <!-- Modal Técnico de Exercícios (Dicas) -->
     <div id="exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; padding: 20px; z-index: 9999;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 16px; max-width: 500px; width: 100%; position: relative;">
             <button onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 20px; cursor: pointer;">✖</button>
@@ -429,6 +481,7 @@
         </div>
     </div>
 
+    <!-- Modal Calculadora de Discos (Animação de Cargas) -->
     <div id="plate-math-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10002;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
             <button onclick="closePlateMath()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -437,6 +490,7 @@
             <p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span id="plate-target-weight">100</span> KG</p>
             <p style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">Assumindo barra olímpica de 20kg</p>
             
+            <!-- Desenho Dinâmico da Barra -->
             <div style="display: flex; align-items: center; justify-content: center; height: 120px; margin-bottom: 20px;">
                 <div style="width: 20px; height: 15px; background: #94a3b8; border-radius: 2px;"></div>
                 <div id="visual-plates" style="display: flex; align-items: center; gap: 2px;"></div>
@@ -449,6 +503,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=12"></script>
+    <!-- Script de Lógica Principal -->
+    <script src="script.js?v=13"></script>
 </body>
 </html>
