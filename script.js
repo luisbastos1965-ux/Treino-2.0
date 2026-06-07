@@ -859,3 +859,73 @@ function importData(event) {
 renderWorkout();
 renderProfile();
 updateHeatmap();
+
+
+// ==========================================
+// PARTE 4: CALCULADORA DE DISCOS (PLATE MATH)
+// ==========================================
+
+function openPlateMath(targetWeightStr) {
+    const targetWeight = parseFloat(targetWeightStr);
+    
+    // A barra pesa 20kg, logo se o peso for menor ou igual, não há discos a adicionar
+    if (!targetWeight || targetWeight <= 20) {
+        alert('Por favor, insere um peso superior a 20kg (peso da barra).');
+        return;
+    }
+
+    document.getElementById('plate-target-weight').innerText = targetWeight;
+    
+    // Configuração dos discos padrão de ginásio (peso, cor CSS, altura visual)
+    const plates = [
+        { weight: 25, color: '#ef4444', height: '100px' },  // Vermelho
+        { weight: 20, color: '#3b82f6', height: '90px' },   // Azul
+        { weight: 15, color: '#eab308', height: '80px' },   // Amarelo
+        { weight: 10, color: '#22c55e', height: '70px' },   // Verde
+        { weight: 5, color: '#f8fafc', height: '50px' },    // Branco
+        { weight: 2.5, color: '#334155', height: '40px' },  // Cinza Escuro
+        { weight: 1.25, color: '#94a3b8', height: '30px' }  // Cinza Claro
+    ];
+
+    // O peso a colocar DE CADA LADO da barra
+    let weightPerSide = (targetWeight - 20) / 2;
+    let resultHTML = '';
+    let visualHTML = '';
+
+    // Algoritmo guloso: tenta sempre colocar os discos mais pesados primeiro
+    plates.forEach(plate => {
+        let count = Math.floor(weightPerSide / plate.weight);
+        if (count > 0) {
+            // 1. Adicionar o texto com as quantidades
+            resultHTML += `
+            <div class="plate-row">
+                <div class="plate-info">
+                    <div class="plate-color-box" style="background: ${plate.color};"></div>
+                    Disco de ${plate.weight}kg
+                </div>
+                <span class="plate-qty">${count}x</span>
+            </div>`;
+
+            // 2. Adicionar os retângulos coloridos ao desenho da barra
+            for(let i = 0; i < count; i++) {
+                visualHTML += `<div style="width:12px; height:${plate.height}; background:${plate.color}; border-radius:3px; border:1px solid #000;"></div>`;
+            }
+
+            // Subtrair o peso adicionado e limpar erros de ponto flutuante do JavaScript
+            weightPerSide -= count * plate.weight;
+            weightPerSide = Math.round(weightPerSide * 100) / 100;
+        }
+    });
+
+    if (resultHTML === '') {
+        resultHTML = '<p style="color:var(--muted); text-align:center;">Não são necessários discos adicionais.</p>';
+    }
+
+    document.getElementById('plate-math-result').innerHTML = resultHTML;
+    document.getElementById('visual-plates').innerHTML = visualHTML; // O desenho dos discos
+    document.getElementById('plate-math-modal').style.display = 'flex';
+}
+
+function closePlateMath() {
+    document.getElementById('plate-math-modal').style.display = 'none';
+}
