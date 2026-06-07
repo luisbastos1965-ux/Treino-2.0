@@ -1782,3 +1782,25 @@ function renderVideoFrame(exerciseName) {
         `;
     }
 }
+
+// ==========================================
+// PARTE 15: INTEGRAÇÃO MUSICAL NO BEAST MODE 🎧
+// ==========================================
+
+let musicPlayerActive = false;
+
+function toggleMusicPlayer() {
+    musicPlayerActive = !musicPlayerActive;
+    const player = document.getElementById('beast-music-player');
+    const btn = document.getElementById('music-btn');
+    
+    if (musicPlayerActive) {
+        player.style.display = 'block';
+        btn.style.color = 'var(--accent)';
+        btn.innerText = '🎧 Som';
+    } else {
+        player.style.display = 'none';
+        btn.style.color = 'var(--muted)';
+        btn.innerText = '🎵 Som';
+    }
+}
