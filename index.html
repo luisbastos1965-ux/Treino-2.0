@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker - Ultra Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -24,6 +24,9 @@
         <div class="beast-body">
             <h2 id="beast-exercise-name" class="beast-title">Supino Inclinado</h2>
             <div id="beast-history-badge" class="history-badge" style="margin: 10px auto; font-size: 14px;">Última: -</div>
+            
+            <!-- NOVO: Botão de Aquecimento Inteligente -->
+            <button id="warmup-btn" class="beast-action-btn" style="background:#3b82f6; margin: 10px auto; display: block; width: 100%; max-width: 350px; font-size: 14px; padding: 10px;" onclick="openWarmup()">🔥 Gerar Aquecimento Ideal</button>
             
             <div class="beast-inputs">
                 <div class="beast-input-group">
@@ -503,7 +506,19 @@
         </div>
     </div>
 
+    <!-- Modal Calculadora de Aquecimento -->
+    <div id="warmup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10003;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
+            <button onclick="closeWarmup()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white; margin-bottom: 5px;">🔥 Aquecimento</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 20px;">Prepara o Sistema Nervoso Central.</p>
+            <div id="warmup-results" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Preenchido pelo JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=13"></script>
+    <script src="script.js?v=14"></script>
 </body>
 </html>
