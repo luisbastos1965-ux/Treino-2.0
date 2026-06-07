@@ -60,7 +60,7 @@ const exerciseLibrary = [
     { name: "Tríceps na Polia com Corda (Pushdowns)", muscle: "Braços", tier: "S", type: "machine", defaultSets: 3 }
 ];
 
-// Identificador Inteligente de Músculos (Para o Mapa de Calor)
+// Identificador Inteligente de Músculos
 function getMuscleForExercise(name) {
     let found = exerciseLibrary.find(ex => ex.name === name);
     if (found) return found.muscle;
@@ -71,7 +71,7 @@ function getMuscleForExercise(name) {
     if (lower.includes('leg') || lower.includes('agachamento') || lower.includes('peso morto') || lower.includes('gémeos') || lower.includes('flexão') || lower.includes('extensão')) return 'Pernas';
     if (lower.includes('press') || lower.includes('elevações laterais') || lower.includes('ombros') || lower.includes('voos')) return 'Ombros';
     if (lower.includes('curl') || lower.includes('tríceps') || lower.includes('bíceps') || lower.includes('braços') || lower.includes('skullcrushers') || lower.includes('pushdown')) return 'Braços';
-    return 'Core'; // Fallback
+    return 'Core';
 }
 
 // Estado Principal
@@ -95,12 +95,19 @@ let builderState = {
     routine: []
 };
 
+// NOVO: Estado do Beast Mode
+let beastState = {
+    active: false,
+    exIdx: 0,
+    setIdx: 0
+};
+
 // Variável do Perfil
 let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || {
     name: '', age: 25, gender: 'male', height: 170, weight: 70, activity: '1.55', goal: 'maintain'
 };
 // ==========================================
-// PARTE 2: NAVEGAÇÃO, CONSTRUTOR, TREINO E JOGO
+// PARTE 2: BEAST MODE, NAVEGAÇÃO E CONSTRUTOR
 // ==========================================
 
 // --- NAVEGAÇÃO DA ILHA DINÂMICA ---
@@ -124,13 +131,131 @@ function navigateIsland(event, id, icon, text) {
     if (id === 'view-evolucao') { 
         setupChartSelect(); 
         updateGlobalStats(); 
-        updateHeatmap(); // Nova função do Mapa de Calor!
+        updateHeatmap(); 
     }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); }
     if (id === 'view-dieta') { renderDieta(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
 }
+
+function getLastPerformance(exerciseName) {
+    for (let i = history.length - 1; i >= 0; i--) {
+        if (history[i].exercises[exerciseName]) return history[i].exercises[exerciseName];
+    }
+    return null;
+}
+
+// --- BEAST MODE (FOCO IMERSIVO) 🦍 ---
+function startBeastMode() {
+    const exercises = workoutData[currentDay];
+    if (!exercises || exercises.length === 0) {
+        alert('Não há exercícios para este dia! Usa o Construtor para criar um treino.');
+        return;
+    }
+    beastState.active = true;
+    beastState.exIdx = 0;
+    beastState.setIdx = 1;
+    document.getElementById('beast-mode-overlay').style.display = 'flex';
+    renderBeastMode();
+}
+
+function renderBeastMode() {
+    const exercises = workoutData[currentDay];
+    if (beastState.exIdx >= exercises.length) {
+        alert('TREINO CONCLUÍDO! 🦍 Não te esqueças de o gravar!');
+        exitBeastMode();
+        return;
+    }
+
+    const ex = exercises[beastState.exIdx];
+    document.getElementById('beast-progress-text').innerText = `Exercício ${beastState.exIdx + 1}/${exercises.length} - Série ${beastState.setIdx}/${ex.sets}`;
+    document.getElementById('beast-exercise-name').innerText = ex.name;
+
+    const weightInput = document.getElementById('beast-weight');
+    const repsInput = document.getElementById('beast-reps');
+    
+    weightInput.value = '';
+    repsInput.value = '';
+
+    const lastPerf = getLastPerformance(ex.name);
+    if (lastPerf) {
+        document.getElementById('beast-history-badge').innerText = `Última vez: ${lastPerf[0].weight}kg x ${lastPerf[0].reps}`;
+        let prevSet = lastPerf[beastState.setIdx - 1] || lastPerf[0];
+        weightInput.placeholder = prevSet.weight;
+        repsInput.placeholder = prevSet.reps;
+    } else {
+        document.getElementById('beast-history-badge').innerText = `Sem registos anteriores`;
+        weightInput.placeholder = '0';
+        repsInput.placeholder = '0';
+    }
+}
+
+function completeBeastSet() {
+    // Feedback tátil (vibração) se o telemóvel suportar
+    if ("vibrate" in navigator) navigator.vibrate(200);
+
+    const exercises = workoutData[currentDay];
+    const ex = exercises[beastState.exIdx];
+    
+    // Ler valores do Beast Mode
+    const bw = document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder;
+    const br = document.getElementById('beast-reps').value || document.getElementById('beast-reps').placeholder;
+    const brir = document.getElementById('beast-rir').value;
+
+    // Sincronizar com os inputs escondidos da aba de treino normal
+    const mainW = document.getElementById(`weight-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    const mainR = document.getElementById(`reps-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    const mainRir = document.getElementById(`rir-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+
+    if (mainW) mainW.value = bw;
+    if (mainR) mainR.value = br;
+    if (mainRir) mainRir.value = brir;
+
+    // Adicionar a classe "done" na vista normal
+    const row = document.getElementById(`row-${currentDay}-${beastState.exIdx}-${beastState.setIdx}`);
+    if(row) row.classList.add('done');
+
+    // Avançar a série ou exercício
+    beastState.setIdx++;
+    if (beastState.setIdx > ex.sets) {
+        beastState.exIdx++;
+        beastState.setIdx = 1;
+    }
+
+    // Iniciar temporizador de descanso, se não tiver acabado o treino
+    if (beastState.exIdx < exercises.length) {
+        startTimer(90); 
+        renderBeastMode();
+    } else {
+        alert('MISSÃO CUMPRIDA! 🦍 Bom trabalho. Grava o teu treino!');
+        exitBeastMode();
+    }
+}
+
+function prevBeastExercise() {
+    if (beastState.exIdx > 0) {
+        beastState.exIdx--;
+        beastState.setIdx = 1;
+        renderBeastMode();
+    }
+}
+
+function nextBeastExercise() {
+    const exercises = workoutData[currentDay];
+    if (beastState.exIdx < exercises.length - 1) {
+        beastState.exIdx++;
+        beastState.setIdx = 1;
+        renderBeastMode();
+    }
+}
+
+function exitBeastMode() {
+    beastState.active = false;
+    document.getElementById('beast-mode-overlay').style.display = 'none';
+    renderWorkout(); // Força a atualização da vista normal do treino
+}
+
 
 // --- CONSTRUTOR DE TREINOS (LABORATÓRIO) ---
 function setFatigue(level) {
@@ -293,192 +418,8 @@ function applyBuiltWorkout() {
     if (customTab) customTab.click();
     renderWorkout();
 }
-
-// --- LÓGICA DO TREINO ---
-function switchWorkout(event, day) {
-    currentDay = day;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if(event) event.target.classList.add('active');
-
-    ['PUSH', 'PULL', 'LEGS', 'CUSTOM'].forEach(d => {
-        const planDiv = document.getElementById(`plan-${d}`);
-        if(planDiv) planDiv.style.display = (d === day) ? 'block' : 'none';
-    });
-}
-
-function getLastPerformance(exerciseName) {
-    for (let i = history.length - 1; i >= 0; i--) {
-        if (history[i].exercises[exerciseName]) return history[i].exercises[exerciseName];
-    }
-    return null;
-}
-
-function renderWorkout() {
-    const container = document.getElementById('workout-container');
-    container.innerHTML = '';
-
-    ['PUSH', 'PULL', 'LEGS', 'CUSTOM'].forEach(day => {
-        let displayStyle = day === currentDay ? 'block' : 'none';
-        
-        if (day === 'CUSTOM' && workoutData.CUSTOM.length === 0) {
-            container.innerHTML += `<div id="plan-CUSTOM" style="display: ${displayStyle}; text-align:center; padding: 30px; color: var(--muted);">Vai à aba Construtor para criares o teu treino de hoje!</div>`;
-            return;
-        }
-
-        let dayHTML = `<div id="plan-${day}" style="display: ${displayStyle};">`;
-
-        workoutData[day].forEach((ex, exIdx) => {
-            const lastPerf = getLastPerformance(ex.name);
-            const historyHTML = lastPerf
-                ? `<div class="history-badge">Última vez: ${lastPerf[0].weight}kg x ${lastPerf[0].reps} (RIR: ${lastPerf[0].rir !== undefined ? lastPerf[0].rir : '-'})</div>`
-                : ``;
-
-            let setsHTML = '';
-            for (let s = 1; s <= ex.sets; s++) {
-                const pW = lastPerf && lastPerf[s - 1] ? lastPerf[s - 1].weight : '';
-                const pR = lastPerf && lastPerf[s - 1] ? lastPerf[s - 1].reps : '';
-
-                setsHTML += `
-                <div class="set-row" id="row-${day}-${exIdx}-${s}">
-                    <span>S${s}</span>
-                    <div class="input-group">
-                        <label>KG</label>
-                        <input type="number" id="weight-${day}-${exIdx}-${s}" placeholder="${pW}">
-                    </div>
-                    <div class="input-group">
-                        <label>REPS</label>
-                        <input type="number" id="reps-${day}-${exIdx}-${s}" placeholder="${pR}">
-                    </div>
-                    <div class="input-group">
-                        <label>RIR</label>
-                        <select id="rir-${day}-${exIdx}-${s}">
-                            <option value="0">0</option>
-                            <option value="1" selected>1</option>
-                            <option value="2">2</option>
-                            <option value="3">3+</option>
-                        </select>
-                    </div>
-                    <button class="check-btn" onclick="checkSet('${day}', ${exIdx}, ${s})">✔</button>
-                </div>`;
-            }
-
-            dayHTML += `
-            <div class="exercise-card">
-                <div class="exercise-name">${ex.name}</div>
-                ${historyHTML}
-                <div class="exercise-buttons">
-                    <button class="exercise-tip-btn" onclick="showExerciseTips('${ex.name}')">📘 Dicas</button>
-                    <button class="exercise-video-btn" onclick="showExerciseVideo('${ex.name}')">🎥 Vídeo</button>
-                </div>
-                ${setsHTML}
-            </div>`;
-        });
-
-        dayHTML += `</div>`;
-        container.innerHTML += dayHTML;
-    });
-}
-
-function checkSet(day, exIdx, s) {
-    document.getElementById(`row-${day}-${exIdx}-${s}`).classList.add('done');
-    startTimer(90);
-}
-
-function saveCurrentWorkout() {
-    const confirmSave = confirm(`Tens a certeza que queres gravar o teu treino de ${currentDay}?`);
-    if (!confirmSave) return; 
-
-    const dateObj = new Date();
-    const todayString = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-
-    const workoutLog = {
-        date: todayString,
-        day: currentDay,
-        exercises: {}
-    };
-
-    workoutData[currentDay].forEach((ex, exIdx) => {
-        const sets = [];
-        for (let s = 1; s <= ex.sets; s++) {
-            const weightInput = document.getElementById(`weight-${currentDay}-${exIdx}-${s}`);
-            const repsInput = document.getElementById(`reps-${currentDay}-${exIdx}-${s}`);
-            const rirInput = document.getElementById(`rir-${currentDay}-${exIdx}-${s}`);
-
-            const weight = parseFloat(weightInput.value || weightInput.placeholder || 0);
-            const reps = parseInt(repsInput.value || repsInput.placeholder || 0);
-            const rir = parseInt(rirInput.value || 0);
-
-            sets.push({ weight, reps, rir });
-        }
-        workoutLog.exercises[ex.name] = sets;
-    });
-
-    const existingIndex = history.findIndex(h => h.date === todayString);
-    if (existingIndex !== -1) {
-        const confirmOverwrite = confirm("Já existe um treino gravado hoje. Queres substituir os dados anteriores pelos novos?");
-        if (!confirmOverwrite) return; 
-        history[existingIndex] = workoutLog;
-    } else {
-        history.push(workoutLog);
-    }
-
-    localStorage.setItem('gym_history', JSON.stringify(history));
-    alert('Treino gravado com sucesso! 💪');
-    
-    if (document.getElementById('view-evolucao').classList.contains('active')) {
-        updateGlobalStats();
-        updateHeatmap();
-    }
-}
-
-// --- LÓGICA DO MINI-JOGO DE DESCANSO ---
-function startTimer(seconds) {
-    clearInterval(timerInterval);
-    clearInterval(gameInterval);
-
-    const overlay = document.getElementById('rest-timer-overlay');
-    const display = document.getElementById('rest-time-display');
-    const scoreDisplay = document.getElementById('game-score');
-    const barbell = document.getElementById('barbell');
-    
-    overlay.style.display = 'flex';
-    
-    let timeLeft = seconds;
-    display.innerText = timeLeft + 's';
-    barbellY = 50; barbellVelocity = 0; score = 0; gameTicks = 0;
-    scoreDisplay.innerText = score;
-    
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        display.innerText = timeLeft + 's';
-        if (timeLeft <= 0) endTimer();
-    }, 1000);
-
-    gameInterval = setInterval(() => {
-        barbellVelocity += 0.8; 
-        barbellY += barbellVelocity;
-        
-        if (barbellY > 90) { barbellY = 90; barbellVelocity = 0; }
-        if (barbellY < 10) { barbellY = 10; barbellVelocity = 0; }
-        
-        barbell.style.top = barbellY + '%';
-        
-        if (barbellY >= 30 && barbellY <= 70) {
-            gameTicks++;
-            if(gameTicks % 30 === 0) { score++; scoreDisplay.innerText = score; }
-        }
-    }, 30);
-}
-
-function jumpBarbell() { barbellVelocity = -7; }
-function skipTimer() { endTimer(); }
-function endTimer() {
-    clearInterval(timerInterval);
-    clearInterval(gameInterval);
-    document.getElementById('rest-timer-overlay').style.display = 'none';
-}
 // ==========================================
-// PARTE 3: PROGRESSO, MAPA DE CALOR, CALENDÁRIO E BACKUP
+// PARTE 3: PROGRESSO, MAPA DE CALOR, CALENDÁRIO, DIETA E BACKUP
 // ==========================================
 
 // --- MAPA DE CALOR MUSCULAR (HEATMAP) ---
@@ -547,16 +488,11 @@ function updateHeatmap() {
 // --- PROGRESSO E ESTATÍSTICAS ---
 function setupChartSelect() {
     const select = document.getElementById('exercise-select');
+    if (!select) return;
     select.innerHTML = '<option value="">Escolhe um exercício...</option>';
     const uniqueExercises = new Set();
-
-    history.forEach(log => {
-        Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex));
-    });
-
-    uniqueExercises.forEach(ex => {
-        select.innerHTML += `<option value="${ex}">${ex}</option>`;
-    });
+    history.forEach(log => { Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); });
+    uniqueExercises.forEach(ex => { select.innerHTML += `<option value="${ex}">${ex}</option>`; });
 }
 
 function renderChart() {
@@ -595,31 +531,18 @@ function renderChart() {
         }
     });
 
-    const maxWeight = Math.max(...data);
-    const maxReps = Math.max(...reps);
+    const maxWeight = Math.max(...data, 0);
+    const maxReps = Math.max(...reps, 0);
     const estimated1RM = Math.round(maxWeight * (1 + maxReps / 30));
 
     let totalVolume = 0;
     history.forEach(log => {
-        if (log.exercises[exercise]) {
-            log.exercises[exercise].forEach(set => {
-                totalVolume += set.weight * set.reps;
-            });
-        }
+        if (log.exercises[exercise]) log.exercises[exercise].forEach(set => totalVolume += set.weight * set.reps);
     });
 
-    let coach = '';
-    if (data.length >= 3) {
-        const last = data[data.length - 1];
-        const previous = data[data.length - 2];
-        if (last > previous) {
-            coach = '📈 Excelente progressão recente.';
-        } else {
-            coach = '⚠️ Sem progressão recente. Considera ajustar volume ou recuperação.';
-        }
-    } else {
-        coach = '📊 Ainda há poucos dados para análise.';
-    }
+    let coach = data.length >= 3 
+        ? (data[data.length - 1] > data[data.length - 2] ? '📈 Excelente progressão recente.' : '⚠️ Sem progressão recente. Considera ajustar volume ou recuperação.') 
+        : '📊 Ainda há poucos dados para análise.';
 
     document.getElementById('coach-message').innerText = coach;
     document.getElementById('pr-display').innerHTML = `
@@ -640,35 +563,28 @@ function updateGlobalStats() {
 
     history.forEach(log => {
         Object.entries(log.exercises).forEach(([exercise, sets]) => {
-            if (!exercisesDone[exercise]) {
-                exercisesDone[exercise] = 0;
-            }
+            if (!exercisesDone[exercise]) exercisesDone[exercise] = 0;
             exercisesDone[exercise]++;
             totalSets += sets.length;
-            sets.forEach(set => {
-                totalVolume += set.weight * set.reps;
-            });
+            sets.forEach(set => totalVolume += set.weight * set.reps);
         });
     });
 
-    let favoriteExercise = 'Nenhum';
-    if (Object.keys(exercisesDone).length > 0) {
-        favoriteExercise = Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b);
-    }
-
+    let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum';
     document.getElementById('global-stats').innerHTML = `
         <h3>📊 Estatísticas Globais</h3>
         <br>
         <p><strong>Total de treinos:</strong> ${totalWorkouts}</p>
         <p><strong>Total de séries:</strong> ${totalSets}</p>
         <p><strong>Volume total:</strong> ${Math.round(totalVolume)} kg</p>
-        <p><strong>Exercício favorito:</strong> ${favoriteExercise}</p>
+        <p><strong>Exercício favorito:</strong> ${fav}</p>
     `;
 }
 
 // --- CALENDÁRIO ---
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
+    if (!grid) return;
     grid.innerHTML = '';
     const title = document.getElementById('calendar-title');
 
