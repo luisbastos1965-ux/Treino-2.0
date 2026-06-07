@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker - Ultra Edition 3.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
 
@@ -25,7 +25,6 @@
             <h2 id="beast-exercise-name" class="beast-title">Supino Inclinado</h2>
             <div id="beast-history-badge" class="history-badge" style="margin: 10px auto 5px; font-size: 14px;">Última: -</div>
             
-            <!-- NOVO: Sugestão do Smart Coach para Sobrecarga Progressiva -->
             <div id="beast-smart-suggestion" style="color: var(--success); font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 8px rgba(34,197,94,0.3); display: none;">🎯 Coach: Tenta 82.5kg (+2.5kg)</div>
             
             <button id="warmup-btn" class="beast-action-btn" style="background:#3b82f6; margin: 10px auto; display: block; width: 100%; max-width: 350px; font-size: 14px; padding: 10px;" onclick="openWarmup()">🔥 Gerar Aquecimento Ideal</button>
@@ -151,7 +150,6 @@
         </div>
 
         <div class="exercise-card">
-            <!-- Nível de Fadiga -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Como te sentes hoje? (Fadiga)</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
@@ -161,7 +159,6 @@
                 </div>
             </div>
 
-            <!-- Modo de Criação -->
             <div class="form-group" style="margin-bottom: 20px;">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Método de Seleção</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
@@ -171,7 +168,6 @@
                 </div>
             </div>
 
-            <!-- Painel Automático -->
             <div id="auto-focus-panel" class="form-group">
                 <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Grupo Muscular Alvo</label>
                 <select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;">
@@ -183,7 +179,6 @@
                 <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino Inteligente</button>
             </div>
 
-            <!-- Painel Manual (Biblioteca Completa) -->
             <div id="manual-library-panel" style="display: none;">
                 <div style="display: flex; gap: 8px; margin: 15px 0;">
                     <select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
@@ -204,13 +199,11 @@
                 <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;"></div>
             </div>
 
-            <!-- Painel de Treinos Guardados -->
             <div id="saved-routines-panel" style="display: none; margin-top: 15px;">
                 <div id="saved-routines-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
         </div>
 
-        <!-- Esboço da Rotina Atual -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>📝 O Teu Esboço</h3>
@@ -235,7 +228,6 @@
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
 
-        <!-- MAPA DE CALOR MUSCULAR ANATÓMICO -->
         <div class="goal-container text-center">
             <h3>🔥 Mapa de Calor Muscular</h3>
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Músculo Fritado!</p>
@@ -273,7 +265,6 @@
                 </div>
             </div>
             
-            <!-- Legenda de Cores -->
             <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 10px; color: var(--muted);">
                 <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #334155; border-radius: 2px;"></div> Descansado</div>
                 <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve</div>
@@ -282,18 +273,15 @@
             </div>
         </div>
 
-        <!-- MODO RPG: NÍVEIS MUSCULARES -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🎮 Modo RPG: Níveis Musculares</h3>
             <p class="text-center" style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ganha XP com cada quilo levantado. Sobe os teus atributos!</p>
             
             <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
-                <!-- Lista de RPG preenchida pelo JS -->
                 <div style="text-align: center; color: var(--muted); font-size: 13px;">A calcular Níveis...</div>
             </div>
         </div>
 
-        <!-- Seletor de Gráfico e Visualização -->
         <div style="margin-top: 20px;">
             <select id="exercise-select" class="chart-select" onchange="renderChart()">
                 <option value="">Escolhe um exercício...</option>
@@ -330,7 +318,6 @@
 
         <div class="calendar-grid" id="calendar-grid"></div>
 
-        <!-- Metas em Barras de Progresso -->
         <div class="goal-container">
             <h3>🎯 Meta Semanal: 6 Treinos</h3>
             <p style="margin-top:10px;color:var(--muted); font-size:14px;"><span id="weekly-count">0</span> / 6 Concluídos</p>
@@ -396,11 +383,11 @@
             </div>
 
             <div class="form-group">
-                <label>Nível de Atividade</label>
+                <label>Nível de Atividade Base</label>
                 <select id="prof-activity" onchange="updateProfileData()">
-                    <option value="1.2">Sedentário (Trabalho de secretária)</option>
+                    <option value="1.2" selected>Sedentário (Usa a aba Dieta para sincronizar passos)</option>
                     <option value="1.375">Leve (1-3 treinos/semana)</option>
-                    <option value="1.55" selected>Moderado (3-5 treinos/semana)</option>
+                    <option value="1.55">Moderado (3-5 treinos/semana)</option>
                     <option value="1.725">Muito Ativo (6-7 treinos intensos)</option>
                 </select>
             </div>
@@ -415,7 +402,6 @@
             </div>
         </div>
 
-        <!-- ID CARD COM RESULTADOS BIOMÉTRICOS -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📊 O Teu ID Card</h3>
             <div style="display: flex; justify-content: space-around; margin-top: 15px;">
@@ -425,14 +411,13 @@
                     <div id="calc-bmi-status" style="font-size: 11px; color: var(--accent);">Normal</div>
                 </div>
                 <div>
-                    <div style="color: var(--muted); font-size: 12px;">Calorias/Dia</div>
+                    <div style="color: var(--muted); font-size: 12px;">Calorias Base</div>
                     <div id="calc-cals" style="font-size: 24px; font-weight: bold; color: var(--success);">2500</div>
-                    <div style="font-size: 11px; color: var(--accent);">Kcal Estimadas</div>
+                    <div style="font-size: 11px; color: var(--accent);">Kcal Estáticas</div>
                 </div>
             </div>
         </div>
 
-        <!-- RASTREIO CORPORAL (FITA MÉTRICA) -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📏 Rastreio Corporal</h3>
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px; margin-bottom: 15px;">A balança engana. Regista as tuas medidas reais (cm).</p>
@@ -456,14 +441,12 @@
                 </div>
             </div>
             
-            <!-- Estimativa de Massa Gorda -->
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
                 <div style="color: var(--muted); font-size: 12px;">Massa Gorda Estimada (Fórmula RFM)</div>
                 <div id="calc-bf" style="font-size: 28px; font-weight: bold; color: var(--accent); margin-top: 5px;">--%</div>
             </div>
         </div>
 
-        <!-- SISTEMA LOCAL DE BACKUP INTEGRAL -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Segurança e Backup Local</h3>
             <p style="font-size: 12px; color: var(--muted); margin: 10px 0;">Guarda um ficheiro JSON local com todo o histórico e perfil.</p>
@@ -484,7 +467,7 @@
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
             <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
-            <p class="text-center" style="color:var(--muted); font-size: 12px; margin-top:5px;">Calculados com base no teu Perfil e Objetivo.</p>
+            <p class="text-center" style="color:var(--muted); font-size: 12px; margin-top:5px;">Calculados de forma dinâmica para apoiar o teu corpo.</p>
             
             <div style="display: flex; justify-content: space-between; margin-top: 20px; text-align: center;">
                 <div class="macro-box">
@@ -502,10 +485,33 @@
             </div>
         </div>
 
-        <div class="goal-container text-center">
+        <!-- INTEGRAÇÃO SMARTWATCH -->
+        <div class="goal-container text-center" style="margin-top: 20px;">
+            <h3>⌚ Sincronização Wearable</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ajuste dinâmico de calorias com base no teu smartwatch.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px;">
+                <div class="form-group">
+                    <label style="font-size: 12px;">👟 Passos Diários</label>
+                    <input type="number" id="wearable-steps" placeholder="ex: 10000" oninput="updateWearableData()">
+                </div>
+                <div class="form-group">
+                    <label style="font-size: 12px;">🔥 Kcal Treino</label>
+                    <input type="number" id="wearable-cals" placeholder="ex: 450" oninput="updateWearableData()">
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
+                <div style="color: var(--muted); font-size: 12px;">Gasto Calórico Total Ajustado (TDEE)</div>
+                <div id="dynamic-tdee" style="font-size: 28px; font-weight: bold; color: var(--success); margin-top: 5px;">-- Kcal</div>
+                <div style="font-size: 11px; color: var(--accent); margin-top: 5px;" id="wearable-macro-update">Macros atualizados em tempo real!</div>
+            </div>
+        </div>
+
+        <div class="goal-container text-center" style="margin-top: 20px;">
             <h3>💧 Hidratação Alvo</h3>
             <div style="font-size: 28px; font-weight: bold; color: var(--accent); margin: 10px 0;" id="water-goal">0 L</div>
-            <p style="font-size: 12px; color: var(--muted);">Ajustada ao teu peso e nível de atividade diária.</p>
+            <p style="font-size: 12px; color: var(--muted);">Ajustada ao teu peso e suor do treino.</p>
         </div>
 
         <div class="exercise-card" style="margin-top: 20px;">
@@ -569,9 +575,7 @@
         <div style="width: 100%; max-width: 360px; position: relative; text-align: center;">
             <button onclick="closeModoFlex()" style="position: absolute; top: -40px; right: 10px; background: none; border: none; color: white; font-size: 28px; cursor: pointer;">✖</button>
             
-            <!-- Cartão Estilo Story -->
             <div id="flex-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 35px 25px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
-                <!-- Efeito de Luz de fundo -->
                 <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(56,189,248,0.15); filter: blur(40px); border-radius: 50%;"></div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
@@ -603,13 +607,12 @@
                 </div>
             </div>
 
-            <!-- Botão de Ação -->
             <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 14px; background: #38bdf8; color: black; font-weight: bold;" onclick="copyFlexText()">📋 Copiar Resumo em Texto</button>
             <p style="color: var(--muted); font-size: 11px; margin-top: 10px;">📸 Tira um print ao ecrã para partilhares no teu Story!</p>
         </div>
     </div>
 
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=18"></script>
+    <script src="script.js?v=19"></script>
 </body>
 </html>
