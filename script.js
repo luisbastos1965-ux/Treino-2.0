@@ -1029,3 +1029,109 @@ function deleteSavedRoutine(index) {
         renderSavedRoutines();
     }
 }
+
+// ==========================================
+// PARTE 6: COACH DE VOZ INVISÍVEL 🎧🤖
+// ==========================================
+
+let voiceCoachActive = false;
+
+function toggleVoiceCoach() {
+    voiceCoachActive = !voiceCoachActive;
+    const btn = document.getElementById('voice-coach-btn');
+    
+    if (btn) {
+        btn.innerText = voiceCoachActive ? "🎧 Voz: LIGADA" : "🔇 Voz: DESLIGADA";
+        btn.style.color = voiceCoachActive ? "var(--success)" : "var(--muted)";
+    }
+    
+    if (voiceCoachActive) {
+        speakVoiceCoach("Assistente de voz ativado. Foco total no treino, campeão!");
+    }
+}
+
+function speakVoiceCoach(text) {
+    if (!('speechSynthesis' in window)) {
+        console.log("O teu navegador não suporta comandos de voz offline.");
+        return;
+    }
+    // Cancelar qualquer fala em andamento para não encavalar o áudio
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-PT'; // Sotaque de Portugal 🇵🇹
+    utterance.rate = 0.95;    // Velocidade ligeiramente cadenciada para soar natural
+    utterance.pitch = 1.0;
+    
+    window.speechSynthesis.speak(utterance);
+}
+
+function triggerVoiceWarning() {
+    // Só faz o anúncio se estivermos a treinar ativamente no Beast Mode
+    if (!beastState.active) return;
+    
+    const exercises = workoutData[currentDay];
+    const ex = exercises[beastState.exIdx];
+    if (!ex) return;
+    
+    // Tenta ir buscar o peso inserido ou o placeholder planeado
+    const weightInput = document.getElementById('beast-weight');
+    const weight = weightInput ? (weightInput.value || weightInput.placeholder || '0') : '0';
+    
+    const phrase = `Prepara-te. Próxima série de ${ex.name}, com ${weight} quilos. Vamos a isto!`;
+    speakVoiceCoach(phrase);
+}
+
+// REDEFINIÇÃO DO TEMPORIZADOR (Substitui o antigo automaticamente de forma segura)
+function startTimer(seconds) {
+    clearInterval(timerInterval);
+    clearInterval(gameInterval);
+
+    const overlay = document.getElementById('rest-timer-overlay');
+    const display = document.getElementById('rest-time-display');
+    const scoreDisplay = document.getElementById('game-score');
+    const barbell = document.getElementById('barbell');
+    
+    if (overlay) overlay.style.display = 'flex';
+    
+    let timeLeft = seconds;
+    if (display) display.innerText = timeLeft + 's';
+    
+    barbellY = 50; barbellVelocity = 0; score = 0; gameTicks = 0;
+    if (scoreDisplay) scoreDisplay.innerText = score;
+    
+    let spokeWarning = false;
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        if (display) display.innerText = timeLeft + 's';
+        
+        // Disparar o Coach de Voz exatamente aos 10 segundos restantes
+        if (timeLeft === 10 && voiceCoachActive && !spokeWarning) {
+            spokeWarning = true;
+            triggerVoiceWarning();
+        }
+
+        if (timeLeft <= 0) {
+            endTimer();
+        }
+    }, 1000);
+
+    gameInterval = setInterval(() => {
+        barbellVelocity += 0.8; 
+        barbellY += barbellVelocity;
+        
+        if (barbellY > 90) { barbellY = 90; barbellVelocity = 0; }
+        if (barbellY < 10) { barbellY = 10; barbellVelocity = 0; }
+        
+        if (barbell) barbell.style.top = barbellY + '%';
+        
+        if (barbellY >= 30 && barbellY <= 70) {
+            gameTicks++;
+            if(gameTicks % 30 === 0) {
+                score++;
+                if (scoreDisplay) scoreDisplay.innerText = score;
+            }
+        }
+    }, 30);
+}
