@@ -1329,3 +1329,89 @@ function calculateBodyFat() {
         bfDisplay.style.color = 'var(--accent)';
     }
 }
+
+// ==========================================
+// PARTE 10: EXPORTAÇÃO MODO FLEX 📸 (Final Boss)
+// ==========================================
+
+const flexQuotes = [
+    "Mais um bloco de cimento colocado no castelo. O ferro nunca mente.",
+    "A dor de hoje é a força de amanhã. Sem desculpas.",
+    "Não é sobre ter tempo, é sobre criar tempo. Fritado com sucesso!",
+    "O corpo atinge aquilo em que a mente acredita.",
+    "Treino pago. A disciplina é a ponte entre a meta e o resultado.",
+    "Contra a gravidade e contra a preguiça. Vitória dupla!"
+];
+
+function openModoFlex() {
+    let totalVolume = 0;
+    let totalSets = 0;
+    const exercises = workoutData[currentDay];
+
+    // Calcular volume real lendo as caixas de input que o utilizador preencheu hoje
+    if (exercises) {
+        exercises.forEach((ex, exIdx) => {
+            // Varremos até 15 séries por exercício para garantir que apanhamos Drop Sets extras
+            for (let setIdx = 1; setIdx <= 15; setIdx++) {
+                let wInput = document.getElementById(`weight-${currentDay}-${exIdx}-${setIdx}`);
+                let rInput = document.getElementById(`reps-${currentDay}-${exIdx}-${setIdx}`);
+                
+                // Se o input existe e não está vazio
+                if (wInput && rInput && wInput.value && rInput.value) {
+                    let w = parseFloat(wInput.value);
+                    let r = parseInt(rInput.value);
+                    
+                    if (!isNaN(w) && !isNaN(r)) {
+                        totalVolume += (w * r);
+                        totalSets++;
+                    }
+                }
+            }
+        });
+    }
+
+    // Puxar Nickname do Perfil (se existir)
+    let username = '@atleta_misterioso';
+    if (userProfile.name && userProfile.name.trim() !== '') {
+        // Remove os espaços do nome para parecer um @handle de Instagram
+        username = '@' + userProfile.name.replace(/\s+/g, '').toLowerCase();
+    }
+    
+    // Injetar os dados no Cartão Flex
+    document.getElementById('flex-card-name').innerText = username;
+    
+    const today = new Date();
+    document.getElementById('flex-card-date').innerText = today.toLocaleDateString('pt-PT');
+    
+    document.getElementById('flex-card-workout').innerText = currentDay.toUpperCase() + ' DAY';
+    
+    // Formata os números com vírgula para os milhares (ex: 4,250 kg)
+    document.getElementById('flex-card-volume').innerText = totalVolume.toLocaleString('en-US') + ' kg';
+    document.getElementById('flex-card-sets').innerText = totalSets + ' Sets';
+
+    // Injetar Frase Aleatória
+    const randomQuote = flexQuotes[Math.floor(Math.random() * flexQuotes.length)];
+    document.getElementById('flex-card-quote').innerText = `"${randomQuote}"`;
+
+    // Mostrar Modal com animação suave
+    document.getElementById('flex-modal').style.display = 'flex';
+}
+
+function closeModoFlex() {
+    document.getElementById('flex-modal').style.display = 'none';
+}
+
+function copyFlexText() {
+    const workout = document.getElementById('flex-card-workout').innerText;
+    const volume = document.getElementById('flex-card-volume').innerText;
+    const sets = document.getElementById('flex-card-sets').innerText;
+    
+    const textToCopy = `🔥 ACABEI DE FRITAR O MEU TREINO!\n\n💪 Foco: ${workout}\n📈 Volume Movido: ${volume}\n🥵 Séries Concluídas: ${sets}\n\n🤖 Registado no Gym Tracker Ultra`;
+    
+    // A API Clipboard permite copiar o texto automaticamente
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert('✅ Resumo copiado com sucesso! Já podes colar no teu WhatsApp, Instagram ou Twitter.');
+    }).catch(err => {
+        alert('Não foi possível copiar automaticamente. Tira um print ao ecrã!');
+    });
+}
