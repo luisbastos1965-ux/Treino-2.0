@@ -1219,3 +1219,40 @@ function triggerSuperset() {
     if (voiceCoachActive) speakVoiceCoach("Supersérie concluída. Passa imediatamente para o próximo movimento, não há tempo a perder!");
     completeBeastSet(true, false);
 }
+
+// ==========================================
+// PARTE 8: CALCULADORA DE AQUECIMENTO 🚀
+// ==========================================
+
+function openWarmup() {
+    const targetInput = document.getElementById('beast-weight');
+    const targetW = parseFloat(targetInput.value || targetInput.placeholder);
+    
+    if (!targetW || targetW <= 20) {
+        alert("Insere um peso alvo superior a 20kg (peso da barra) na caixa 'KG' para calcular o aquecimento.");
+        return;
+    }
+    
+    // Algoritmo de Aquecimento (Barra -> 50% -> 75%)
+    let html = `
+        <div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #94a3b8;">
+            <strong style="color: var(--accent);">Set 1:</strong> Barra (20kg) x 15 reps 
+            <br><span style="font-size: 11px; color: var(--muted);">Foco na técnica e fluxo sanguíneo</span>
+        </div>
+        <div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #38bdf8;">
+            <strong style="color: var(--accent);">Set 2:</strong> ${Math.round(targetW * 0.5)}kg x 8 reps 
+            <br><span style="font-size: 11px; color: var(--muted);">50% da carga alvo</span>
+        </div>
+        <div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #ef4444;">
+            <strong style="color: var(--accent);">Set 3:</strong> ${Math.round(targetW * 0.75)}kg x 3 reps 
+            <br><span style="font-size: 11px; color: var(--muted);">75% da carga (Potenciação do SNC)</span>
+        </div>
+    `;
+    
+    document.getElementById('warmup-results').innerHTML = html;
+    document.getElementById('warmup-modal').style.display = 'flex';
+}
+
+function closeWarmup() {
+    document.getElementById('warmup-modal').style.display = 'none';
+}
