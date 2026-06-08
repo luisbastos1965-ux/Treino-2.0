@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=25">
+    <link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
 
@@ -144,7 +144,6 @@
             <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
         </div>
 
-        <!-- ALERTA DE DELOAD AUTOMÁTICO -->
         <div id="deload-warning" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #f87171; text-align: center; line-height: 1.5; font-size: 14px;">
             <strong>⚠️ ALERTA DO SNC ⚠️</strong><br>
             Registaste treinos em 6 semanas consecutivas. O Smart Coach sugere uma <b>Semana de Deload</b> (reduz cargas e volume em 50%) para recuperares a fundo!
@@ -254,7 +253,6 @@
             <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Músculo Fritado!</p>
             
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
-                <!-- SVG Frente -->
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -269,8 +267,6 @@
                         <rect id="hm-quads-r" x="53" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
                     </svg>
                 </div>
-
-                <!-- SVG Costas -->
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div>
                     <svg viewBox="0 0 100 200" width="90" height="180">
@@ -297,10 +293,7 @@
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🎮 Modo RPG: Níveis Musculares</h3>
             <p class="text-center" style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ganha XP com cada quilo levantado. Sobe os teus atributos!</p>
-            
-            <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
-                <div style="text-align: center; color: var(--muted); font-size: 13px;">A calcular Níveis...</div>
-            </div>
+            <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
 
         <div style="margin-top: 20px;">
@@ -312,9 +305,18 @@
             <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
         </div>
 
-        <div id="pr-display" class="goal-container">
-            <h3>🏆 PRs</h3>
-            <p style="margin-top:10px;color:var(--muted);">Seleciona um exercício para puxar recordes.</p>
+        <!-- 🔮 NOVO: ZONA DE PR E PREVISÃO DE 1RM -->
+        <div id="pr-display" class="goal-container" style="margin-top: 20px;">
+            <h3>🏆 Força Bruta e PRs</h3>
+            <p style="margin-top:5px; color:var(--muted); font-size: 12px;">Seleciona um exercício no gráfico acima para calcular a tua força real.</p>
+            
+            <div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; text-align: left;">
+                <div style="font-size: 11px; font-weight: bold; color: #d8b4fe; text-transform: uppercase; letter-spacing: 1px;">Estimativa 1RM (Fórmula Epley)</div>
+                <div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7; margin: 5px 0; text-shadow: 0 0 10px rgba(168,85,247,0.4);">-- kg</div>
+                <div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px; line-height: 1.5; border-top: 1px solid rgba(168,85,247,0.2); padding-top: 10px;">
+                    🔮 A calcular previsão...
+                </div>
+            </div>
         </div>
 
         <div id="global-stats" class="goal-container">
@@ -547,7 +549,6 @@
          MODAIS SECUNDÁRIOS DE SUPORTE
          ========================================== -->
 
-    <!-- Modal Técnico de Exercícios (Biblioteca Visual Privada) -->
     <div id="exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; position: relative; display: flex; flex-direction: column; gap: 15px;">
             <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -569,7 +570,6 @@
         </div>
     </div>
 
-    <!-- Modal Calculadora de Discos (Animação de Cargas) -->
     <div id="plate-math-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10002;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
             <button onclick="closePlateMath()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -590,7 +590,6 @@
         </div>
     </div>
 
-    <!-- Modal Calculadora de Aquecimento -->
     <div id="warmup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10003;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
             <button onclick="closeWarmup()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -600,7 +599,6 @@
         </div>
     </div>
 
-    <!-- Modal Modo Flex (Partilha Estilo Instagram) -->
     <div id="flex-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10004;">
         <div style="width: 100%; max-width: 360px; position: relative; text-align: center;">
             <button onclick="closeModoFlex()" style="position: absolute; top: -40px; right: 10px; background: none; border: none; color: white; font-size: 28px; cursor: pointer;">✖</button>
@@ -643,7 +641,7 @@
     </div>
 
     <!-- Script de Lógica Principal -->
-    <script src="script.js?v=25"></script>
+    <script src="script.js?v=26"></script>
     
     <!-- Registo do Service Worker para a PWA Offline -->
     <script>
