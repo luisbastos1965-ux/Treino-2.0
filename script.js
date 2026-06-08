@@ -1782,36 +1782,3 @@ function renderVideoFrame(exerciseName) {
         `;
     }
 }
-
-// ==========================================
-// PARTE 15: INTEGRAÇÃO MUSICAL NO BEAST MODE 🎧 (Versão Blindada)
-// ==========================================
-
-// Usamos o window. para garantir que o HTML encontra sempre esta função
-window.toggleMusicPlayer = function() {
-    // Inicializa a variável se ela não existir
-    if (typeof window.musicPlayerActive === 'undefined') {
-        window.musicPlayerActive = false;
-    }
-    
-    window.musicPlayerActive = !window.musicPlayerActive;
-    
-    const player = document.getElementById('beast-music-player');
-    const btn = document.getElementById('music-btn');
-    
-    // Pequeno aviso para ajudar a detetar erros
-    if (!player || !btn) {
-        console.error("Gym Tracker: Elementos do leitor de música não encontrados no HTML.");
-        return;
-    }
-    
-    if (window.musicPlayerActive) {
-        player.style.display = 'block';
-        btn.style.color = 'var(--accent)';
-        btn.innerText = '🎧 Som';
-    } else {
-        player.style.display = 'none';
-        btn.style.color = 'var(--muted)';
-        btn.innerText = '🎵 Som';
-    }
-};
