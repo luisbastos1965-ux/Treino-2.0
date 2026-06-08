@@ -1794,6 +1794,9 @@ function toggleMusicPlayer() {
     const player = document.getElementById('beast-music-player');
     const btn = document.getElementById('music-btn');
     
+    // Verifica se os elementos existem para evitar erros
+    if (!player || !btn) return;
+    
     if (musicPlayerActive) {
         player.style.display = 'block';
         btn.style.color = 'var(--accent)';
