@@ -1782,3 +1782,49 @@ function renderVideoFrame(exerciseName) {
         `;
     }
 }
+
+// ==========================================
+// PARTE 16: GESTÃO DE FADIGA CENTRAL (DELOAD AUTOMÁTICO) 🔋
+// ==========================================
+
+function checkCentralFatigue() {
+    let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
+    if (history.length === 0) return;
+
+    // Função simples para obter o número da semana do ano
+    const getWeekNumber = (d) => {
+        const date = new Date(d.getTime());
+        date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+        return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    };
+
+    let activeWeeks = new Set();
+    
+    // Varremos o histórico para ver em quantas semanas distintas treinaste
+    history.forEach(session => {
+        if (session.date) {
+            // Converter string "DD/MM/YYYY" para Date (formato da nossa app)
+            let parts = session.date.split('/');
+            if (parts.length === 3) {
+                let d = new Date(parts[2], parts[1] - 1, parts[0]);
+                activeWeeks.add(parts[2] + '-' + getWeekNumber(d));
+            }
+        }
+    });
+
+    const deloadWarning = document.getElementById('deload-warning');
+    if (!deloadWarning) return;
+
+    // Se o atleta treinou em 6 ou mais semanas diferentes (no histórico gravado)
+    if (activeWeeks.size >= 6) {
+        deloadWarning.style.display = 'block';
+    } else {
+        deloadWarning.style.display = 'none';
+    }
+}
+
+// Injetar a verificação logo no arranque da app
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(checkCentralFatigue, 1000);
+});
