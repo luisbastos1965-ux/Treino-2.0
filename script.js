@@ -1828,3 +1828,82 @@ function checkCentralFatigue() {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(checkCentralFatigue, 1000);
 });
+
+// ==========================================
+// PARTE 17: CALCULADORA DE 1RM E METAS PREDITIVAS 🔮
+// ==========================================
+
+function calculate1RM(weight, reps) {
+    // Fórmula de Epley: 1RM = Peso * (1 + Reps / 30)
+    if (reps === 1) return weight;
+    return weight * (1 + (reps / 30));
+}
+
+function update1RMPrediction() {
+    const exerciseSelect = document.getElementById('exercise-select');
+    if (!exerciseSelect) return;
+    
+    const exerciseName = exerciseSelect.value;
+    const container = document.getElementById('onerm-container');
+    const valueDisplay = document.getElementById('onerm-value');
+    const predictionDisplay = document.getElementById('onerm-prediction');
+    
+    if (!exerciseName || !container) {
+        if(container) container.style.display = 'none';
+        return;
+    }
+
+    let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
+    let best1RM = 0;
+    let bestWeight = 0;
+    let bestReps = 0;
+
+    // Vasculhar o histórico à procura do melhor momento de sempre neste exercício
+    history.forEach(session => {
+        if (session.exercises) {
+            const match = session.exercises.find(e => e.name === exerciseName);
+            if (match && match.setsDetails) {
+                match.setsDetails.forEach(set => {
+                    let w = parseFloat(set.w);
+                    let r = parseInt(set.r);
+                    if (!isNaN(w) && !isNaN(r) && w > 0 && r > 0) {
+                        let current1RM = calculate1RM(w, r);
+                        if (current1RM > best1RM) {
+                            best1RM = current1RM;
+                            bestWeight = w;
+                            bestReps = r;
+                        }
+                    }
+                });
+            }
+        }
+    });
+
+    if (best1RM > 0) {
+        container.style.display = 'block';
+        valueDisplay.innerText = Math.round(best1RM) + ' kg';
+        
+        // Algoritmo Preditivo Simples:
+        // Assumimos um ganho de força constante (ex: 1.5% ao mês para atletas)
+        let target1RM = Math.round(best1RM * 1.10); // A próxima grande meta é +10%
+        
+        // 1.5% ao mês = ~0.05% ao dia. Quanto tempo para os +10%? -> 200 dias.
+        let daysToTarget = Math.round((target1RM - best1RM) / (best1RM * 0.0005));
+        
+        let targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + daysToTarget);
+        let dateString = targetDate.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
+
+        predictionDisplay.innerHTML = `🔮 <b>Previsão da Máquina:</b> Com base nos teus ${bestWeight}kg x ${bestReps} reps, se mantiveres o foco, a alimentação e o deload em dia, vais conseguir esmagar os <b>${target1RM}kg</b> até <b>${dateString}</b>.`;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+// Injetar a previsão sempre que selecionas um exercício novo no gráfico
+const exerciseSelectDropdown = document.getElementById('exercise-select');
+if (exerciseSelectDropdown) {
+    exerciseSelectDropdown.addEventListener('change', () => {
+        setTimeout(update1RMPrediction, 100);
+    });
+}
