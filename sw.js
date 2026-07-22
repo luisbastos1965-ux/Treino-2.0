@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-tracker-v3';
+const CACHE_NAME = 'gym-tracker-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -11,10 +11,9 @@ const ASSETS_TO_CACHE = [
     './js/beastMode.js',
     './js/main.js',
     './manifest.json',
-    './assets/img/icon.jpg'
+    './assets/img/icon.png'
 ];
 
-// Instalação do Service Worker
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -22,7 +21,6 @@ self.addEventListener('install', event => {
     );
 });
 
-// Limpar caches antigas (Garante que a nova estrutura de pastas é assumida)
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
@@ -37,7 +35,6 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Intercetar pedidos para funcionar Offline
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
