@@ -21,24 +21,12 @@ function navigateTo(id) {
     if (id === 'view-construtor') { updateBuilderUI(); }
 }
 
-function previewMenu(type, event) {
-    document.querySelectorAll('#view-home .tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-
-    document.getElementById('menu-machine').style.display = 'none';
-    document.getElementById('menu-plate').style.display = 'none';
-    document.getElementById('menu-rack').style.display = 'none';
-
-    document.getElementById('menu-' + type).style.display = (type === 'machine' || type === 'rack') ? 'flex' : 'block';
-}
-
 // --- RENDERIZAÇÃO DO TREINO NORMAL ---
 function switchWorkout(event, day) {
     currentDay = day;
     document.querySelectorAll('#view-treino .tab-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
     
-    // Oculta Beast Mode se for Mobilidade
     const beastBtn = document.getElementById('main-beast-btn');
     if (beastBtn) beastBtn.style.display = (day === 'MOBILITY') ? 'none' : 'block';
     
@@ -56,7 +44,6 @@ function renderWorkout() {
         return;
     }
 
-    // Render Especial para Mobilidade
     if (currentDay === 'MOBILITY') {
         container.innerHTML = '<p style="color:var(--accent); font-size:13px; text-align:center; margin-bottom:15px;">Rotina de recuperação para baixar o stress do SNC e nutrir as articulações.</p>';
         exercises.forEach((ex, exIdx) => {
@@ -70,7 +57,6 @@ function renderWorkout() {
         return;
     }
 
-    // Render Normal de Treino
     exercises.forEach((ex, exIdx) => {
         let html = `
         <div class="exercise-card">
@@ -412,7 +398,7 @@ function updateMonthlyGoal() {
     document.getElementById('monthly-count').innerText = monthly; document.getElementById('monthly-progress').style.width = `${Math.min(monthly, 24) / 24 * 100}%`;
 }
 
-// --- PERFIL E CONQUISTAS ---
+// --- PERFIL, CONQUISTAS E SPOTIFY ---
 function renderProfile() {
     document.getElementById('prof-name').value = userProfile.name || '';
     document.getElementById('prof-age').value = userProfile.age || 25;
@@ -428,7 +414,34 @@ function renderProfile() {
         document.getElementById('meas-waist').value = userProfile.measurements.waist || '';
         document.getElementById('meas-leg').value = userProfile.measurements.leg || '';
     }
+
+    // Carrega o link do Spotify
+    if (document.getElementById('prof-spotify')) {
+        document.getElementById('prof-spotify').value = userProfile.spotify || '';
+    }
+
     updateProfileData();
+}
+
+function updateSpotifyPlayer() {
+    const iframe = document.getElementById('spotify-iframe');
+    if(!iframe) return;
+    let link = userProfile.spotify || "";
+    let embedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?theme=0"; // Default Gym Playlist
+    
+    if(link.includes('spotify.com')) {
+        if(link.includes('embed')) {
+            embedUrl = link;
+        } else {
+            const match = link.match(/spotify\.com\/(playlist|album|track)\/([a-zA-Z0-9]+)/);
+            if (match) embedUrl = `https://open.spotify.com/embed/${match[1]}/${match[2]}?theme=0`;
+        }
+    }
+    
+    // Evitar recarregar o iframe se o link já for o mesmo
+    if(iframe.src !== embedUrl) {
+        iframe.src = embedUrl;
+    }
 }
 
 function updateProfileData() {
@@ -439,6 +452,11 @@ function updateProfileData() {
     userProfile.weight = parseInt(document.getElementById('prof-weight').value) || 70;
     userProfile.activity = parseFloat(document.getElementById('prof-activity').value) || 1.55;
     userProfile.goal = document.getElementById('prof-goal').value;
+    
+    if (document.getElementById('prof-spotify')) {
+        userProfile.spotify = document.getElementById('prof-spotify').value;
+    }
+
     if (!userProfile.measurements) userProfile.measurements = {};
     userProfile.measurements.arm = document.getElementById('meas-arm').value;
     userProfile.measurements.chest = document.getElementById('meas-chest').value;
@@ -465,7 +483,7 @@ function updateProfileData() {
     let scaleY = 1 + ((userProfile.height - 170) / 170) * 0.7; let scaleX = 1 + ((bmi - 24) / 24) * 0.6;
     if(avatar) avatar.style.transform = `scale(${Math.max(0.6, Math.min(scaleX, 1.8))}, ${Math.max(0.7, Math.min(scaleY, 1.4))})`;
 
-    renderDieta(); calculateBodyFat(); setTimeout(updateWearableData, 200);
+    renderDieta(); calculateBodyFat(); updateSpotifyPlayer(); setTimeout(updateWearableData, 200);
 }
 
 function renderAchievements() {
