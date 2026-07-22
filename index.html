@@ -66,8 +66,9 @@
                 <button class="beast-action-btn superset" onclick="triggerSuperset()">🔗 Supersérie</button>
             </div>
 
+            <!-- SPOTIFY PLAYER (Agora com ID para leitura dinâmica) -->
             <div id="beast-music-player" style="display: none; width: 100%; max-width: 350px; margin: 20px auto 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <iframe id="spotify-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
         </div>
         
@@ -92,61 +93,33 @@
     </div>
 
     <!-- ==========================================
-         NOVA PÁGINA INICIAL (DASHBOARD SHOWROOM)
+         PÁGINA INICIAL (O RACK DE HALETERES)
          ========================================== -->
     <div id="view-home" class="view-section active">
         
-        <!-- SELETOR DE ESTILOS PARA TESTARES -->
-        <div style="text-align: center; margin-top: 10px; margin-bottom: 30px;">
-            <h1 style="color: var(--accent); font-size: 42px; font-weight: 900; letter-spacing: 2px;">PULSE</h1>
-            <p style="color: var(--muted); font-size: 13px;">Menu Showroom - Escolhe o teu estilo:</p>
-            <div class="tabs" style="margin-top: 15px;">
-                <button class="tab-btn active" onclick="previewMenu('machine', event)">Máquina</button>
-                <button class="tab-btn" onclick="previewMenu('plate', event)">Disco</button>
-                <button class="tab-btn" onclick="previewMenu('rack', event)">Rack</button>
-            </div>
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+            <h1 style="color: var(--accent); font-size: 48px; font-weight: 900; letter-spacing: 2px;">PULSE</h1>
+            <p style="color: var(--muted); font-size: 13px;">O teu ecossistema de ferro.</p>
         </div>
 
-        <!-- OPÇÃO 1: MÁQUINA DE CABOS (SELETOR) -->
-        <div id="menu-machine" class="machine-stack" style="display: flex;">
-            <button class="machine-btn" onclick="navigateTo('view-treino')">🏋️‍♂️ Modo Treino</button>
-            <button class="machine-btn" onclick="navigateTo('view-construtor')">🧪 Laboratório</button>
-            <button class="machine-btn" onclick="navigateTo('view-evolucao')">📈 Evolução</button>
-            <button class="machine-btn" onclick="navigateTo('view-dieta')">🍽️ Dieta & Pecado</button>
-            <button class="machine-btn" onclick="navigateTo('view-calendario')">📅 Calendário</button>
-            <button class="machine-btn" onclick="navigateTo('view-perfil')">👤 Perfil Titã</button>
-        </div>
-
-        <!-- OPÇÃO 2: DISCO OLÍMPICO -->
-        <div id="menu-plate" class="plate-container" style="display: none;">
-            <div class="plate-center">PULSE</div>
-            <button class="plate-btn top" onclick="navigateTo('view-treino')"><div class="icon">🏋️‍♂️</div>Treino</button>
-            <button class="plate-btn top-right" onclick="navigateTo('view-construtor')"><div class="icon">🧪</div>Lab</button>
-            <button class="plate-btn bottom-right" onclick="navigateTo('view-evolucao')"><div class="icon">📈</div>Progresso</button>
-            <button class="plate-btn bottom" onclick="navigateTo('view-dieta')"><div class="icon">🍽️</div>Dieta</button>
-            <button class="plate-btn bottom-left" onclick="navigateTo('view-calendario')"><div class="icon">📅</div>Registo</button>
-            <button class="plate-btn top-left" onclick="navigateTo('view-perfil')"><div class="icon">👤</div>Perfil</button>
-        </div>
-
-        <!-- OPÇÃO 3: RACK DE HALTERES -->
-        <div id="menu-rack" class="rack-container" style="display: none;">
+        <div id="menu-rack" class="rack-container">
             <button class="rack-btn" onclick="navigateTo('view-treino')">
-                <div class="db-end">🏋️‍♂️</div><div class="db-bar">TREINAR</div><div class="db-end"></div>
+                <div class="db-end left">🏋️‍♂️</div><div class="db-bar">TREINAR</div><div class="db-end right"></div>
             </button>
             <button class="rack-btn" onclick="navigateTo('view-construtor')">
-                <div class="db-end">🧪</div><div class="db-bar">CONSTRUTOR</div><div class="db-end"></div>
+                <div class="db-end left">🧪</div><div class="db-bar">CONSTRUTOR</div><div class="db-end right"></div>
             </button>
             <button class="rack-btn" onclick="navigateTo('view-evolucao')">
-                <div class="db-end">📈</div><div class="db-bar">PROGRESSO</div><div class="db-end"></div>
+                <div class="db-end left">📈</div><div class="db-bar">PROGRESSO</div><div class="db-end right"></div>
             </button>
             <button class="rack-btn" onclick="navigateTo('view-dieta')">
-                <div class="db-end">🍽️</div><div class="db-bar">NUTRIÇÃO</div><div class="db-end"></div>
+                <div class="db-end left">🍽️</div><div class="db-bar">NUTRIÇÃO</div><div class="db-end right"></div>
             </button>
             <button class="rack-btn" onclick="navigateTo('view-calendario')">
-                <div class="db-end">📅</div><div class="db-bar">HISTÓRICO</div><div class="db-end"></div>
+                <div class="db-end left">📅</div><div class="db-bar">HISTÓRICO</div><div class="db-end right"></div>
             </button>
             <button class="rack-btn" onclick="navigateTo('view-perfil')">
-                <div class="db-end">👤</div><div class="db-bar">ID CARTÃO</div><div class="db-end"></div>
+                <div class="db-end left">👤</div><div class="db-bar">ID CARTÃO</div><div class="db-end right"></div>
             </button>
         </div>
 
@@ -158,7 +131,6 @@
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
             <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
             <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
-            <!-- NOVA ABA MOBILIDADE -->
             <button class="tab-btn" onclick="switchWorkout(event,'MOBILITY')" style="color:var(--accent);">ZEN 🧘</button>
         </div>
         <div id="deload-warning" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #f87171; text-align: center; line-height: 1.5; font-size: 14px;">
@@ -300,6 +272,12 @@
             <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
             <div class="form-group"><label>Atividade Base</label><select id="prof-activity" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">Muito Ativo</option></select></div>
             <div class="form-group"><label>Objetivo</label><select id="prof-goal" onchange="updateProfileData()"><option value="cut">Cut</option><option value="maintain">Manter</option><option value="bulk">Bulk</option></select></div>
+            
+            <!-- NOVA CAIXA: SPOTIFY -->
+            <div class="form-group" style="margin-top:10px;">
+                <label>🎧 Playlist do Spotify (Opcional)</label>
+                <input type="text" id="prof-spotify" placeholder="Cola o link da playlist do Spotify..." onchange="updateProfileData()" style="font-size:12px; background:#1e293b; border:1px solid #334155;">
+            </div>
         </div>
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📊 O Teu ID Card</h3>
@@ -321,7 +299,6 @@
             </div>
         </div>
         
-        <!-- NOVA SECÇÃO: CONQUISTAS -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <h3 class="text-center">🏆 As Tuas Conquistas</h3>
             <p style="font-size: 12px; color: var(--muted); margin: 5px 0 15px; text-align:center;">Treina pesado para as desbloquear.</p>
