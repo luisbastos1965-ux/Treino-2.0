@@ -133,3 +133,11 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
     font-size: 16px;
     margin-top: 15px;
 }
+
+#history-details-content::-webkit-scrollbar {
+    width: 6px;
+}
+#history-details-content::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
