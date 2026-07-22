@@ -1,6 +1,6 @@
 {
   "name": "Gym Tracker Ultra",
-  "short_name": "Gym Tracker",
+  "short_name": "Pulse",
   "description": "A tua máquina pessoal de treino e evolução.",
   "start_url": "./index.html",
   "display": "standalone",
