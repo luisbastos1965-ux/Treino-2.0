@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-tracker-v2';
+const CACHE_NAME = 'gym-tracker-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -11,7 +11,7 @@ const ASSETS_TO_CACHE = [
     './js/beastMode.js',
     './js/main.js',
     './manifest.json',
-    './assets/img/logo.jpg'
+    './assets/img/icon.jpg'
 ];
 
 // Instalação do Service Worker
