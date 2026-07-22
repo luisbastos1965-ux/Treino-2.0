@@ -2,7 +2,6 @@
 // UI.JS: NAVEGAÇÃO, RENDERIZAÇÃO E MODAIS
 // ==========================================
 
-// --- NOVA NAVEGAÇÃO (DASHBOARD & FAB) ---
 function goHome() {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById('view-home').classList.add('active');
@@ -19,12 +18,91 @@ function navigateTo(id) {
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); }
     if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
+    if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
 // --- RENDERIZAÇÃO DO TREINO NORMAL ---
+function renderWorkoutSlots() {
+    const container = document.getElementById('workout-slots-container');
+    if(!container) return;
+    container.innerHTML = '';
+
+    // Slot 1: Titã Clássico
+    container.innerHTML += `
+    <div class="built-item" style="border:1px solid #38bdf8; cursor:pointer;" onclick="openWorkoutSlot('TITAN')">
+        <div style="font-size:24px; margin-right:15px;">🔱</div>
+        <div class="built-item-info">
+            <span class="built-item-title" style="color:#38bdf8;">Divisão Titã (PPL)</span>
+            <span style="font-size:11px; color:var(--muted);">Push, Pull e Legs (Padrão)</span>
+        </div>
+    </div>`;
+
+    // Slot 2: Mobilidade
+    container.innerHTML += `
+    <div class="built-item" style="border:1px solid var(--success); cursor:pointer;" onclick="openWorkoutSlot('MOBILITY')">
+        <div style="font-size:24px; margin-right:15px;">🧘</div>
+        <div class="built-item-info">
+            <span class="built-item-title" style="color:var(--success);">Mobilidade e Recuperação</span>
+            <span style="font-size:11px; color:var(--muted);">SNC e Articulações</span>
+        </div>
+    </div>`;
+
+    // Slots das Rotinas Salvas
+    savedRoutines.forEach((item, index) => {
+        let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0);
+        container.innerHTML += `
+        <div class="built-item" style="border:1px solid #334155; cursor:pointer;" onclick="openWorkoutSlot('SAVED', ${index})">
+            <div style="font-size:24px; margin-right:15px;">💾</div>
+            <div class="built-item-info">
+                <span class="built-item-title">${item.name}</span>
+                <span style="font-size:11px; color:var(--muted);">${item.routine.length} Exs | ${totalSets} Séries</span>
+            </div>
+        </div>`;
+    });
+
+    // Botão Adicionar Novo
+    container.innerHTML += `
+    <div class="built-item" style="border:1px dashed #94a3b8; background:transparent; justify-content:center; cursor:pointer; margin-top:10px;" onclick="navigateTo('view-construtor')">
+        <span style="color:var(--muted); font-weight:bold;">+ Criar Novo Treino</span>
+    </div>`;
+}
+
+function openWorkoutSlot(type, index = 0) {
+    document.getElementById('treino-slots-view').style.display = 'none';
+    document.getElementById('treino-active-view').style.display = 'block';
+    
+    const tabsContainer = document.getElementById('active-workout-tabs');
+    const beastBtn = document.getElementById('main-beast-btn');
+    
+    if (type === 'TITAN') {
+        tabsContainer.style.display = 'flex';
+        tabsContainer.innerHTML = `
+            <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
+            <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
+            <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
+        `;
+        currentDay = 'PUSH';
+    } else if (type === 'MOBILITY') {
+        tabsContainer.style.display = 'none';
+        currentDay = 'MOBILITY';
+    } else if (type === 'SAVED') {
+        tabsContainer.style.display = 'none';
+        workoutData.CUSTOM = JSON.parse(JSON.stringify(savedRoutines[index].routine));
+        currentDay = 'CUSTOM';
+    }
+    
+    if (beastBtn) beastBtn.style.display = (currentDay === 'MOBILITY') ? 'none' : 'block';
+    renderWorkout();
+}
+
+function backToWorkoutSlots() {
+    document.getElementById('treino-slots-view').style.display = 'block';
+    document.getElementById('treino-active-view').style.display = 'none';
+}
+
 function switchWorkout(event, day) {
     currentDay = day;
-    document.querySelectorAll('#view-treino .tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#active-workout-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
     
     const beastBtn = document.getElementById('main-beast-btn');
@@ -207,10 +285,9 @@ function updateBuilderUI(rebuildList = true) {
 function applyBuiltWorkout() {
     if (builderState.routine.length === 0) return;
     workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine));
-    const tabsContainer = document.querySelector('#view-treino .tabs');
-    if (!document.getElementById('tab-custom')) tabsContainer.innerHTML += `<button id="tab-custom" class="tab-btn" onclick="switchWorkout(event,'CUSTOM')">LAB 🧪</button>`;
+    
     navigateTo('view-treino'); 
-    document.getElementById('tab-custom').click();
+    openWorkoutSlot('SAVED', savedRoutines.length); // Abre diretamente como se fosse a última guardada, mas no state CUSTOM
 }
 
 function saveCurrentRoutine() {
@@ -219,6 +296,7 @@ function saveCurrentRoutine() {
     if (!routineName) return;
     savedRoutines.push({ name: routineName, routine: JSON.parse(JSON.stringify(builderState.routine)) });
     localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); alert('✅ Guardada com sucesso!');
+    renderSavedRoutines();
 }
 
 function renderSavedRoutines() {
@@ -357,7 +435,7 @@ function renderRPGStats(muscleXP) {
     }
 }
 
-// --- CALENDÁRIO ---
+// --- CALENDÁRIO COM DETALHES ---
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid'); if (!grid) return; grid.innerHTML = '';
     const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
@@ -366,23 +444,67 @@ function renderCalendar() {
     const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     document.getElementById('calendar-title').innerText = `${monthNames[month]} ${year}`;
     for (let i = 0; i < startDay; i++) grid.innerHTML += '<div class="day-box empty"></div>';
+    
     for (let day = 1; day <= daysInMonth; day++) {
         const dateString = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
-        const trained = history.some(h => h.date === dateString);
-        grid.innerHTML += `<div class="day-box ${trained ? 'trained' : ''}" onclick="toggleTrainingDay('${dateString}')">${day}</div>`;
+        const trainedSessions = history.filter(h => h.date === dateString);
+        let dotHtml = '';
+        if (trainedSessions.length > 0) {
+            dotHtml = `<div style="width:6px; height:6px; background:var(--accent); border-radius:50%; margin-top:4px;"></div>`;
+        }
+        
+        grid.innerHTML += `
+        <div class="day-box ${trainedSessions.length > 0 ? 'trained' : ''}" style="flex-direction:column;" onclick="showHistoryDetails('${dateString}')">
+            ${day}
+            ${dotHtml}
+        </div>`;
     }
     updateWeeklyGoal(); updateMonthlyGoal();
 }
 function changeMonth(direction) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction); renderCalendar(); }
-function toggleTrainingDay(dateString) {
-    const existing = history.find(h => h.date === dateString);
-    if (existing) {
-        if (existing.exercises && Object.keys(existing.exercises).length > 0) if (!confirm("⚠️ Este dia tem um treino com séries reais. Queres APAGAR tudo?")) return;
-        history = history.filter(h => h.date !== dateString);
-    } else { history.push({ date: dateString, day: 'MANUAL', exercises: {} }); }
-    localStorage.setItem('gym_tracker_history', JSON.stringify(history));
-    renderCalendar(); updateGlobalStats(); updateHeatmap();
+
+function showHistoryDetails(dateString) {
+    const sessions = history.filter(h => h.date === dateString);
+    if (sessions.length === 0) {
+        if(confirm("Queres registar um dia de treino (vazio) neste dia?")) {
+            history.push({ date: dateString, day: 'MANUAL', exercises: {} });
+            localStorage.setItem('gym_tracker_history', JSON.stringify(history));
+            renderCalendar(); updateGlobalStats(); updateHeatmap();
+        }
+        return;
+    }
+
+    let html = '';
+    sessions.forEach(session => {
+        let vol = 0; let exs = 0;
+        if(session.exercises) {
+            Object.entries(session.exercises).forEach(([ex, sets]) => {
+                exs++; sets.forEach(s => vol += (s.weight||s.w||0) * (s.reps||s.r||0));
+            });
+        }
+        html += `
+        <div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent); text-align:left;">
+            <h4 style="color:white; margin-bottom:5px;">${session.day || 'Treino'}</h4>
+            <p style="color:var(--muted); font-size:12px;">Exercícios: ${exs} | Volume Movido: ${Math.round(vol)}kg</p>
+        </div>`;
+    });
+    
+    html += `<button onclick="deleteDayHistory('${dateString}')" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;">Apagar Registo do Dia</button>`;
+
+    document.getElementById('history-details-content').innerHTML = html;
+    document.getElementById('history-modal-date').innerText = dateString;
+    document.getElementById('history-details-modal').style.display = 'flex';
 }
+
+function deleteDayHistory(dateString) {
+    if(confirm("Tens a certeza que queres APAGAR todos os dados deste dia?")) {
+        history = history.filter(h => h.date !== dateString);
+        localStorage.setItem('gym_tracker_history', JSON.stringify(history));
+        closeHistoryModal();
+        renderCalendar(); updateGlobalStats(); updateHeatmap();
+    }
+}
+function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
 function updateWeeklyGoal() {
     let weekly = 0; const now = new Date(); const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(now.getDate() - 7);
@@ -415,7 +537,6 @@ function renderProfile() {
         document.getElementById('meas-leg').value = userProfile.measurements.leg || '';
     }
 
-    // Carrega o link do Spotify
     if (document.getElementById('prof-spotify')) {
         document.getElementById('prof-spotify').value = userProfile.spotify || '';
     }
@@ -427,7 +548,7 @@ function updateSpotifyPlayer() {
     const iframe = document.getElementById('spotify-iframe');
     if(!iframe) return;
     let link = userProfile.spotify || "";
-    let embedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?theme=0"; // Default Gym Playlist
+    let embedUrl = "https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?theme=0"; 
     
     if(link.includes('spotify.com')) {
         if(link.includes('embed')) {
@@ -438,10 +559,7 @@ function updateSpotifyPlayer() {
         }
     }
     
-    // Evitar recarregar o iframe se o link já for o mesmo
-    if(iframe.src !== embedUrl) {
-        iframe.src = embedUrl;
-    }
+    if(iframe.src !== embedUrl) iframe.src = embedUrl;
 }
 
 function updateProfileData() {
