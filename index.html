@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="assets/img/icon.png">
+    <link rel="apple-touch-icon" href="assets/img/logo.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="css/views.css">
 </head>
 <body>
+
+    <!-- BOTÃO FLUTUANTE DE REGRESSO A CASA -->
+    <button id="fab-home" onclick="goHome()">🏠 PULSE</button>
 
     <!-- OVERLAYS GLOBAIS (BEAST MODE E MINIGAME) -->
     <div id="beast-mode-overlay">
@@ -88,26 +91,69 @@
         </div>
     </div>
 
-    <!-- NAVEGAÇÃO DA ILHA DINÂMICA -->
-    <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
-        <div id="island-active-preview">
-            <span id="active-icon">🏋️‍♂️</span>
-            <span id="active-text">Treinar</span>
-            <span class="chevron">▼</span>
+    <!-- ==========================================
+         NOVA PÁGINA INICIAL (DASHBOARD SHOWROOM)
+         ========================================== -->
+    <div id="view-home" class="view-section active">
+        
+        <!-- SELETOR DE ESTILOS PARA TESTARES -->
+        <div style="text-align: center; margin-top: 10px; margin-bottom: 30px;">
+            <h1 style="color: var(--accent); font-size: 42px; font-weight: 900; letter-spacing: 2px;">PULSE</h1>
+            <p style="color: var(--muted); font-size: 13px;">Menu Showroom - Escolhe o teu estilo:</p>
+            <div class="tabs" style="margin-top: 15px;">
+                <button class="tab-btn active" onclick="previewMenu('machine', event)">Máquina</button>
+                <button class="tab-btn" onclick="previewMenu('plate', event)">Disco</button>
+                <button class="tab-btn" onclick="previewMenu('rack', event)">Rack</button>
+            </div>
         </div>
-        <div id="island-menu">
-            <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')"><span class="btn-icon">🏋️‍♂️</span> Treinar</button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-construtor', '🧪', 'Construtor')"><span class="btn-icon">🧪</span> Construtor</button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-evolucao', '📈', 'Progresso')"><span class="btn-icon">📈</span> Progresso</button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-calendario', '📅', 'Calendário')"><span class="btn-icon">📅</span> Calendário</button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-perfil', '👤', 'Perfil')"><span class="btn-icon">👤</span> Perfil</button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-dieta', '🍽️', 'Dieta')"><span class="btn-icon">🍽️</span> Dieta</button>
+
+        <!-- OPÇÃO 1: MÁQUINA DE CABOS (SELETOR) -->
+        <div id="menu-machine" class="machine-stack" style="display: flex;">
+            <button class="machine-btn" onclick="navigateTo('view-treino')">🏋️‍♂️ Modo Treino</button>
+            <button class="machine-btn" onclick="navigateTo('view-construtor')">🧪 Laboratório</button>
+            <button class="machine-btn" onclick="navigateTo('view-evolucao')">📈 Evolução</button>
+            <button class="machine-btn" onclick="navigateTo('view-dieta')">🍽️ Dieta & Pecado</button>
+            <button class="machine-btn" onclick="navigateTo('view-calendario')">📅 Calendário</button>
+            <button class="machine-btn" onclick="navigateTo('view-perfil')">👤 Perfil Titã</button>
         </div>
-    </nav>
-    <div style="height: 80px;"></div>
+
+        <!-- OPÇÃO 2: DISCO OLÍMPICO -->
+        <div id="menu-plate" class="plate-container" style="display: none;">
+            <div class="plate-center">PULSE</div>
+            <button class="plate-btn top" onclick="navigateTo('view-treino')"><div class="icon">🏋️‍♂️</div>Treino</button>
+            <button class="plate-btn top-right" onclick="navigateTo('view-construtor')"><div class="icon">🧪</div>Lab</button>
+            <button class="plate-btn bottom-right" onclick="navigateTo('view-evolucao')"><div class="icon">📈</div>Progresso</button>
+            <button class="plate-btn bottom" onclick="navigateTo('view-dieta')"><div class="icon">🍽️</div>Dieta</button>
+            <button class="plate-btn bottom-left" onclick="navigateTo('view-calendario')"><div class="icon">📅</div>Registo</button>
+            <button class="plate-btn top-left" onclick="navigateTo('view-perfil')"><div class="icon">👤</div>Perfil</button>
+        </div>
+
+        <!-- OPÇÃO 3: RACK DE HALTERES -->
+        <div id="menu-rack" class="rack-container" style="display: none;">
+            <button class="rack-btn" onclick="navigateTo('view-treino')">
+                <div class="db-end">🏋️‍♂️</div><div class="db-bar">TREINAR</div><div class="db-end"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-construtor')">
+                <div class="db-end">🧪</div><div class="db-bar">CONSTRUTOR</div><div class="db-end"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-evolucao')">
+                <div class="db-end">📈</div><div class="db-bar">PROGRESSO</div><div class="db-end"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-dieta')">
+                <div class="db-end">🍽️</div><div class="db-bar">NUTRIÇÃO</div><div class="db-end"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-calendario')">
+                <div class="db-end">📅</div><div class="db-bar">HISTÓRICO</div><div class="db-end"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-perfil')">
+                <div class="db-end">👤</div><div class="db-bar">ID CARTÃO</div><div class="db-end"></div>
+            </button>
+        </div>
+
+    </div>
 
     <!-- ABA 1: TREINO -->
-    <div id="view-treino" class="view-section active">
+    <div id="view-treino" class="view-section">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
             <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
@@ -408,6 +454,7 @@
         </div>
     </div>
 
+    <!-- CARREGAMENTO DOS SCRIPTS (ORDEM CRÍTICA) -->
     <script src="js/db.js"></script>
     <script src="js/logic.js"></script>
     <script src="js/ui.js"></script>
