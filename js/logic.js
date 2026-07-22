@@ -2,19 +2,16 @@
 // LOGIC.JS: REGRAS DE NEGÓCIO E ALGORITMOS
 // ==========================================
 
-// --- ORÁCULO DE FORÇA (1RM) ---
 function calculate1RM(weight, reps) {
     if (reps === 1) return weight;
     return weight * (1 + (reps / 30));
 }
 
-// --- MOTOR METABÓLICO (GORDURA E TDEE) ---
 function calculateBodyFatFormula(waist, height, gender) {
     let rfm = (gender === 'male') ? 64 - (20 * (height / waist)) : 76 - (20 * (height / waist));
     return Math.max(3, Math.min(rfm, 50));
 }
 
-// --- SISTEMA DE FADIGA CENTRAL (DELOAD) ---
 const getWeekNumber = (d) => {
     const date = new Date(d.getTime());
     date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
@@ -37,7 +34,6 @@ function checkCentralFatigueLogic(historyData) {
     return activeWeeks.size >= 6;
 }
 
-// --- MODO RPG ---
 function getLevelAndProgress(xp) {
     let level = Math.floor(Math.sqrt(xp / 500)) + 1;
     let currentLevelXP = Math.pow(level - 1, 2) * 500;
@@ -60,18 +56,65 @@ function categorizeMuscleByNameRPG(name) {
     return 'Geral';
 }
 
-// --- GESTÃO DE BACKUP ---
+// --- SISTEMA DE CONQUISTAS (ACHIEVEMENTS) ---
+function checkAchievements() {
+    let newlyUnlocked = false;
+    let totalWorkouts = history.length;
+    let totalVol = 0;
+
+    history.forEach(log => {
+        if(log.exercises) {
+            Object.values(log.exercises).forEach(sets => {
+                sets.forEach(set => totalVol += (set.weight||set.w||0) * (set.reps||set.r||0));
+            });
+        }
+    });
+
+    allAchievements.forEach(ach => {
+        if (!achievementsUnlocked.includes(ach.id)) {
+            let unlock = false;
+            if (ach.reqWorkouts && totalWorkouts >= ach.reqWorkouts) unlock = true;
+            if (ach.reqVol && totalVol >= ach.reqVol) unlock = true;
+            
+            if (unlock) {
+                achievementsUnlocked.push(ach.id);
+                newlyUnlocked = true;
+                setTimeout(() => alert(`🏆 NOVA CONQUISTA DESBLOQUEADA: ${ach.title}! Vai ao teu perfil para ver.`), 500);
+            }
+        }
+    });
+
+    if (newlyUnlocked) {
+        localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked));
+        if (document.getElementById('view-perfil').classList.contains('active')) renderAchievements();
+    }
+}
+
+// --- TAXA DO PECADO (PUNISHMENT ENGINE) ---
+function generatePunishmentLogic(cals) {
+    if (cals < 100) return null;
+    let burpees = Math.floor(cals / 15);
+    let squats = Math.floor(cals / 8);
+    let pushups = Math.floor(cals / 12);
+    
+    return {
+        cals: cals,
+        date: new Date().toLocaleDateString('pt-PT'),
+        burpees: burpees,
+        squats: squats,
+        pushups: pushups
+    };
+}
+
 function exportData() {
-    const data = { history: history, profile: userProfile };
+    const data = { history: history, profile: userProfile, achievements: achievementsUnlocked };
     const dataStr = JSON.stringify(data, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     const date = new Date().toISOString().split('T')[0];
-    a.download = `gym_tracker_backup_${date}.json`;
-    a.href = url;
-    a.click();
-    URL.revokeObjectURL(url);
+    a.download = `pulse_backup_${date}.json`;
+    a.href = url; a.click(); URL.revokeObjectURL(url);
 }
 
 function importData(event) {
@@ -81,19 +124,11 @@ function importData(event) {
     reader.onload = function(e) {
         try {
             const data = JSON.parse(e.target.result);
-            if (data.history) {
-                history = data.history;
-                localStorage.setItem('gym_history', JSON.stringify(history));
-            }
-            if (data.profile) {
-                userProfile = data.profile;
-                localStorage.setItem('gym_profile', JSON.stringify(userProfile));
-            }
-            alert('✅ Backup carregado com sucesso! A página vai recarregar para aplicar os dados.');
-            location.reload(); 
-        } catch (error) {
-            alert('❌ Erro ao ler o ficheiro. Confirma se é o ficheiro de backup correto.');
-        }
+            if (data.history) { history = data.history; localStorage.setItem('gym_history', JSON.stringify(history)); }
+            if (data.profile) { userProfile = data.profile; localStorage.setItem('gym_profile', JSON.stringify(userProfile)); }
+            if (data.achievements) { achievementsUnlocked = data.achievements; localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked)); }
+            alert('✅ Backup carregado com sucesso! A página vai recarregar.'); location.reload(); 
+        } catch (error) { alert('❌ Erro ao ler o ficheiro.'); }
     };
     reader.readAsText(file);
 }
