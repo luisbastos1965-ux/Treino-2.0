@@ -13,15 +13,15 @@
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2964/2964514.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=26">
+    
+    <!-- Módulos CSS Otimizados -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/views.css">
 </head>
 <body>
 
-    <!-- ==========================================
-         OVERLAYS GLOBAIS (BEAST MODE E MINIGAME)
-         ========================================== -->
-
-    <!-- BEAST MODE OVERLAY (Foco Imersivo Total) -->
+    <!-- OVERLAYS GLOBAIS (BEAST MODE E MINIGAME) -->
     <div id="beast-mode-overlay">
         <div class="beast-header">
             <button onclick="exitBeastMode()" class="beast-exit">✖ Sair</button>
@@ -35,17 +35,12 @@
         <div class="beast-body">
             <h2 id="beast-exercise-name" class="beast-title">Supino Inclinado</h2>
             <div id="beast-history-badge" class="history-badge" style="margin: 10px auto 5px; font-size: 14px;">Última: -</div>
-            
             <div id="beast-smart-suggestion" style="color: var(--success); font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 8px rgba(34,197,94,0.3); display: none;">🎯 Coach: Tenta 82.5kg (+2.5kg)</div>
-            
             <button id="warmup-btn" class="beast-action-btn" style="background:#3b82f6; margin: 10px auto; display: block; width: 100%; max-width: 350px; font-size: 14px; padding: 10px;" onclick="openWarmup()">🔥 Gerar Aquecimento Ideal</button>
             
             <div class="beast-inputs">
                 <div class="beast-input-group">
-                    <label style="display: flex; align-items: center; gap: 6px;">
-                        KG 
-                        <button class="plate-calc-btn" onclick="openPlateMath(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder)">🧮</button>
-                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px;">KG <button class="plate-calc-btn" onclick="openPlateMath(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder)">🧮</button></label>
                     <input type="number" id="beast-weight" placeholder="0">
                 </div>
                 <div class="beast-input-group">
@@ -81,177 +76,112 @@
         </div>
     </div>
 
-    <!-- MINI-JOGO DE DESCANSO / TIMER OVERLAY -->
+    <!-- MINI-JOGO DE DESCANSO -->
     <div id="rest-timer-overlay">
         <div class="rest-content">
             <h2 id="rest-time-display">90s</h2>
             <p class="rest-subtitle">Recuperação Ativa: Toca no quadro para manter a barra na zona verde!</p>
-            
             <div id="minigame-container" onclick="jumpBarbell()">
                 <div id="safe-zone"></div>
                 <div id="barbell">🏋️‍♂️</div>
             </div>
-            
             <div class="score-board">Pontos: <span id="game-score">0</span></div>
             <button class="skip-timer-btn" onclick="skipTimer()">Saltar Descanso</button>
         </div>
     </div>
 
-
-    <!-- ==========================================
-         MENU DE NAVEGAÇÃO (DYNAMIC ISLAND DE VIDRO)
-         ========================================== -->
+    <!-- NAVEGAÇÃO DA ILHA DINÂMICA -->
     <nav id="glass-island" class="collapsed" onclick="toggleIsland()">
         <div id="island-active-preview">
             <span id="active-icon">🏋️‍♂️</span>
             <span id="active-text">Treinar</span>
             <span class="chevron">▼</span>
         </div>
-        
         <div id="island-menu">
-            <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')">
-                <span class="btn-icon">🏋️‍♂️</span> Treinar
-            </button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-construtor', '🧪', 'Construtor')">
-                <span class="btn-icon">🧪</span> Construtor
-            </button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-evolucao', '📈', 'Progresso')">
-                <span class="btn-icon">📈</span> Progresso
-            </button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-calendario', '📅', 'Calendário')">
-                <span class="btn-icon">📅</span> Calendário
-            </button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-perfil', '👤', 'Perfil')">
-                <span class="btn-icon">👤</span> Perfil
-            </button>
-            <button class="island-btn" onclick="navigateIsland(event, 'view-dieta', '🍽️', 'Dieta')">
-                <span class="btn-icon">🍽️</span> Dieta
-            </button>
+            <button class="island-btn active" onclick="navigateIsland(event, 'view-treino', '🏋️‍♂️', 'Treinar')"><span class="btn-icon">🏋️‍♂️</span> Treinar</button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-construtor', '🧪', 'Construtor')"><span class="btn-icon">🧪</span> Construtor</button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-evolucao', '📈', 'Progresso')"><span class="btn-icon">📈</span> Progresso</button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-calendario', '📅', 'Calendário')"><span class="btn-icon">📅</span> Calendário</button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-perfil', '👤', 'Perfil')"><span class="btn-icon">👤</span> Perfil</button>
+            <button class="island-btn" onclick="navigateIsland(event, 'view-dieta', '🍽️', 'Dieta')"><span class="btn-icon">🍽️</span> Dieta</button>
         </div>
     </nav>
-
-    <!-- Espaçador de segurança para o topo fixo da Ilha -->
     <div style="height: 80px;"></div>
 
-
-    <!-- ==========================================
-         ABA 1: ROTINA DE TREINO DIÁRIO
-         ========================================== -->
+    <!-- ABA 1: TREINO -->
     <div id="view-treino" class="view-section active">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
             <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
             <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
         </div>
-
         <div id="deload-warning" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #f87171; text-align: center; line-height: 1.5; font-size: 14px;">
-            <strong>⚠️ ALERTA DO SNC ⚠️</strong><br>
-            Registaste treinos em 6 semanas consecutivas. O Smart Coach sugere uma <b>Semana de Deload</b> (reduz cargas e volume em 50%) para recuperares a fundo!
+            <strong>⚠️ ALERTA DO SNC ⚠️</strong><br> Registaste treinos em 6 semanas consecutivas. O Smart Coach sugere uma <b>Semana de Deload</b>!
         </div>
-
-        <button onclick="startBeastMode()" style="width: 100%; background: #f97316; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(249,115,22,0.3); cursor: pointer; font-family: inherit;">🦍 ENTRAR EM BEAST MODE</button>
-
+        <button onclick="startBeastMode()" style="width: 100%; background: #f97316; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(249,115,22,0.3); cursor: pointer;">🦍 ENTRAR EM BEAST MODE</button>
         <div id="workout-container"></div>
-
         <div class="footer-action">
-            <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Modo Flex</button>
+            <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Flex</button>
             <button class="btn-primary" onclick="saveCurrentWorkout()">Gravar Treino</button>
         </div>
     </div>
 
-
-    <!-- ==========================================
-         ABA 2: CONSTRUTOR / LABORATÓRIO DE TREINOS
-         ========================================== -->
+    <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
         <div class="goal-container text-center">
             <h3>🧪 Laboratório de Treino</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Cria, gera ou carrega a tua rotina perfeita adaptada ao teu dia.</p>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Cria a tua rotina perfeita.</p>
         </div>
-
         <div class="exercise-card">
             <div class="form-group" style="margin-bottom: 20px;">
-                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Como te sentes hoje? (Fadiga)</label>
+                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Fadiga</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
                     <button id="btn-fatigue-energized" class="fatigue-btn active" onclick="setFatigue('energized')">🔋 100%</button>
                     <button id="btn-fatigue-normal" class="fatigue-btn" onclick="setFatigue('normal')">⚡ Normal</button>
                     <button id="btn-fatigue-tired" class="fatigue-btn" onclick="setFatigue('tired')">🪫 Cansado</button>
                 </div>
             </div>
-
             <div class="form-group" style="margin-bottom: 20px;">
-                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Método de Seleção</label>
+                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Método</label>
                 <div style="display: flex; gap: 5px; margin-top: 8px;">
                     <button id="btn-mode-auto" class="mode-btn active" onclick="setBuilderMode('auto')">🤖 Auto</button>
                     <button id="btn-mode-manual" class="mode-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
                     <button id="btn-mode-saved" class="mode-btn" onclick="setBuilderMode('saved')">💾 Salvos</button>
                 </div>
             </div>
-
             <div id="auto-focus-panel" class="form-group">
-                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Grupo Muscular Alvo</label>
+                <label style="font-size: 13px; font-weight: bold; color: var(--muted);">Alvo</label>
                 <select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;">
-                    <option value="PUSH">Push (Peito, Ombros, Tríceps)</option>
-                    <option value="PULL">Pull (Costas, Bíceps, Posterior)</option>
-                    <option value="LEGS">Legs (Pernas Completas)</option>
-                    <option value="FULL">Full Body (Corpo Inteiro)</option>
+                    <option value="PUSH">Push</option><option value="PULL">Pull</option><option value="LEGS">Legs</option><option value="FULL">Full Body</option>
                 </select>
-                <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 15px; border-radius: 12px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino Inteligente</button>
+                <button class="btn-primary" style="width: 100%; margin-top: 15px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino</button>
             </div>
-
             <div id="manual-library-panel" style="display: none;">
                 <div style="display: flex; gap: 8px; margin: 15px 0;">
-                    <select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
-                        <option value="ALL">Músculos (Todos)</option>
-                        <option value="Peito">Peito</option>
-                        <option value="Costas">Costas</option>
-                        <option value="Pernas">Pernas</option>
-                        <option value="Ombros">Ombros</option>
-                        <option value="Braços">Braços</option>
-                    </select>
-                    <select id="filter-tier" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none; font-size: 12px;" onchange="renderLibrary()">
-                        <option value="ALL">Grau (Todos)</option>
-                        <option value="S">S-Tier (Melhores)</option>
-                        <option value="A">A-Tier (Ótimos)</option>
-                        <option value="B">B-Tier (Bons)</option>
-                    </select>
+                    <select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none;" onchange="renderLibrary()"><option value="ALL">Músculos</option><option value="Peito">Peito</option><option value="Costas">Costas</option><option value="Pernas">Pernas</option><option value="Ombros">Ombros</option><option value="Braços">Braços</option></select>
+                    <select id="filter-tier" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none;" onchange="renderLibrary()"><option value="ALL">Grau</option><option value="S">S-Tier</option><option value="A">A-Tier</option><option value="B">B-Tier</option></select>
                 </div>
-                <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;"></div>
+                <div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
-
-            <div id="saved-routines-panel" style="display: none; margin-top: 15px;">
-                <div id="saved-routines-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-            </div>
+            <div id="saved-routines-panel" style="display: none; margin-top: 15px;"><div id="saved-routines-list" style="display: flex; flex-direction: column; gap: 10px;"></div></div>
         </div>
-
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3>📝 O Teu Esboço</h3>
-                <span id="workout-volume-badge" style="background: #334155; padding: 5px 10px; border-radius: 8px; font-size: 11px; color: var(--accent);">0 Séries</span>
+                <h3>📝 Esboço</h3><span id="workout-volume-badge" style="background: #334155; padding: 5px 10px; border-radius: 8px; font-size: 11px; color: var(--accent);">0 Séries</span>
             </div>
-            
-            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                <p class="text-center" style="color: var(--muted); font-size: 14px; padding: 20px 0;">Nenhum exercício selecionado ainda. Usa as opções acima!</p>
-            </div>
-            
+            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
             <div id="builder-action-buttons" style="display: none; gap: 10px; margin-top: 20px;">
-                <button class="btn-secondary" style="flex: 1; padding: 15px; border-radius: 12px; font-weight: bold;" onclick="saveCurrentRoutine()">💾 Guardar</button>
+                <button class="btn-secondary" style="flex: 1;" onclick="saveCurrentRoutine()">💾 Guardar</button>
                 <button class="btn-success" style="flex: 2; padding: 15px; border-radius: 12px; border: none; background: var(--success); color: white; font-weight: bold; cursor: pointer;" onclick="applyBuiltWorkout()">▶️ Iniciar</button>
             </div>
         </div>
     </div>
 
-
-    <!-- ==========================================
-         ABA 3: PROGRESSO E MAPA DE CALOR
-         ========================================== -->
+    <!-- ABA 3: EVOLUÇÃO -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
-
         <div class="goal-container text-center">
-            <h3>🔥 Mapa de Calor Muscular</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Volume dos últimos 7 dias. Vermelho = Músculo Fritado!</p>
-            
+            <h3>🔥 Mapa Muscular</h3>
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
@@ -281,289 +211,117 @@
                     </svg>
                 </div>
             </div>
-            
-            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; font-size: 10px; color: var(--muted);">
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #334155; border-radius: 2px;"></div> Descansado</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #eab308; border-radius: 2px;"></div> Leve</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #f97316; border-radius: 2px;"></div> Médio</div>
-                <div style="display: flex; align-items: center; gap: 4px;"><div style="width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></div> Fritado</div>
-            </div>
         </div>
-
         <div class="goal-container" style="margin-top: 20px;">
-            <h3 class="text-center">🎮 Modo RPG: Níveis Musculares</h3>
-            <p class="text-center" style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ganha XP com cada quilo levantado. Sobe os teus atributos!</p>
+            <h3 class="text-center">🎮 Níveis Musculares</h3>
             <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
-
         <div style="margin-top: 20px;">
-            <select id="exercise-select" class="chart-select" onchange="renderChart()">
-                <option value="">Escolhe um exercício...</option>
-            </select>
-            
+            <select id="exercise-select" class="chart-select"></select>
             <canvas id="progressChart"></canvas>
             <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
         </div>
-
-        <!-- 🔮 NOVO: ZONA DE PR E PREVISÃO DE 1RM -->
         <div id="pr-display" class="goal-container" style="margin-top: 20px;">
-            <h3>🏆 Força Bruta e PRs</h3>
-            <p style="margin-top:5px; color:var(--muted); font-size: 12px;">Seleciona um exercício no gráfico acima para calcular a tua força real.</p>
-            
-            <div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; text-align: left;">
-                <div style="font-size: 11px; font-weight: bold; color: #d8b4fe; text-transform: uppercase; letter-spacing: 1px;">Estimativa 1RM (Fórmula Epley)</div>
-                <div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7; margin: 5px 0; text-shadow: 0 0 10px rgba(168,85,247,0.4);">-- kg</div>
-                <div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px; line-height: 1.5; border-top: 1px solid rgba(168,85,247,0.2); padding-top: 10px;">
-                    🔮 A calcular previsão...
-                </div>
-            </div>
+            <h3>🏆 PRs</h3><div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;"><div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div><div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div><div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div></div>
         </div>
-
-        <div id="global-stats" class="goal-container">
-            <h3>📊 Estatísticas Globais</h3>
-        </div>
+        <div id="global-stats" class="goal-container"><h3>📊 Estatísticas Globais</h3></div>
     </div>
 
-
-    <!-- ==========================================
-         ABA 4: CALENDÁRIO HISTÓRICO E METAS
-         ========================================== -->
+    <!-- ABA 4: CALENDÁRIO -->
     <div id="view-calendario" class="view-section">
         <div class="calendar-header">
-            <button onclick="changeMonth(-1)">◀</button>
-            <h2 id="calendar-title">Janeiro 2026</h2>
-            <button onclick="changeMonth(1)">▶</button>
+            <button onclick="changeMonth(-1)">◀</button><h2 id="calendar-title">Mês</h2><button onclick="changeMonth(1)">▶</button>
         </div>
-
-        <div class="weekdays">
-            <div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
-        </div>
-
+        <div class="weekdays"><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div></div>
         <div class="calendar-grid" id="calendar-grid"></div>
-
-        <div class="goal-container">
-            <h3>🎯 Meta Semanal: 6 Treinos</h3>
-            <p style="margin-top:10px;color:var(--muted); font-size:14px;"><span id="weekly-count">0</span> / 6 Concluídos</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="weekly-progress"></div>
-            </div>
-        </div>
-
-        <div class="goal-container">
-            <h3>📅 Meta Mensal: 24 Treinos</h3>
-            <p style="margin-top:10px;color:var(--muted); font-size:14px;"><span id="monthly-count">0</span> / 24 Concluídos</p>
-            <div class="progress-bar">
-                <div class="progress-fill" id="monthly-progress"></div>
-            </div>
-        </div>
+        <div class="goal-container"><h3>🎯 Meta Semanal</h3><p style="color:var(--muted); font-size:14px;"><span id="weekly-count">0</span> / 6</p><div class="progress-bar"><div class="progress-fill" id="weekly-progress"></div></div></div>
+        <div class="goal-container"><h3>📅 Meta Mensal</h3><p style="color:var(--muted); font-size:14px;"><span id="monthly-count">0</span> / 24</p><div class="progress-bar"><div class="progress-fill" id="monthly-progress"></div></div></div>
     </div>
 
-
-    <!-- ==========================================
-         ABA 5: PERFIL DO UTILIZADOR E METABOLISMO
-         ========================================== -->
+    <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
-            <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="30" r="15" fill="#38bdf8" />
-                <rect x="35" y="45" width="30" height="60" rx="10" fill="#38bdf8" />
-                <rect x="20" y="45" width="10" height="50" rx="5" fill="#38bdf8" />
-                <rect x="70" y="45" width="10" height="50" rx="5" fill="#38bdf8" />
-                <rect x="35" y="100" width="12" height="60" rx="5" fill="#38bdf8" />
-                <rect x="53" y="100" width="12" height="60" rx="5" fill="#38bdf8" />
-            </svg>
+            <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="15" fill="#38bdf8" /><rect x="35" y="45" width="30" height="60" rx="10" fill="#38bdf8" /><rect x="20" y="45" width="10" height="50" rx="5" fill="#38bdf8" /><rect x="70" y="45" width="10" height="50" rx="5" fill="#38bdf8" /><rect x="35" y="100" width="12" height="60" rx="5" fill="#38bdf8" /><rect x="53" y="100" width="12" height="60" rx="5" fill="#38bdf8" /></svg>
             <div id="avatar-shadow"></div>
         </div>
-
         <div class="profile-form exercise-card">
-            <div class="form-group">
-                <label>Nome ou Nickname</label>
-                <input type="text" id="prof-name" placeholder="Como te queres chamar?" oninput="updateProfileData()">
-            </div>
-
+            <div class="form-group"><label>Nome</label><input type="text" id="prof-name" oninput="updateProfileData()"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Idade</label>
-                    <input type="number" id="prof-age" value="25" oninput="updateProfileData()">
-                </div>
-                <div class="form-group">
-                    <label>Género (Biológico)</label>
-                    <select id="prof-gender" onchange="updateProfileData()">
-                        <option value="male">Masculino</option>
-                        <option value="female">Feminino</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Idade</label><input type="number" id="prof-age" oninput="updateProfileData()"></div>
+                <div class="form-group"><label>Género</label><select id="prof-gender" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
             </div>
-
-            <div class="form-group">
-                <label>Altura: <span id="height-val" class="accent-text">170</span> cm</label>
-                <input type="range" id="prof-height" min="140" max="220" value="170" class="slider" oninput="updateProfileData()">
-            </div>
-
-            <div class="form-group">
-                <label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label>
-                <input type="range" id="prof-weight" min="40" max="150" value="70" class="slider" oninput="updateProfileData()">
-            </div>
-
-            <div class="form-group">
-                <label>Nível de Atividade Base</label>
-                <select id="prof-activity" onchange="updateProfileData()">
-                    <option value="1.2" selected>Sedentário (Usa a aba Dieta para sincronizar passos)</option>
-                    <option value="1.375">Leve (1-3 treinos/semana)</option>
-                    <option value="1.55">Moderado (3-5 treinos/semana)</option>
-                    <option value="1.725">Muito Ativo (6-7 treinos intensos)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Objetivo Principal</label>
-                <select id="prof-goal" onchange="updateProfileData()">
-                    <option value="cut">Perder Gordura (Cut)</option>
-                    <option value="maintain" selected>Manter / Recomposição</option>
-                    <option value="bulk">Ganhar Massa (Bulk)</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
+            <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
+            <div class="form-group"><label>Atividade Base</label><select id="prof-activity" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">Muito Ativo</option></select></div>
+            <div class="form-group"><label>Objetivo</label><select id="prof-goal" onchange="updateProfileData()"><option value="cut">Cut</option><option value="maintain">Manter</option><option value="bulk">Bulk</option></select></div>
         </div>
-
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📊 O Teu ID Card</h3>
             <div style="display: flex; justify-content: space-around; margin-top: 15px;">
-                <div>
-                    <div style="color: var(--muted); font-size: 12px;">IMC</div>
-                    <div id="calc-bmi" style="font-size: 24px; font-weight: bold; color: white;">24.2</div>
-                    <div id="calc-bmi-status" style="font-size: 11px; color: var(--accent);">Normal</div>
-                </div>
-                <div>
-                    <div style="color: var(--muted); font-size: 12px;">Calorias Base</div>
-                    <div id="calc-cals" style="font-size: 24px; font-weight: bold; color: var(--success);">2500</div>
-                    <div style="font-size: 11px; color: var(--accent);">Kcal Estáticas</div>
-                </div>
+                <div><div style="color: var(--muted); font-size: 12px;">IMC</div><div id="calc-bmi" style="font-size: 24px; font-weight: bold; color: white;"></div><div id="calc-bmi-status" style="font-size: 11px;"></div></div>
+                <div><div style="color: var(--muted); font-size: 12px;">Kcal Base</div><div id="calc-cals" style="font-size: 24px; font-weight: bold; color: var(--success);"></div></div>
             </div>
         </div>
-
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>📏 Rastreio Corporal</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 5px; margin-bottom: 15px;">A balança engana. Regista as tuas medidas reais (cm).</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
-                <div class="form-group">
-                    <label style="font-size: 12px;">💪 Braços</label>
-                    <input type="number" id="meas-arm" placeholder="ex: 38" oninput="updateProfileData()">
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 12px;">🫁 Peito</label>
-                    <input type="number" id="meas-chest" placeholder="ex: 105" oninput="updateProfileData()">
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 12px;">⚡ Cintura</label>
-                    <input type="number" id="meas-waist" placeholder="ex: 82" oninput="updateProfileData()">
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 12px;">🦵 Pernas</label>
-                    <input type="number" id="meas-leg" placeholder="ex: 60" oninput="updateProfileData()">
-                </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px;">
+                <div class="form-group"><label style="font-size: 12px;">💪 Braços</label><input type="number" id="meas-arm" oninput="updateProfileData()"></div>
+                <div class="form-group"><label style="font-size: 12px;">🫁 Peito</label><input type="number" id="meas-chest" oninput="updateProfileData()"></div>
+                <div class="form-group"><label style="font-size: 12px;">⚡ Cintura</label><input type="number" id="meas-waist" oninput="updateProfileData()"></div>
+                <div class="form-group"><label style="font-size: 12px;">🦵 Pernas</label><input type="number" id="meas-leg" oninput="updateProfileData()"></div>
             </div>
-            
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
-                <div style="color: var(--muted); font-size: 12px;">Massa Gorda Estimada (Fórmula RFM)</div>
-                <div id="calc-bf" style="font-size: 28px; font-weight: bold; color: var(--accent); margin-top: 5px;">--%</div>
+                <div style="color: var(--muted); font-size: 12px;">Massa Gorda (RFM)</div><div id="calc-bf" style="font-size: 28px; font-weight: bold; margin-top: 5px;">--%</div>
             </div>
         </div>
-
         <div class="goal-container text-center" style="margin-bottom: 20px;">
-            <h3>💾 Segurança e Backup Local</h3>
-            <p style="font-size: 12px; color: var(--muted); margin: 10px 0;">Guarda um ficheiro JSON local com todo o histórico e perfil.</p>
+            <h3>💾 Backup Local</h3>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                <button class="btn-primary" onclick="exportData()" style="flex:1; padding: 12px; border-radius: 10px;">📥 Exportar</button>
-                <label class="btn-secondary" style="flex:1; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0;">
-                    📤 Importar
-                    <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)">
-                </label>
+                <button class="btn-primary" onclick="exportData()" style="flex:1;">📥 Exportar</button>
+                <label class="btn-secondary" style="flex:1; cursor: pointer; display: flex; align-items: center; justify-content: center;">📤 Importar<input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)"></label>
             </div>
         </div>
     </div>
 
-
-    <!-- ==========================================
-         ABA 6: DIETA AUTOMÁTICA E HIDRATAÇÃO
-         ========================================== -->
+    <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
         <div class="goal-container">
-            <h3 class="text-center">🍽️ Os Teus Macros Diários</h3>
-            <p class="text-center" style="color:var(--muted); font-size: 12px; margin-top:5px;">Calculados de forma dinâmica para apoiar o teu corpo.</p>
-            
+            <h3 class="text-center">🍽️ Macros Diários</h3>
             <div style="display: flex; justify-content: space-between; margin-top: 20px; text-align: center;">
-                <div class="macro-box">
-                    <div style="color: var(--accent); font-weight: bold; font-size: 22px;" id="macro-pro">0g</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Proteína</div>
-                </div>
-                <div class="macro-box">
-                    <div style="color: var(--success); font-weight: bold; font-size: 22px;" id="macro-car">0g</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Hidratos</div>
-                </div>
-                <div class="macro-box">
-                    <div style="color: #f59e0b; font-weight: bold; font-size: 22px;" id="macro-fat">0g</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">Gorduras</div>
-                </div>
+                <div class="macro-box"><div style="color: var(--accent); font-weight: bold; font-size: 22px;" id="macro-pro"></div><div style="font-size: 11px; color: var(--muted);">Proteína</div></div>
+                <div class="macro-box"><div style="color: var(--success); font-weight: bold; font-size: 22px;" id="macro-car"></div><div style="font-size: 11px; color: var(--muted);">Hidratos</div></div>
+                <div class="macro-box"><div style="color: #f59e0b; font-weight: bold; font-size: 22px;" id="macro-fat"></div><div style="font-size: 11px; color: var(--muted);">Gorduras</div></div>
             </div>
         </div>
-
         <div class="goal-container text-center" style="margin-top: 20px;">
             <h3>⌚ Sincronização Wearable</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 5px;">Ajuste dinâmico de calorias com base no teu smartwatch.</p>
-            
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px;">
-                <div class="form-group">
-                    <label style="font-size: 12px;">👟 Passos Diários</label>
-                    <input type="number" id="wearable-steps" placeholder="ex: 10000" oninput="updateWearableData()">
-                </div>
-                <div class="form-group">
-                    <label style="font-size: 12px;">🔥 Kcal Treino</label>
-                    <input type="number" id="wearable-cals" placeholder="ex: 450" oninput="updateWearableData()">
-                </div>
+                <div class="form-group"><label style="font-size: 12px;">👟 Passos Diários</label><input type="number" id="wearable-steps" placeholder="ex: 10000" oninput="updateWearableData()"></div>
+                <div class="form-group"><label style="font-size: 12px;">🔥 Kcal Treino</label><input type="number" id="wearable-cals" placeholder="ex: 450" oninput="updateWearableData()"></div>
             </div>
-
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;">
-                <div style="color: var(--muted); font-size: 12px;">Gasto Calórico Total Ajustado (TDEE)</div>
-                <div id="dynamic-tdee" style="font-size: 28px; font-weight: bold; color: var(--success); margin-top: 5px;">-- Kcal</div>
-                <div style="font-size: 11px; color: var(--accent); margin-top: 5px;" id="wearable-macro-update">Macros atualizados em tempo real!</div>
+                <div style="color: var(--muted); font-size: 12px;">Gasto Calórico Ajustado</div><div id="dynamic-tdee" style="font-size: 28px; font-weight: bold; color: var(--success); margin-top: 5px;"></div>
             </div>
         </div>
-
         <div class="goal-container text-center" style="margin-top: 20px;">
-            <h3>💧 Hidratação Alvo</h3>
-            <div style="font-size: 28px; font-weight: bold; color: var(--accent); margin: 10px 0;" id="water-goal">0 L</div>
-            <p style="font-size: 12px; color: var(--muted);">Ajustada ao teu peso e suor do treino.</p>
+            <h3>💧 Hidratação Alvo</h3><div style="font-size: 28px; font-weight: bold; color: var(--accent); margin: 10px 0;" id="water-goal"></div>
         </div>
-
         <div class="exercise-card" style="margin-top: 20px;">
-            <h3>🤖 O Teu Conselheiro Nutricional</h3>
-            <div id="diet-advisor" style="margin-top: 12px; color: var(--text); line-height: 1.6; font-size: 14px; background: #334155; padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent);">
-                Preenche o teu perfil na aba "Perfil" para receberes conselhos detalhados.
-            </div>
+            <h3>🤖 Conselheiro Nutricional</h3><div id="diet-advisor" style="margin-top: 12px; color: var(--text); font-size: 14px; background: #334155; padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent);"></div>
         </div>
     </div>
 
-
-    <!-- ==========================================
-         MODAIS SECUNDÁRIOS DE SUPORTE
-         ========================================== -->
-
+    <!-- MODAIS -->
     <div id="exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; position: relative; display: flex; flex-direction: column; gap: 15px;">
             <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
-            <h2 id="modal-title" style="margin-right: 20px; color: white;">Supino</h2>
-            
-            <div id="modal-video-container" style="width: 100%; aspect-ratio: 16/9; background: #0f172a; border-radius: 12px; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid #334155;">
-                <span style="color: var(--muted); font-size: 12px;">Nenhum vídeo associado.</span>
-            </div>
-
-            <p id="modal-content" style="line-height: 1.6; color: var(--muted); font-size: 14px; margin: 0;"></p>
-            
+            <h2 id="modal-title" style="color: white;"></h2>
+            <div id="modal-video-container" style="width: 100%; aspect-ratio: 16/9; background: #0f172a; border-radius: 12px; display: flex; justify-content: center; align-items: center; border: 1px solid #334155;"></div>
+            <p id="modal-content" style="color: var(--muted); font-size: 14px; margin: 0;"></p>
             <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px dashed #334155;">
-                <label style="font-size: 11px; color: var(--accent); font-weight: bold; margin-bottom: 5px; display: block;">🔗 Associar Link de YouTube</label>
+                <label style="font-size: 11px; color: var(--accent); font-weight: bold; margin-bottom: 5px; display: block;">🔗 Associar YouTube</label>
                 <div style="display: flex; gap: 5px;">
-                    <input type="text" id="custom-video-input" placeholder="Cola o link do YouTube aqui..." style="flex: 1; font-size: 12px; padding: 8px; border-radius: 8px; border: none; background: #1e293b; color: white;">
+                    <input type="text" id="custom-video-input" style="flex: 1; font-size: 12px; padding: 8px; border-radius: 8px; border: none; background: #1e293b; color: white;">
                     <button onclick="saveCustomVideo()" class="btn-success" style="padding: 0 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer;">Gravar</button>
                 </div>
             </div>
@@ -573,19 +331,13 @@
     <div id="plate-math-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10002;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
             <button onclick="closePlateMath()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
-            
-            <h3 style="margin-bottom: 5px; color: white;">Calculadora de Discos</h3>
-            <p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span id="plate-target-weight">100</span> KG</p>
-            <p style="font-size: 12px; color: var(--muted); margin-bottom: 15px;">Assumindo barra olímpica de 20kg</p>
-            
+            <h3 style="color: white;">Calculadora de Discos</h3>
+            <p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span id="plate-target-weight"></span> KG</p>
             <div style="display: flex; align-items: center; justify-content: center; height: 120px; margin-bottom: 20px;">
                 <div style="width: 20px; height: 15px; background: #94a3b8; border-radius: 2px;"></div>
                 <div id="visual-plates" style="display: flex; align-items: center; gap: 2px;"></div>
-                <div style="width: 60px; height: 15px; background: #64748b; margin-left: 2px; position: relative;">
-                    <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #cbd5e1;">BARRA</div>
-                </div>
+                <div style="width: 60px; height: 15px; background: #64748b; margin-left: 2px; position: relative;"><div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #cbd5e1;">BARRA</div></div>
             </div>
-
             <div id="plate-math-result" style="background: #0f172a; padding: 15px; border-radius: 12px; text-align: left; max-height: 180px; overflow-y: auto;"></div>
         </div>
     </div>
@@ -593,8 +345,7 @@
     <div id="warmup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10003;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
             <button onclick="closeWarmup()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
-            <h3 style="color: white; margin-bottom: 5px;">🔥 Aquecimento</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-bottom: 20px;">Prepara o Sistema Nervoso Central.</p>
+            <h3 style="color: white; margin-bottom: 20px;">🔥 Aquecimento</h3>
             <div id="warmup-results" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
     </div>
@@ -602,56 +353,35 @@
     <div id="flex-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10004;">
         <div style="width: 100%; max-width: 360px; position: relative; text-align: center;">
             <button onclick="closeModoFlex()" style="position: absolute; top: -40px; right: 10px; background: none; border: none; color: white; font-size: 28px; cursor: pointer;">✖</button>
-            
-            <div id="flex-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 35px 25px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(56,189,248,0.15); filter: blur(40px); border-radius: 50%;"></div>
-                
+            <div id="flex-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 35px 25px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <div>
-                        <h4 id="flex-card-name" style="color: white; font-size: 18px; font-weight: bold; margin: 0;">@atleta</h4>
-                        <span id="flex-card-date" style="color: var(--muted); font-size: 11px;">07/06/2026</span>
-                    </div>
-                    <div style="background: rgba(56,189,248,0.1); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; color: var(--accent); font-size: 12px; font-weight: bold; letter-spacing: 1px;">GYM TRACKER</div>
+                    <div><h4 id="flex-card-name" style="color: white; font-size: 18px;"></h4><span id="flex-card-date" style="color: var(--muted); font-size: 11px;"></span></div>
+                    <div style="background: rgba(56,189,248,0.1); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; color: var(--accent); font-size: 12px; font-weight: bold;">GYM TRACKER</div>
                 </div>
-
-                <div style="margin-bottom: 25px;">
-                    <span style="color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Treino do Dia</span>
-                    <h2 id="flex-card-workout" style="color: #38bdf8; font-size: 32px; font-weight: 900; margin-top: 5px; text-shadow: 0 0 10px rgba(56,189,248,0.3);">PUSH DAY</h2>
-                </div>
-
+                <div style="margin-bottom: 25px;"><span style="color: var(--muted); font-size: 11px; text-transform: uppercase;">Treino do Dia</span><h2 id="flex-card-workout" style="color: #38bdf8; font-size: 32px; font-weight: 900; margin-top: 5px;"></h2></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
-                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                        <span style="color: var(--muted); font-size: 11px;">Volume Total</span>
-                        <div id="flex-card-volume" style="color: #22c55e; font-size: 24px; font-weight: bold; margin-top: 5px;">4,250 kg</div>
-                    </div>
-                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                        <span style="color: var(--muted); font-size: 11px;">Séries Fritadas</span>
-                        <div id="flex-card-sets" style="color: #f59e0b; font-size: 24px; font-weight: bold; margin-top: 5px;">18 Sets</div>
-                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Volume</span><div id="flex-card-volume" style="color: #22c55e; font-size: 24px; font-weight: bold;"></div></div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Séries Fritadas</span><div id="flex-card-sets" style="color: #f59e0b; font-size: 24px; font-weight: bold;"></div></div>
                 </div>
-
-                <div style="background: rgba(56,189,248,0.05); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent);">
-                    <p id="flex-card-quote" style="color: #cbd5e1; font-size: 13px; font-style: italic; line-height: 1.5; margin: 0;">"Mais um bloco de cimento colocado no castelo. O ferro nunca mente."</p>
-                </div>
+                <div style="background: rgba(56,189,248,0.05); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent);"><p id="flex-card-quote" style="color: #cbd5e1; font-size: 13px; font-style: italic;"></p></div>
             </div>
-
-            <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px; border-radius: 14px; background: #38bdf8; color: black; font-weight: bold;" onclick="copyFlexText()">📋 Copiar Resumo em Texto</button>
-            <p style="color: var(--muted); font-size: 11px; margin-top: 10px;">📸 Tira um print ao ecrã para partilhares no teu Story!</p>
+            <button class="btn-primary" style="width: 100%; margin-top: 20px; background: #38bdf8; color: black;" onclick="copyFlexText()">📋 Copiar Resumo</button>
         </div>
     </div>
 
-    <!-- Script de Lógica Principal -->
-    <script src="script.js?v=26"></script>
+    <!-- CARREGAMENTO DOS SCRIPTS (ORDEM CRÍTICA) -->
+    <script src="js/db.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/beastMode.js"></script>
+    <script src="js/main.js"></script>
     
-    <!-- Registo do Service Worker para a PWA Offline -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(registration => {
-                    console.log('PWA Service Worker registado com sucesso!', registration.scope);
-                }).catch(err => {
-                    console.log('Falha ao registar o PWA Service Worker:', err);
-                });
+                    console.log('PWA Service Worker registado!', registration.scope);
+                }).catch(err => console.log('Falha:', err));
             });
         }
     </script>
