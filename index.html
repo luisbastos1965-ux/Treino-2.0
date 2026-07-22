@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pulse - Gym Tracker</title>
     
-    <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +13,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Módulos CSS Otimizados -->
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/views.css">
@@ -114,11 +112,13 @@
             <button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button>
             <button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button>
             <button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>
+            <!-- NOVA ABA MOBILIDADE -->
+            <button class="tab-btn" onclick="switchWorkout(event,'MOBILITY')" style="color:var(--accent);">ZEN 🧘</button>
         </div>
         <div id="deload-warning" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 20px; color: #f87171; text-align: center; line-height: 1.5; font-size: 14px;">
             <strong>⚠️ ALERTA DO SNC ⚠️</strong><br> Registaste treinos em 6 semanas consecutivas. O Smart Coach sugere uma <b>Semana de Deload</b>!
         </div>
-        <button onclick="startBeastMode()" style="width: 100%; background: #f97316; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(249,115,22,0.3); cursor: pointer;">🦍 ENTRAR EM BEAST MODE</button>
+        <button id="main-beast-btn" onclick="startBeastMode()" style="width: 100%; background: #f97316; color: white; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(249,115,22,0.3); cursor: pointer;">🦍 ENTRAR EM BEAST MODE</button>
         <div id="workout-container"></div>
         <div class="footer-action">
             <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Flex</button>
@@ -274,6 +274,14 @@
                 <div style="color: var(--muted); font-size: 12px;">Massa Gorda (RFM)</div><div id="calc-bf" style="font-size: 28px; font-weight: bold; margin-top: 5px;">--%</div>
             </div>
         </div>
+        
+        <!-- NOVA SECÇÃO: CONQUISTAS -->
+        <div class="goal-container" style="margin-bottom: 20px;">
+            <h3 class="text-center">🏆 As Tuas Conquistas</h3>
+            <p style="font-size: 12px; color: var(--muted); margin: 5px 0 15px; text-align:center;">Treina pesado para as desbloquear.</p>
+            <div id="achievements-list"></div>
+        </div>
+
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Backup Local</h3>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
@@ -293,6 +301,14 @@
                 <div class="macro-box"><div style="color: #f59e0b; font-weight: bold; font-size: 22px;" id="macro-fat"></div><div style="font-size: 11px; color: var(--muted);">Gorduras</div></div>
             </div>
         </div>
+
+        <button class="recipe-btn" onclick="openRecipesModal()">📖 Abrir Livro de Receitas Titã</button>
+
+        <div class="exercise-card" style="margin-top: 20px;" id="punishment-status">
+            <!-- Renderizado via JS -->
+        </div>
+        <button class="punishment-btn" onclick="openPunishmentModal()">⚠️ Infrinji a Dieta (Taxa do Pecado)</button>
+
         <div class="goal-container text-center" style="margin-top: 20px;">
             <h3>⌚ Sincronização Wearable</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px;">
@@ -311,7 +327,30 @@
         </div>
     </div>
 
-    <!-- MODAIS -->
+    <!-- NOVOS MODAIS: RECEITAS E PUNIÇÃO -->
+    <div id="recipes-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative;">
+            <button onclick="closeRecipesModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h2 style="color: white; margin-bottom: 20px;">🥗 Livro Titã</h2>
+            <div id="recipes-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+        </div>
+    </div>
+
+    <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
+        <div style="background: #1e293b; border: 2px solid #ef4444; padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+            <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: #ef4444; margin-bottom: 10px; font-size:24px;">⛔ Confessa o Pecado</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Não fujas à balança. Quantas calorias ingeriste fora do plano?</p>
+            
+            <div class="input-group" style="justify-content:center; margin-bottom:20px;">
+                <input type="number" id="sin-cals" placeholder="ex: 450" style="font-size: 24px; width:120px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444;">
+            </div>
+            
+            <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button>
+        </div>
+    </div>
+
+    <!-- MODAIS ANTIGOS -->
     <div id="exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; position: relative; display: flex; flex-direction: column; gap: 15px;">
             <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -369,7 +408,6 @@
         </div>
     </div>
 
-    <!-- CARREGAMENTO DOS SCRIPTS (ORDEM CRÍTICA) -->
     <script src="js/db.js"></script>
     <script src="js/logic.js"></script>
     <script src="js/ui.js"></script>
@@ -379,9 +417,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(registration => {
-                    console.log('PWA Service Worker registado!', registration.scope);
-                }).catch(err => console.log('Falha:', err));
+                navigator.serviceWorker.register('sw.js').then(r => console.log('PWA Service Worker registado!', r.scope)).catch(e => console.log('Falha:', e));
             });
         }
     </script>
