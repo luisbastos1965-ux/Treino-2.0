@@ -2,25 +2,34 @@
 // UI.JS: NAVEGAÇÃO, RENDERIZAÇÃO E MODAIS
 // ==========================================
 
-function toggleIsland() { document.getElementById('glass-island').classList.toggle('collapsed'); }
+// --- NOVA NAVEGAÇÃO (DASHBOARD & FAB) ---
+function goHome() {
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-home').classList.add('active');
+    document.getElementById('fab-home').classList.remove('visible');
+}
 
-function navigateIsland(event, id, icon, text) {
-    if(event) event.stopPropagation();
-    document.getElementById('active-icon').innerText = icon;
-    document.getElementById('active-text').innerText = text;
-    document.getElementById('glass-island').classList.add('collapsed');
-
+function navigateTo(id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-
-    document.querySelectorAll('.island-btn').forEach(btn => btn.classList.remove('active'));
-    if(event && event.currentTarget) event.currentTarget.classList.add('active');
+    document.getElementById('fab-home').classList.add('visible');
 
     if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); }
     if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
+}
+
+function previewMenu(type, event) {
+    document.querySelectorAll('#view-home .tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    document.getElementById('menu-machine').style.display = 'none';
+    document.getElementById('menu-plate').style.display = 'none';
+    document.getElementById('menu-rack').style.display = 'none';
+
+    document.getElementById('menu-' + type).style.display = (type === 'machine' || type === 'rack') ? 'flex' : 'block';
 }
 
 // --- RENDERIZAÇÃO DO TREINO NORMAL ---
@@ -120,7 +129,7 @@ function saveCurrentWorkout() {
     
     updateHeatmap();
     calculateRPGStats();
-    checkAchievements();
+    if(typeof checkAchievements === 'function') checkAchievements();
 }
 
 // --- CONSTRUTOR ---
@@ -214,7 +223,7 @@ function applyBuiltWorkout() {
     workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine));
     const tabsContainer = document.querySelector('#view-treino .tabs');
     if (!document.getElementById('tab-custom')) tabsContainer.innerHTML += `<button id="tab-custom" class="tab-btn" onclick="switchWorkout(event,'CUSTOM')">LAB 🧪</button>`;
-    document.querySelector('.island-btn').click(); 
+    navigateTo('view-treino'); 
     document.getElementById('tab-custom').click();
 }
 
@@ -317,7 +326,9 @@ function update1RMPrediction(exerciseName, maxWeight, maxReps, totalVolume) {
         let dateString = targetDate.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
         document.getElementById('onerm-prediction').innerHTML = `🔮 <b>Previsão da Máquina:</b> Com base nos teus ${maxWeight}kg x ${maxReps} reps, vais conseguir esmagar os <b>${target1RM}kg</b> até <b>${dateString}</b>.`;
     } else container.style.display = 'none';
-    document.getElementById('pr-display').innerHTML += `<p style="margin-top:10px;"><strong>Maior carga:</strong> ${maxWeight} kg</p><p><strong>Maior reps:</strong> ${maxReps}</p><p><strong>Volume acumulado:</strong> ${Math.round(totalVolume)} kg</p>`;
+    document.getElementById('pr-display').innerHTML = `
+        <h3>🏆 PRs</h3><div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;"><div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div><div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;">${Math.round(best1RM)} kg</div><div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div></div>
+        <p style="margin-top:10px;"><strong>Maior carga:</strong> ${maxWeight} kg</p><p><strong>Maior reps:</strong> ${maxReps}</p><p><strong>Volume acumulado:</strong> ${Math.round(totalVolume)} kg</p>`;
 }
 
 function updateGlobalStats() {
@@ -326,7 +337,7 @@ function updateGlobalStats() {
         if(log.exercises) {
             Object.entries(log.exercises).forEach(([exercise, sets]) => {
                 if (!exercisesDone[exercise]) exercisesDone[exercise] = 0; exercisesDone[exercise]++;
-                totalSets += sets.length; sets.forEach(set => totalVolume += (set.weight||set.w) * (set.reps||set.r));
+                totalSets += sets.length; sets.forEach(set => totalVolume += (set.weight||set.w||0) * (set.reps||set.r||0));
             });
         }
     });
@@ -461,6 +472,7 @@ function renderAchievements() {
     const container = document.getElementById('achievements-list');
     if(!container) return;
     container.innerHTML = '';
+    if(typeof allAchievements === 'undefined') return;
     
     allAchievements.forEach(ach => {
         const isUnlocked = achievementsUnlocked.includes(ach.id);
@@ -524,7 +536,7 @@ function calculateBodyFat() {
     const waist = parseFloat(document.getElementById('meas-waist').value);
     const height = userProfile.height; const gender = userProfile.gender;
     const bfDisplay = document.getElementById('calc-bf');
-    if (waist > 0 && height > 0) {
+    if (waist > 0 && height > 0 && typeof calculateBodyFatFormula === 'function') {
         let rfm = calculateBodyFatFormula(waist, height, gender);
         bfDisplay.innerText = rfm.toFixed(1) + '%';
         if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8';
@@ -536,17 +548,19 @@ function calculateBodyFat() {
 
 function openRecipesModal() {
     let html = '';
-    recipesDB.forEach(r => {
-        html += `
-        <div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:12px; text-align:left; border-left:4px solid var(--accent);">
-            <div style="display:flex; justify-content:space-between;">
-                <h4 style="color:white; margin:0;">${r.name}</h4>
-                <span class="badge" style="background:#334155; color:var(--muted);">${r.type}</span>
-            </div>
-            <p style="color:var(--success); font-weight:bold; font-size:12px; margin:5px 0;">${r.cals} Kcal | ${r.pro}g Pro</p>
-            <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
-        </div>`;
-    });
+    if(typeof recipesDB !== 'undefined'){
+        recipesDB.forEach(r => {
+            html += `
+            <div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:12px; text-align:left; border-left:4px solid var(--accent);">
+                <div style="display:flex; justify-content:space-between;">
+                    <h4 style="color:white; margin:0;">${r.name}</h4>
+                    <span class="badge" style="background:#334155; color:var(--muted);">${r.type}</span>
+                </div>
+                <p style="color:var(--success); font-weight:bold; font-size:12px; margin:5px 0;">${r.cals} Kcal | ${r.pro}g Pro</p>
+                <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
+            </div>`;
+        });
+    }
     document.getElementById('recipes-list').innerHTML = html;
     document.getElementById('recipes-modal').style.display = 'flex';
 }
@@ -559,11 +573,13 @@ function triggerPunishment() {
     const cals = parseInt(document.getElementById('sin-cals').value);
     if (!cals || cals < 100) { alert('Mínimo 100kcal para ser considerado pecado!'); return; }
     
-    activePunishment = generatePunishmentLogic(cals);
-    localStorage.setItem('gym_punishment', JSON.stringify(activePunishment));
-    closePunishmentModal();
-    renderPunishmentStatus();
-    alert('🔥 A MÁQUINA JULGOU-TE. Tens uma nova penitência para pagar!');
+    if(typeof generatePunishmentLogic === 'function') {
+        activePunishment = generatePunishmentLogic(cals);
+        localStorage.setItem('gym_punishment', JSON.stringify(activePunishment));
+        closePunishmentModal();
+        renderPunishmentStatus();
+        alert('🔥 A MÁQUINA JULGOU-TE. Tens uma nova penitência para pagar!');
+    }
 }
 
 function renderPunishmentStatus() {
