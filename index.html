@@ -22,7 +22,7 @@
     <!-- BOTÃO FLUTUANTE DE REGRESSO A CASA -->
     <button id="fab-home" onclick="goHome()">🏠 PULSE</button>
 
-    <!-- OVERLAYS GLOBAIS -->
+    <!-- OVERLAYS GLOBAIS (BEAST MODE E MINIGAME) -->
     <div id="beast-mode-overlay">
         <div class="beast-header">
             <button onclick="exitBeastMode()" class="beast-exit">✖ Sair</button>
@@ -66,6 +66,7 @@
                 <button class="beast-action-btn superset" onclick="triggerSuperset()">🔗 Supersérie</button>
             </div>
 
+            <!-- SPOTIFY PLAYER -->
             <div id="beast-music-player" style="display: none; width: 100%; max-width: 350px; margin: 20px auto 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
                 <iframe id="spotify-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
@@ -118,16 +119,18 @@
         </div>
     </div>
 
-    <!-- ABA 1: TREINO -->
+    <!-- ABA 1: TREINO (BIBLIOTECA) -->
     <div id="view-treino" class="view-section">
         
+        <!-- Vista 1: A Biblioteca (Slots de Treino) -->
         <div id="treino-slots-view">
             <div class="goal-container text-center" style="margin-top:0;">
-                <h3 style="font-size:22px;">Biblioteca de Treinos</h3>
+                <h3 style="font-size:22px;">📚 Biblioteca de Treinos</h3>
             </div>
             <div id="workout-slots-container" style="margin-top: 20px; padding-bottom: 20px;"></div>
         </div>
 
+        <!-- Vista 2: A Execução do Treino -->
         <div id="treino-active-view" style="display: none;">
             <button onclick="backToWorkoutSlots()" style="background:transparent; border:none; color:var(--accent); font-size:14px; font-weight:bold; margin-bottom:15px; cursor:pointer;">◀ Voltar à Biblioteca</button>
             
@@ -198,7 +201,6 @@
                 <h4 style="color:var(--muted); font-size:12px; margin-bottom:15px; text-align:center;">Base de Dados Completa</h4>
                 <div id="directory-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column;"></div>
             </div>
-            
         </div>
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -212,7 +214,7 @@
         </div>
     </div>
 
-    <!-- ABA 3: EVOLUÇÃO -->
+    <!-- ABA 3: EVOLUÇÃO (Com Corpos V-Taper Vetoriais) -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
         <div class="goal-container text-center">
@@ -220,29 +222,29 @@
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div>
-                    <svg viewBox="0 0 100 200" width="90" height="180">
-                        <circle cx="50" cy="20" r="14" fill="#334155" />
-                        <circle id="hm-ombros-l" cx="28" cy="48" r="10" fill="#334155" style="transition: fill 0.5s;" />
-                        <circle id="hm-ombros-r" cx="72" cy="48" r="10" fill="#334155" style="transition: fill 0.5s;" />
-                        <path id="hm-peito" d="M35 45 h30 v25 h-30 z" fill="#334155" rx="6" style="transition: fill 0.5s;" />
-                        <path id="hm-core" d="M38 73 h24 v35 h-24 z" fill="#334155" rx="4" style="transition: fill 0.5s;" />
-                        <rect id="hm-biceps-l" x="18" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-biceps-r" x="72" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-quads-l" x="35" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-quads-r" x="53" y="112" width="12" height="45" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                    <svg viewBox="0 0 100 200" width="100" height="200">
+                        <circle cx="50" cy="18" r="12" fill="#334155" />
+                        <path id="hm-ombros-l" d="M 38 30 C 25 30, 18 40, 18 50 L 30 50 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-ombros-r" d="M 62 30 C 75 30, 82 40, 82 50 L 70 50 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-peito" d="M 30 45 Q 50 60 70 45 L 65 65 Q 50 70 35 65 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-core" d="M 35 67 L 65 67 L 58 100 L 42 100 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-biceps-l" d="M 18 52 L 30 52 L 25 80 L 12 80 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-biceps-r" d="M 70 52 L 82 52 L 88 80 L 75 80 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-quads-l" d="M 40 105 L 48 105 L 45 160 L 32 150 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-quads-r" d="M 52 105 L 60 105 L 68 150 L 55 160 Z" fill="#334155" style="transition: fill 0.5s;" />
                     </svg>
                 </div>
                 <div style="position: relative;">
                     <div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div>
-                    <svg viewBox="0 0 100 200" width="90" height="180">
-                        <circle cx="50" cy="20" r="14" fill="#334155" />
-                        <path id="hm-costas" d="M30 45 h40 v40 l-12 25 h-16 l-12 -25 z" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-triceps-l" x="18" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-triceps-r" x="72" y="60" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-femorais-l" x="35" y="112" width="12" height="40" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-femorais-r" x="53" y="112" width="12" height="40" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-gemeos-l" x="36" y="155" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
-                        <rect id="hm-gemeos-r" x="54" y="155" width="10" height="30" rx="5" fill="#334155" style="transition: fill 0.5s;" />
+                    <svg viewBox="0 0 100 200" width="100" height="200">
+                        <circle cx="50" cy="18" r="12" fill="#334155" />
+                        <path id="hm-costas" d="M 25 45 Q 50 50 75 45 L 65 95 L 35 95 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-triceps-l" d="M 18 52 L 30 52 L 25 80 L 12 80 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-triceps-r" d="M 70 52 L 82 52 L 88 80 L 75 80 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-femorais-l" d="M 40 105 L 48 105 L 45 160 L 32 150 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-femorais-r" d="M 52 105 L 60 105 L 68 150 L 55 160 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-gemeos-l" d="M 32 155 L 44 162 L 40 195 L 34 195 Z" fill="#334155" style="transition: fill 0.5s;" />
+                        <path id="hm-gemeos-r" d="M 56 162 L 68 155 L 66 195 L 60 195 Z" fill="#334155" style="transition: fill 0.5s;" />
                     </svg>
                 </div>
             </div>
@@ -276,7 +278,15 @@
     <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
-            <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="30" r="15" fill="#38bdf8" /><rect x="35" y="45" width="30" height="60" rx="10" fill="#38bdf8" /><rect x="20" y="45" width="10" height="50" rx="5" fill="#38bdf8" /><rect x="70" y="45" width="10" height="50" rx="5" fill="#38bdf8" /><rect x="35" y="100" width="12" height="60" rx="5" fill="#38bdf8" /><rect x="53" y="100" width="12" height="60" rx="5" fill="#38bdf8" /></svg>
+            <!-- V-Taper Avatar -->
+            <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="20" r="14" fill="#38bdf8" />
+                <path d="M 25 45 Q 50 60 75 45 L 65 105 L 35 105 Z" fill="#38bdf8" />
+                <path d="M 18 52 L 30 52 L 25 90 L 12 90 Z" fill="#38bdf8" />
+                <path d="M 70 52 L 82 52 L 88 90 L 75 90 Z" fill="#38bdf8" />
+                <path d="M 38 110 L 48 110 L 45 180 L 32 170 Z" fill="#38bdf8" />
+                <path d="M 52 110 L 62 110 L 68 170 L 55 180 Z" fill="#38bdf8" />
+            </svg>
             <div id="avatar-shadow"></div>
         </div>
         <div class="profile-form exercise-card">
@@ -292,7 +302,7 @@
             
             <div class="form-group" style="margin-top:10px;">
                 <label>🎧 Playlist do Spotify (Opcional)</label>
-                <input type="text" id="prof-spotify" placeholder="Cola o link da playlist do Spotify..." onchange="updateProfileData()" style="font-size:12px; background:#1e293b; border:1px solid #334155;">
+                <input type="text" id="prof-spotify" placeholder="Cola o link da playlist..." onchange="updateProfileData()" style="font-size:12px; background:#1e293b; border:1px solid #334155;">
             </div>
         </div>
         <div class="goal-container text-center" style="margin-bottom: 20px;">
@@ -343,6 +353,24 @@
 
         <button class="recipe-btn" onclick="openRecipesModal()">📖 Abrir Livro de Receitas Titã</button>
 
+        <!-- NOVO REGISTO DIÁRIO -->
+        <div class="goal-container" style="margin-top: 20px;">
+            <h3>📝 Registo Alimentar Diário</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom:15px; margin-top:5px;">O que abasteceste hoje?</p>
+            
+            <div id="daily-progress-bars" style="margin-bottom:15px;"></div>
+
+            <div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:15px;">
+                <input type="text" id="food-name" placeholder="Ex: Frango c/ Arroz" style="width:100%; margin-bottom:8px; padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                    <input type="number" id="food-cals" placeholder="Kcal" style="padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
+                    <input type="number" id="food-pro" placeholder="Pro(g)" style="padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
+                    <button onclick="addDailyFood()" style="background:var(--success); color:white; padding:10px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button>
+                </div>
+            </div>
+            <div id="daily-food-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
         <div class="exercise-card" style="margin-top: 20px;" id="punishment-status"></div>
         <button class="punishment-btn" onclick="openPunishmentModal()">⚠️ Infrinji a Dieta (Taxa do Pecado)</button>
 
@@ -358,9 +386,6 @@
         </div>
         <div class="goal-container text-center" style="margin-top: 20px;">
             <h3>💧 Hidratação Alvo</h3><div style="font-size: 28px; font-weight: bold; color: var(--accent); margin: 10px 0;" id="water-goal"></div>
-        </div>
-        <div class="exercise-card" style="margin-top: 20px;">
-            <h3>🤖 Conselheiro Nutricional</h3><div id="diet-advisor" style="margin-top: 12px; color: var(--text); font-size: 14px; background: #334155; padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent);"></div>
         </div>
     </div>
 
@@ -384,14 +409,33 @@
         </div>
     </div>
 
+    <!-- MODAL DO PECADO AVANÇADO -->
     <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
-        <div style="background: #1e293b; border: 2px solid #ef4444; padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+        <div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
-            <h3 style="color: #ef4444; margin-bottom: 10px; font-size:24px;">⛔ Confessa o Pecado</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Não fujas à balança. Quantas calorias ingeriste fora do plano?</p>
-            <div class="input-group" style="justify-content:center; margin-bottom:20px;">
-                <input type="number" id="sin-cals" placeholder="ex: 450" style="font-size: 24px; width:120px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444;">
+            <h3 style="color: #ef4444; margin-bottom: 5px; font-size:24px;">⛔ O Pecado</h3>
+            
+            <select id="sin-preset" onchange="fillSinPreset()" style="width:100%; margin-top:15px; margin-bottom:15px; padding:12px; border-radius:8px; border:none; background:#0f172a; color:white; font-size:14px;">
+                <option value="">Seleciona o Fast Food...</option>
+                <option value="600" data-p="25" data-c="50" data-f="30">🍕 Fatias de Pizza (2)</option>
+                <option value="800" data-p="35" data-c="60" data-f="45">🍔 Hamburger c/ Queijo e Bacon</option>
+                <option value="400" data-p="5" data-c="60" data-f="15">🍩 Donut Recheado</option>
+                <option value="500" data-p="10" data-c="70" data-f="20">🍦 Gelado Grande</option>
+                <option value="350" data-p="4" data-c="40" data-f="18">🍟 Dose de Batatas Fritas</option>
+            </select>
+
+            <p style="color:var(--muted); font-size:11px; margin-bottom:10px;">Ou insere os macros exatos do pacote:</p>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:10px;">
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()" style="width:100%;"></div>
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()" style="width:100%;"></div>
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Gord (g)</label><input type="number" id="sin-fat" oninput="calculateSinFromMacros()" style="width:100%;"></div>
             </div>
+
+            <div class="input-group" style="justify-content:center; margin-bottom:20px; margin-top:15px;">
+                <input type="number" id="sin-cals" placeholder="Kcal Totais" style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a;">
+            </div>
+            
             <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button>
         </div>
     </div>
