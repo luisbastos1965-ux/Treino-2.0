@@ -31,8 +31,7 @@ const allAchievements = [
 let currentDay = 'PUSH'; let currentCalendarDate = new Date(); let chartInstance;
 let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity = 0, score = 0; let currentModalExercise = ""; let voiceCoachActive = false; let deleteMode = false; 
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] }; let beastState = { active: false, exIdx: 0, setIdx: 0 };
-let currentSwapIndex = -1; // Para substituir exercícios
-let fastingInterval = null;
+let currentSwapIndex = -1; let fastingInterval = null;
 
 // --- Bases de Dados Locais (Persistência no Dispositivo) ---
 let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
@@ -43,23 +42,18 @@ let activePunishment = JSON.parse(localStorage.getItem('gym_punishment')) || nul
 let bodyStatsHistory = JSON.parse(localStorage.getItem('gym_body_stats')) || [];
 let frequentFoods = JSON.parse(localStorage.getItem('gym_freq_foods')) || [];
 let fastingState = JSON.parse(localStorage.getItem('gym_fasting')) || { active: false, start: null };
-
-// Gestão de Streaks e Missões
 let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
 let activeMission = JSON.parse(localStorage.getItem('gym_mission')) || null;
 
-// Dieta e Água (Reinicia à meia-noite)
+// INVENTÁRIO CORPORAL (Dores)
+let painTracker = JSON.parse(localStorage.getItem('gym_pain_tracker')) || [];
+
 let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
 let waterIntake = JSON.parse(localStorage.getItem('gym_water')) || { date: new Date().toLocaleDateString('pt-PT'), ml: 0 };
 
-if (dailyIntake.date !== new Date().toLocaleDateString('pt-PT')) {
-    dailyIntake = { date: new Date().toLocaleDateString('pt-PT'), foods: [] }; localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
-}
-if (waterIntake.date !== new Date().toLocaleDateString('pt-PT')) {
-    waterIntake = { date: new Date().toLocaleDateString('pt-PT'), ml: 0 }; localStorage.setItem('gym_water', JSON.stringify(waterIntake));
-}
+if (dailyIntake.date !== new Date().toLocaleDateString('pt-PT')) { dailyIntake = { date: new Date().toLocaleDateString('pt-PT'), foods: [] }; localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); }
+if (waterIntake.date !== new Date().toLocaleDateString('pt-PT')) { waterIntake = { date: new Date().toLocaleDateString('pt-PT'), ml: 0 }; localStorage.setItem('gym_water', JSON.stringify(waterIntake)); }
 
-// Lógica Muscular
 function getMuscleForExercise(name) {
     let found = exerciseLibrary.find(ex => ex.name === name); if (found) return found.muscle;
     let lower = name.toLowerCase();
