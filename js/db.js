@@ -94,7 +94,7 @@ let chartInstance;
 let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity = 0, score = 0;
 let currentModalExercise = "";
 let voiceCoachActive = false;
-let deleteMode = false; // Novo Estado para o modo de eliminar
+let deleteMode = false;
 
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] };
 let beastState = { active: false, exIdx: 0, setIdx: 0 };
@@ -105,6 +105,13 @@ let savedRoutines = JSON.parse(localStorage.getItem('gym_saved_routines')) || []
 let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || { name: '', age: 25, gender: 'male', height: 170, weight: 70, activity: '1.55', goal: 'maintain', measurements: { arm: '', chest: '', waist: '', leg: '' } };
 let achievementsUnlocked = JSON.parse(localStorage.getItem('gym_achievements')) || [];
 let activePunishment = JSON.parse(localStorage.getItem('gym_punishment')) || null;
+
+// Registo Diário Alimentar
+let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
+if (dailyIntake.date !== new Date().toLocaleDateString('pt-PT')) {
+    dailyIntake = { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
+}
 
 function getMuscleForExercise(name) {
     let found = exerciseLibrary.find(ex => ex.name === name);
