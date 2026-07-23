@@ -97,6 +97,7 @@
         <div class="pulse-title-container">
             <h1 class="pulse-hero-title">PULSE</h1>
         </div>
+
         <div id="menu-rack" class="rack-container">
             <button class="rack-btn" onclick="navigateTo('view-treino')">
                 <div class="db-end left"></div><div class="db-bar">TREINAR</div><div class="db-end right"></div>
@@ -125,9 +126,12 @@
         <!-- Vista 1: A Biblioteca (Slots de Treino) -->
         <div id="treino-slots-view">
             <div class="goal-container text-center" style="margin-top:0;">
-                <h3 style="font-size:22px;">📚 Biblioteca de Treinos</h3>
+                <h3 style="font-size:22px;">Biblioteca de Treinos</h3>
             </div>
-            <div id="workout-slots-container" style="margin-top: 20px; padding-bottom: 20px;"></div>
+            
+            <div id="workout-slots-container" style="margin-top: 20px; padding-bottom: 20px;">
+                <!-- Slots geradas via JS -->
+            </div>
         </div>
 
         <!-- Vista 2: A Execução do Treino -->
@@ -214,9 +218,11 @@
         </div>
     </div>
 
-    <!-- ABA 3: EVOLUÇÃO (Com Corpos V-Taper Vetoriais) -->
+    <!-- ABA 3: EVOLUÇÃO (Agora com Gráficos Avançados) -->
     <div id="view-evolucao" class="view-section">
         <h2>📈 Progresso</h2>
+        
+        <!-- MAPA DE CALOR V-TAPER -->
         <div class="goal-container text-center">
             <h3>🔥 Mapa Muscular</h3>
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
@@ -249,18 +255,49 @@
                 </div>
             </div>
         </div>
+
+        <!-- NOVO: GRÁFICO DE RADAR (SIMETRIA) -->
+        <div class="goal-container text-center" style="margin-top: 20px;">
+            <h3>🕸️ Simetria Muscular</h3>
+            <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Volume distribuído para detetar falhas.</p>
+            <canvas id="radarChart"></canvas>
+        </div>
+
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🎮 Níveis Musculares</h3>
             <div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div>
         </div>
+
+        <!-- GRÁFICO DE LINHAS: 1RM E EXERCÍCIO -->
         <div style="margin-top: 20px;">
             <select id="exercise-select" class="chart-select"></select>
             <canvas id="progressChart"></canvas>
             <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
         </div>
+        
         <div id="pr-display" class="goal-container" style="margin-top: 20px;">
-            <h3>🏆 PRs</h3><div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;"><div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div><div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div><div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div></div>
+            <h3>🏆 PRs</h3>
+            <div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;">
+                <div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div>
+                <div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div>
+                <div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div>
+            </div>
         </div>
+
+        <!-- NOVO: GRÁFICO DE BARRAS (TONAGEM MENSAL) -->
+        <div class="goal-container text-center" style="margin-top: 20px;">
+            <h3>🏗️ Carga Total Movida</h3>
+            <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Tonagem global mensal (kg).</p>
+            <canvas id="tonnageChart"></canvas>
+        </div>
+
+        <!-- NOVO: GRÁFICO DE COMPOSIÇÃO CORPORAL -->
+        <div class="goal-container text-center" style="margin-top: 20px;">
+            <h3>⚖️ Evolução Corporal</h3>
+            <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Peso (kg) vs Massa Gorda (RFM).</p>
+            <canvas id="bodyStatsChart"></canvas>
+        </div>
+
         <div id="global-stats" class="goal-container"><h3>📊 Estatísticas Globais</h3></div>
     </div>
 
@@ -278,7 +315,6 @@
     <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container">
-            <!-- V-Taper Avatar -->
             <svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="50" cy="20" r="14" fill="#38bdf8" />
                 <path d="M 25 45 Q 50 60 75 45 L 65 105 L 35 105 Z" fill="#38bdf8" />
@@ -353,7 +389,6 @@
 
         <button class="recipe-btn" onclick="openRecipesModal()">📖 Abrir Livro de Receitas Titã</button>
 
-        <!-- NOVO REGISTO DIÁRIO -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3>📝 Registo Alimentar Diário</h3>
             <p style="font-size: 12px; color: var(--muted); margin-bottom:15px; margin-top:5px;">O que abasteceste hoje?</p>
@@ -389,9 +424,7 @@
         </div>
     </div>
 
-    <!-- MODAIS E COMPONENTES OCULTOS -->
-    
-    <!-- NOVO MODAL: INFORMAÇÕES DA BIBLIOTECA ("i") -->
+    <!-- MODAIS GLOBAIS -->
     <div id="workout-info-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10007;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
             <button onclick="closeWorkoutInfo()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -409,7 +442,6 @@
         </div>
     </div>
 
-    <!-- MODAL DO PECADO AVANÇADO -->
     <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10005;">
         <div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -425,7 +457,6 @@
             </select>
 
             <p style="color:var(--muted); font-size:11px; margin-bottom:10px;">Ou insere os macros exatos do pacote:</p>
-            
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:10px;">
                 <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()" style="width:100%;"></div>
                 <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()" style="width:100%;"></div>
@@ -435,7 +466,6 @@
             <div class="input-group" style="justify-content:center; margin-bottom:20px; margin-top:15px;">
                 <input type="number" id="sin-cals" placeholder="Kcal Totais" style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a;">
             </div>
-            
             <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button>
         </div>
     </div>
