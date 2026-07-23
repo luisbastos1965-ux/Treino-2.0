@@ -94,7 +94,7 @@ let chartInstance;
 let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity = 0, score = 0;
 let currentModalExercise = "";
 let voiceCoachActive = false;
-let deleteMode = false;
+let deleteMode = false; 
 
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] };
 let beastState = { active: false, exIdx: 0, setIdx: 0 };
