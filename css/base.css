@@ -16,8 +16,17 @@
 }
 
 body {
-    background: var(--bg-color);
+    background-color: var(--bg-color);
+    /* Novo Fundo Cyberpunk (Malha subtil) */
+    background-image: 
+        radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.1) 0%, transparent 40%),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 30px 30px, 30px 30px;
+    background-position: center top;
+    background-attachment: fixed;
+    
     color: var(--text);
     padding: 15px;
-    padding-bottom: 110px;
+    padding-bottom: 110px; /* Garante espaço de sobra para não cobrir itens no final */
 }
