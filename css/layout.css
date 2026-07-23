@@ -105,12 +105,13 @@
     text-align: center;
 }
 
+/* Contentor ligeiramente alargado para compensar os pesos mais largos */
 .rack-container {
     display: flex;
     flex-direction: column;
     gap: 25px;
     margin: 0 auto;
-    max-width: 340px;
+    max-width: 380px;
     position: relative;
 }
 
@@ -130,12 +131,13 @@
     filter: drop-shadow(0 20px 15px rgba(0,0,0,0.7));
 }
 
+/* Pesos (extremidades pretas) mais largos horizontamente (de 42px para 60px) */
 .db-end {
-    width: 42px; 
+    width: 60px; 
     height: 75px;
     background: linear-gradient(135deg, #334155 0%, #1e293b 50%, #0f172a 100%);
     border-radius: 6px;
-    clip-path: polygon(25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(18% 0%, 82% 0%, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0% 82%, 0% 18%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -153,6 +155,7 @@
     border-left: 2px solid var(--accent);
 }
 
+/* O varão central mantém-se exatamente com as mesmas proporções */
 .db-bar {
     flex: 1;
     height: 28px;
