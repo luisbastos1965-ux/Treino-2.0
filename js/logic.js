@@ -4,12 +4,31 @@
 
 function calculate1RM(weight, reps) { if (reps === 1) return weight; return weight * (1 + (reps / 30)); }
 function calculateBodyFatFormula(waist, height, gender) { let rfm = (gender === 'male') ? 64 - (20 * (height / waist)) : 76 - (20 * (height / waist)); return Math.max(3, Math.min(rfm, 50)); }
-
 const getWeekNumber = (d) => { const date = new Date(d.getTime()); date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7)); const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1)); return Math.ceil((((date - yearStart) / 86400000) + 1) / 7); };
 
+// --- TEMPORIZADORES INTELIGENTES (Auto-Rest) ---
+function getSmartRestTime(exerciseName) {
+    let ex = exerciseLibrary.find(e => e.name === exerciseName);
+    if (!ex) return 90; // Default 1.5 min
+    // Compostos Pesados levam 3 min. Máquinas/Isolamento levam 1.5 min.
+    if (ex.tier === 'S' && ex.type === 'free' && ['Costas', 'Pernas', 'Peito'].includes(ex.muscle)) return 180;
+    if (ex.tier === 'S') return 120;
+    return 90;
+}
+
+// --- ALERTA DE DORES (Pain Tracker) ---
+function checkPainWarning(exerciseName) {
+    let muscle = getMuscleForExercise(exerciseName);
+    let warnings = [];
+    if (painTracker.includes('Ombros') && (muscle === 'Ombros' || muscle === 'Peito')) warnings.push("⚠️ Cuidado: Dores nos Ombros relatadas. Controla a descida.");
+    if (painTracker.includes('Lombar') && (muscle === 'Costas' || muscle === 'Pernas')) warnings.push("⚠️ Cuidado: Atenção à Lombar. Usa cinto se necessário.");
+    if (painTracker.includes('Joelhos') && muscle === 'Pernas') warnings.push("⚠️ Cuidado: Dores nos Joelhos. Aquece bem a articulação.");
+    if (painTracker.includes('Cotovelos') && (muscle === 'Braços' || muscle === 'Peito')) warnings.push("⚠️ Cuidado: Tensão nos Cotovelos. Evita esticar até bloquear.");
+    return warnings.length > 0 ? warnings[0] : "";
+}
+
 function checkCentralFatigueLogic(historyData) {
-    if (!historyData || historyData.length === 0) return false;
-    let activeWeeks = new Set();
+    if (!historyData || historyData.length === 0) return false; let activeWeeks = new Set();
     historyData.forEach(session => { if (session.date) { let parts = session.date.split('/'); if (parts.length === 3) { let d = new Date(parts[2], parts[1] - 1, parts[0]); activeWeeks.add(parts[2] + '-' + getWeekNumber(d)); } } });
     return activeWeeks.size >= 6;
 }
@@ -43,54 +62,36 @@ function generateWorkoutLogic(focus, fatigue, library) {
     return finalRoutine;
 }
 
-// --- MISSÕES E STREAKS (Gamificação) ---
+// Gamificação e Missões
 function updateGamificationLogic() {
     let today = new Date(); let todayStr = today.toLocaleDateString('pt-PT');
-    
-    // Streaks
     if (appStreaks.lastDate !== todayStr) {
         if (!appStreaks.lastDate) { appStreaks.current = 1; } 
         else {
             let parts = appStreaks.lastDate.split('/'); let lastDateObj = new Date(parts[2], parts[1]-1, parts[0]);
             let diffTime = Math.abs(today - lastDateObj); let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            if (diffDays === 1) appStreaks.current += 1; else if (diffDays > 2) appStreaks.current = 1; // Perde a streak após 2 dias sem treinar
+            if (diffDays === 1) appStreaks.current += 1; else if (diffDays > 2) appStreaks.current = 1; 
         }
-        appStreaks.lastDate = todayStr;
-        localStorage.setItem('gym_streaks', JSON.stringify(appStreaks));
+        appStreaks.lastDate = todayStr; localStorage.setItem('gym_streaks', JSON.stringify(appStreaks));
     }
-
-    // Missões Mensais
     let currentMonth = today.getMonth();
     if (!activeMission || activeMission.month !== currentMonth) {
-        const missions = [
-            { type: 'volume', target: 30000, desc: "Mover 30.000 kg de Carga Total" },
-            { type: 'workouts', target: 16, desc: "Completar 16 Treinos no Mês" }
-        ];
+        const missions = [ { type: 'volume', target: 30000, desc: "Mover 30.000 kg de Carga Total" }, { type: 'workouts', target: 16, desc: "Completar 16 Treinos no Mês" } ];
         let randMission = missions[Math.floor(Math.random() * missions.length)];
         activeMission = { month: currentMonth, type: randMission.type, target: randMission.target, desc: randMission.desc, progress: 0, completed: false };
     }
-
-    // Atualizar Missão
-    let volToday = 0;
-    let lastLog = history[history.length - 1];
+    let volToday = 0; let lastLog = history[history.length - 1];
     if (lastLog && lastLog.date === todayStr && lastLog.exercises) {
-        if(activeMission.type === 'volume') {
-            Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => volToday += (s.weight||s.w||0) * (s.reps||s.r||0)));
-            activeMission.progress += volToday;
-        } else if (activeMission.type === 'workouts') {
-            activeMission.progress += 1;
-        }
+        if(activeMission.type === 'volume') { Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => volToday += (s.weight||s.w||0) * (s.reps||s.r||0))); activeMission.progress += volToday; } 
+        else if (activeMission.type === 'workouts') { activeMission.progress += 1; }
     }
-    
-    if (activeMission.progress >= activeMission.target && !activeMission.completed) {
-        activeMission.completed = true; alert("🎖️ MISSÃO MENSAL CONCLUÍDA! O Valhalla aprova.");
-    }
+    if (activeMission.progress >= activeMission.target && !activeMission.completed) { activeMission.completed = true; alert("🎖️ MISSÃO MENSAL CONCLUÍDA! O Valhalla aprova."); }
     localStorage.setItem('gym_mission', JSON.stringify(activeMission));
 }
 
 function checkAchievements() {
     let newlyUnlocked = false; let totalWorkouts = history.length; let totalVol = 0;
-    history.forEach(log => { if(log.exercises) Object.values(log.exercises).forEach(sets => { sets.forEach(set => totalVol += (set.weight||s.w||0) * (set.reps||s.r||0)); }); });
+    history.forEach(log => { if(log.exercises) Object.values(log.exercises).forEach(sets => { sets.forEach(set => totalVol += (set.weight||set.w||0) * (set.reps||set.r||0)); }); });
     allAchievements.forEach(ach => {
         if (!achievementsUnlocked.includes(ach.id)) {
             let unlock = false;
@@ -104,7 +105,6 @@ function checkAchievements() {
 
 function generatePunishmentLogic(cals) { if (cals < 100) return null; return { cals: cals, date: new Date().toLocaleDateString('pt-PT'), burpees: Math.floor(cals / 15), squats: Math.floor(cals / 8), pushups: Math.floor(cals / 12) }; }
 
-// --- EXPORTAÇÃO PARA TREINADORES (CSV) ---
 function exportToCSV() {
     if(history.length === 0) { alert("Sem treinos registados para exportar."); return; }
     let csv = "Data,Exercicio,Serie,Peso_Kg,Repeticoes,Tipo,Notas\n";
