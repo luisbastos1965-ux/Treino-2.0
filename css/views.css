@@ -141,3 +141,18 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
     background: #334155;
     border-radius: 10px;
 }
+
+/* --- NOVAS FUNCIONALIDADES: JEJUM, ÁGUA, STREAKS --- */
+.streak-badge { background: linear-gradient(135deg, #f97316, #ef4444); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); }
+.mission-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: white; font-size: 13px; margin-top: 15px; text-align: left; }
+.water-btn { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.water-btn:active { background: #38bdf8; color: #0f172a; }
+.fasting-ring { width: 150px; height: 150px; border-radius: 50%; border: 8px solid #334155; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold; color: var(--accent); position: relative; }
+.fasting-ring.active { border-color: var(--success); color: var(--success); box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+.freq-food-chip { background: #334155; color: white; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.freq-foods-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-top: 10px; }
+.set-type-btn { background: transparent; border: none; font-size: 16px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
+.set-type-btn.work { filter: grayscale(0%); }
+.set-type-btn.warmup { filter: grayscale(0%); opacity: 0.7; }
+.exercise-notes { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #334155; color: var(--accent); font-size: 12px; padding: 5px 0; margin-top: 10px; font-style: italic; }
+.exercise-notes:focus { outline: none; border-bottom-color: var(--success); }
