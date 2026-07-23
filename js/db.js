@@ -10,7 +10,7 @@ let workoutData = {
     CUSTOM: []
 };
 
-const exerciseLibrary = [
+let exerciseLibrary = [
     { name: "Supino Plano com Barra", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, { name: "Supino Inclinado c/ Halteres", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, { name: "Supino Plano na Máquina", muscle: "Peito", tier: "A", type: "machine", defaultSets: 3 }, { name: "Peck Deck / Voador", muscle: "Peito", tier: "B", type: "machine", defaultSets: 3 }, { name: "Crossover na Polia", muscle: "Peito", tier: "A", type: "machine", defaultSets: 4 },
     { name: "Elevações (Pull-ups)", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, { name: "Puxada Vertical na Polia Alta", muscle: "Costas", tier: "S", type: "machine", defaultSets: 3 }, { name: "Remada com Barra", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, { name: "Remada Sentada com Cabo", muscle: "Costas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Remada Inclinada c/ Halteres", muscle: "Costas", tier: "A", type: "free", defaultSets: 3 }, { name: "Pullover com Haltere", muscle: "Costas", tier: "B", type: "free", defaultSets: 3 },
     { name: "Agachamento Livre", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 }, { name: "Agachamento Hack", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Leg Press 45º", muscle: "Pernas", tier: "S", type: "machine", defaultSets: 4 }, { name: "Peso Morto Romeno (RDL)", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 }, { name: "Extensão de Pernas", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Flexão de Pernas (Leg Curl)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Elevação de Gémeos em Pé", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 }, { name: "Elevação de Gémeos Sentado", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 },
@@ -44,10 +44,13 @@ let frequentFoods = JSON.parse(localStorage.getItem('gym_freq_foods')) || [];
 let fastingState = JSON.parse(localStorage.getItem('gym_fasting')) || { active: false, start: null };
 let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
 let activeMission = JSON.parse(localStorage.getItem('gym_mission')) || null;
-
-// INVENTÁRIO CORPORAL (Dores)
 let painTracker = JSON.parse(localStorage.getItem('gym_pain_tracker')) || [];
 
+// Exercícios Criados Pelo Utilizador
+let customExercisesDB = JSON.parse(localStorage.getItem('gym_custom_exercises')) || [];
+exerciseLibrary.push(...customExercisesDB); // Funde com a base oficial
+
+// Dieta e Água (Reinicia à meia-noite)
 let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
 let waterIntake = JSON.parse(localStorage.getItem('gym_water')) || { date: new Date().toLocaleDateString('pt-PT'), ml: 0 };
 
@@ -64,4 +67,5 @@ function getMuscleForExercise(name) {
     if (lower.includes('curl') || lower.includes('tríceps') || lower.includes('testa') || lower.includes('pushdown')) return 'Braços';
     return 'Core';
 }
+
 function getLastPerformance(exerciseName) { for (let i = history.length - 1; i >= 0; i--) { if (history[i].exercises && history[i].exercises[exerciseName]) return history[i].exercises[exerciseName]; } return null; }
