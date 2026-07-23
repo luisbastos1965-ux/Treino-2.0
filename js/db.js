@@ -87,7 +87,7 @@ const allAchievements = [
     { id: 'volume_100k', icon: '🏗️', title: 'Guindaste', desc: 'Moveste 100.000 kg de volume total.', reqVol: 100000 }
 ];
 
-// Variáveis de Estado 
+// Variáveis de Estado (Memória RAM)
 let currentDay = 'PUSH';
 let currentCalendarDate = new Date();
 let chartInstance;
@@ -99,20 +99,24 @@ let deleteMode = false;
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] };
 let beastState = { active: false, exIdx: 0, setIdx: 0 };
 
-// Bases de Dados Locais 
+// Bases de Dados Locais (Persistência no Dispositivo)
 let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
 let savedRoutines = JSON.parse(localStorage.getItem('gym_saved_routines')) || [];
 let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || { name: '', age: 25, gender: 'male', height: 170, weight: 70, activity: '1.55', goal: 'maintain', measurements: { arm: '', chest: '', waist: '', leg: '' } };
 let achievementsUnlocked = JSON.parse(localStorage.getItem('gym_achievements')) || [];
 let activePunishment = JSON.parse(localStorage.getItem('gym_punishment')) || null;
 
-// Registo Diário Alimentar
+// Memória da Evolução Corporal (Peso e RFM no Tempo)
+let bodyStatsHistory = JSON.parse(localStorage.getItem('gym_body_stats')) || [];
+
+// Registo Diário Alimentar (Reinicia à meia-noite)
 let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
 if (dailyIntake.date !== new Date().toLocaleDateString('pt-PT')) {
     dailyIntake = { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
 }
 
+// Lógica de Agrupamento Muscular (Para Gráficos e RPG)
 function getMuscleForExercise(name) {
     let found = exerciseLibrary.find(ex => ex.name === name);
     if (found) return found.muscle;
