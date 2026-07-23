@@ -2,6 +2,7 @@
 // UI.JS: NAVEGAÇÃO, RENDERIZAÇÃO E MODAIS
 // ==========================================
 
+// --- NOVA NAVEGAÇÃO (DASHBOARD & FAB) ---
 function goHome() {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     document.getElementById('view-home').classList.add('active');
@@ -21,50 +22,94 @@ function navigateTo(id) {
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
-// --- RENDERIZAÇÃO DO TREINO NORMAL ---
+// --- RENDERIZAÇÃO DA BIBLIOTECA DE TREINOS ---
 function renderWorkoutSlots() {
     const container = document.getElementById('workout-slots-container');
     if(!container) return;
     container.innerHTML = '';
+    
+    let slotCount = 0;
+    const minSlots = 5;
 
-    // Slot 1: Titã Clássico
-    container.innerHTML += `
-    <div class="built-item" style="border:1px solid #38bdf8; cursor:pointer;" onclick="openWorkoutSlot('TITAN')">
-        <div style="font-size:24px; margin-right:15px;">🔱</div>
-        <div class="built-item-info">
-            <span class="built-item-title" style="color:#38bdf8;">Divisão Titã (PPL)</span>
-            <span style="font-size:11px; color:var(--muted);">Push, Pull e Legs (Padrão)</span>
-        </div>
-    </div>`;
+    const createSlotHTML = (type, index, icon, title, subtitle, color, isSaved = false) => {
+        slotCount++;
+        return `
+        <div class="slot-container-flex">
+            <div class="built-item" style="flex:1; border:1px solid ${color}; cursor:pointer;" onclick="openWorkoutSlot('${type}', ${index})">
+                <div style="font-size:24px; margin-right:15px;">${icon}</div>
+                <div class="built-item-info">
+                    <span class="built-item-title" style="color:${color};">${title}</span>
+                    <span style="font-size:11px; color:var(--muted);">${subtitle}</span>
+                </div>
+            </div>
+            <button class="info-btn" onclick="showWorkoutInfo('${type}', ${index})">i</button>
+        </div>`;
+    };
 
-    // Slot 2: Mobilidade
-    container.innerHTML += `
-    <div class="built-item" style="border:1px solid var(--success); cursor:pointer;" onclick="openWorkoutSlot('MOBILITY')">
-        <div style="font-size:24px; margin-right:15px;">🧘</div>
-        <div class="built-item-info">
-            <span class="built-item-title" style="color:var(--success);">Mobilidade e Recuperação</span>
-            <span style="font-size:11px; color:var(--muted);">SNC e Articulações</span>
-        </div>
-    </div>`;
+    // Slot 1: Titã Clássico 
+    container.innerHTML += createSlotHTML('TITAN', 0, '🔱', 'Divisão Titã (PPL)', 'Push, Pull e Legs (Padrão)', '#38bdf8');
+    
+    // Slot 2: Mobilidade 
+    container.innerHTML += createSlotHTML('MOBILITY', 0, '🧘', 'Mobilidade Activa', 'SNC e Articulações', 'var(--success)');
 
     // Slots das Rotinas Salvas
     savedRoutines.forEach((item, index) => {
         let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0);
-        container.innerHTML += `
-        <div class="built-item" style="border:1px solid #334155; cursor:pointer;" onclick="openWorkoutSlot('SAVED', ${index})">
-            <div style="font-size:24px; margin-right:15px;">💾</div>
-            <div class="built-item-info">
-                <span class="built-item-title">${item.name}</span>
-                <span style="font-size:11px; color:var(--muted);">${item.routine.length} Exs | ${totalSets} Séries</span>
-            </div>
-        </div>`;
+        container.innerHTML += createSlotHTML('SAVED', index, '💾', item.name, `${item.routine.length} Exs | ${totalSets} Séries`, '#f8fafc', true);
     });
 
-    // Botão Adicionar Novo
+    // Injetar Slots Vazias até preencher o ecrã
+    while(slotCount < minSlots) {
+        container.innerHTML += `
+        <div class="slot-container-flex">
+            <div class="built-item" style="flex:1; border:1px dashed #334155; background:transparent; opacity: 0.5;">
+                <div class="built-item-info">
+                    <span class="built-item-title" style="color:#94a3b8;">Slot Vazio</span>
+                </div>
+            </div>
+            <div style="width:55px; border-radius:12px; border:1px dashed #334155; background:transparent; opacity: 0.5;"></div>
+        </div>`;
+        slotCount++;
+    }
+
+    // Botão Adicionar Novo Treino
     container.innerHTML += `
-    <div class="built-item" style="border:1px dashed #94a3b8; background:transparent; justify-content:center; cursor:pointer; margin-top:10px;" onclick="navigateTo('view-construtor')">
-        <span style="color:var(--muted); font-weight:bold;">+ Criar Novo Treino</span>
+    <div class="built-item" style="border:1px dashed var(--accent); background:rgba(56,189,248,0.05); justify-content:center; cursor:pointer; margin-top:5px; padding:18px;" onclick="navigateTo('view-construtor')">
+        <span style="color:var(--accent); font-weight:bold; font-size:15px;">+ Criar Novo Treino</span>
     </div>`;
+}
+
+function showWorkoutInfo(type, index) {
+    let title = '';
+    let content = '';
+    
+    if (type === 'TITAN') {
+        title = 'Divisão Titã (PPL)';
+        content = `
+            <div style="margin-bottom:10px;"><strong style="color:var(--accent);">PUSH:</strong><br>Peito, Ombros, Tríceps (Foco em empurrar cargas)</div>
+            <div style="margin-bottom:10px;"><strong style="color:var(--accent);">PULL:</strong><br>Costas, Posterior de Ombro, Bíceps (Foco na tração)</div>
+            <div style="margin-bottom:10px;"><strong style="color:var(--accent);">LEGS:</strong><br>Quads, Femorais, Gémeos (Fundação Titã)</div>
+        `;
+    } else if (type === 'MOBILITY') {
+        title = 'Mobilidade Activa';
+        content = `Esta rotina regenerativa é ideal para os dias de descanso ou para os períodos onde o Alerta do SNC está ativo. Sem cargas, focada na respiração e recuperação fluída das articulações e tendões.`;
+    } else if (type === 'SAVED') {
+        const routine = savedRoutines[index];
+        title = routine.name;
+        content = `<ul style="padding-left:15px; margin:0;">`;
+        routine.routine.forEach(ex => {
+            content += `<li style="margin-bottom:5px;"><b>${ex.sets}x</b> ${ex.name}</li>`;
+        });
+        content += `</ul>`;
+    }
+    
+    document.getElementById('info-modal-title').innerText = title;
+    document.getElementById('info-modal-content').innerHTML = content;
+    document.getElementById('workout-info-modal').style.display = 'flex';
+}
+
+function closeWorkoutInfo() {
+    document.getElementById('workout-info-modal').style.display = 'none';
 }
 
 function openWorkoutSlot(type, index = 0) {
@@ -194,6 +239,7 @@ function saveCurrentWorkout() {
     updateHeatmap();
     calculateRPGStats();
     if(typeof checkAchievements === 'function') checkAchievements();
+    backToWorkoutSlots();
 }
 
 // --- CONSTRUTOR ---
@@ -286,8 +332,17 @@ function applyBuiltWorkout() {
     if (builderState.routine.length === 0) return;
     workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine));
     
-    navigateTo('view-treino'); 
-    openWorkoutSlot('SAVED', savedRoutines.length); // Abre diretamente como se fosse a última guardada, mas no state CUSTOM
+    navigateTo('view-treino');
+    document.getElementById('treino-slots-view').style.display = 'none';
+    document.getElementById('treino-active-view').style.display = 'block';
+    
+    const tabsContainer = document.getElementById('active-workout-tabs');
+    tabsContainer.style.display = 'none';
+    currentDay = 'CUSTOM';
+    
+    const beastBtn = document.getElementById('main-beast-btn');
+    if (beastBtn) beastBtn.style.display = 'block';
+    renderWorkout();
 }
 
 function saveCurrentRoutine() {
@@ -769,6 +824,7 @@ function openPlateMath(targetWeightStr) {
     document.getElementById('plate-math-modal').style.display = 'flex';
 }
 function closePlateMath() { document.getElementById('plate-math-modal').style.display = 'none'; }
+
 function openWarmup() {
     const targetW = parseFloat(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder);
     if (!targetW || targetW <= 20) { alert("Insere um peso alvo superior a 20kg."); return; }
@@ -776,9 +832,11 @@ function openWarmup() {
     document.getElementById('warmup-modal').style.display = 'flex';
 }
 function closeWarmup() { document.getElementById('warmup-modal').style.display = 'none'; }
+
 function openModal(title, content) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-content').innerText = content; currentModalExercise = title; document.getElementById('custom-video-input').value = ""; renderVideoFrame(title); document.getElementById('exercise-modal').style.display = 'flex'; }
 function closeModal() { document.getElementById('exercise-modal').style.display = 'none'; document.getElementById('modal-video-container').innerHTML = ''; }
 function showExerciseTips(exerciseName) { openModal(exerciseName, "Foca-te na execução perfeita e numa descida controlada!"); }
+
 function saveCustomVideo() {
     const inputLink = document.getElementById('custom-video-input').value.trim(); if (!inputLink) return; let embedLink = inputLink;
     if (inputLink.includes('watch?v=')) { embedLink = inputLink.replace('watch?v=', 'embed/'); if(embedLink.includes('&')) embedLink = embedLink.split('&')[0]; } 
@@ -786,6 +844,7 @@ function saveCustomVideo() {
     let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {}; videoLibrary[currentModalExercise] = embedLink; localStorage.setItem('gym_tracker_videos', JSON.stringify(videoLibrary));
     renderVideoFrame(currentModalExercise); document.getElementById('custom-video-input').value = ""; document.getElementById('custom-video-input').placeholder = "Gravado com sucesso!"; if ("vibrate" in navigator) navigator.vibrate(50);
 }
+
 function renderVideoFrame(exerciseName) {
     let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {}; const container = document.getElementById('modal-video-container');
     if (videoLibrary[exerciseName]) container.innerHTML = `<iframe width="100%" height="100%" src="${videoLibrary[exerciseName]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
