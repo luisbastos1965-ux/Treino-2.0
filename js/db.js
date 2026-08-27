@@ -38,7 +38,6 @@ let activePunishment = JSON.parse(localStorage.getItem('gym_punishment')) || nul
 let bodyStatsHistory = JSON.parse(localStorage.getItem('gym_body_stats')) || [];
 let frequentFoods = JSON.parse(localStorage.getItem('gym_freq_foods')) || [];
 let fastingState = JSON.parse(localStorage.getItem('gym_fasting')) || { active: false, start: null };
-let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
 let activeMission = JSON.parse(localStorage.getItem('gym_mission')) || null;
 let painTracker = JSON.parse(localStorage.getItem('gym_pain_tracker')) || [];
 let customExercisesDB = JSON.parse(localStorage.getItem('gym_custom_exercises')) || [];
