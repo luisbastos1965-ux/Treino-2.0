@@ -38,7 +38,6 @@
             <div id="beast-smart-suggestion" style="color: var(--success); font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 8px rgba(34,197,94,0.3); display: none;">🎯 Coach: Tenta 82.5kg (+2.5kg)</div>
             <button id="warmup-btn" class="beast-action-btn" style="background:#3b82f6; margin: 10px auto; display: block; width: 100%; max-width: 350px; font-size: 14px; padding: 10px;" onclick="openWarmup()">🔥 Gerar Aquecimento Ideal</button>
             
-            <!-- MICRO LOADING ADDED HERE -->
             <div class="beast-inputs">
                 <div class="beast-input-group">
                     <label style="display: flex; align-items: center; gap: 6px;">KG <button class="plate-calc-btn" onclick="openPlateMath(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder)">🧮</button></label>
@@ -63,7 +62,7 @@
             
             <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%; max-width: 350px;">
                 <button class="beast-action-btn dropset" onclick="triggerDropSet()">📉 Drop Set</button>
-                <button class="beast-action-btn superset" onclick="triggerRestPause()">⏳ Rest-Pause 15s</button>
+                <button class="beast-action-btn superset" onclick="triggerSuperset()">🔗 Supersérie</button>
             </div>
 
             <div id="beast-music-player" style="display: none; width: 100%; max-width: 350px; margin: 20px auto 0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
@@ -74,7 +73,7 @@
     </div>
 
     <!-- MINI-JOGO DE DESCANSO -->
-    <div id="rest-timer-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+    <div id="rest-timer-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
         <div class="rest-content" style="text-align:center;">
             <h2 id="rest-time-display" style="font-size:60px; color:var(--accent); font-weight:900;">90s</h2>
             <p class="rest-subtitle" style="color:var(--muted); margin-bottom:20px;">Recupera o fôlego Titã!</p>
@@ -82,12 +81,10 @@
         </div>
     </div>
 
-    <!-- PÁGINA INICIAL -->
+    <!-- PÁGINA INICIAL (AGORA TRANCADA E SEM SCROLL) -->
     <div id="view-home" class="view-section active">
         <div class="pulse-title-container text-center">
             <h1 class="pulse-hero-title">PULSE</h1>
-            <div id="home-streak-display"></div>
-            <div id="home-mission-display"></div>
         </div>
 
         <div id="menu-rack" class="rack-container" style="margin-top:20px;">
@@ -164,7 +161,7 @@
         <div class="goal-container"><h3>🎯 Meta Semanal</h3><p style="color:var(--muted); font-size:14px;"><span id="weekly-count">0</span> / 6</p><div class="progress-bar"><div class="progress-fill" id="weekly-progress"></div></div></div>
     </div>
 
-    <!-- ABA 5: PERFIL -->
+    <!-- ABA 5: PERFIL (ID CARTÃO E MISSÕES) -->
     <div id="view-perfil" class="view-section">
         <div class="avatar-container"><svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="20" r="14" fill="#38bdf8" /><path d="M 25 45 Q 50 60 75 45 L 65 105 L 35 105 Z" fill="#38bdf8" /><path d="M 18 52 L 30 52 L 25 90 L 12 90 Z" fill="#38bdf8" /><path d="M 70 52 L 82 52 L 88 90 L 75 90 Z" fill="#38bdf8" /><path d="M 38 110 L 48 110 L 45 180 L 32 170 Z" fill="#38bdf8" /><path d="M 52 110 L 62 110 L 68 170 L 55 180 Z" fill="#38bdf8" /></svg><div id="avatar-shadow"></div></div>
         <div class="profile-form exercise-card">
@@ -188,7 +185,6 @@
             </div>
         </div>
 
-        <!-- SBD TOTAL ADDED HERE -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>🏋️ Powerlifting Total (SBD)</h3>
             <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
@@ -212,6 +208,11 @@
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;"><div style="color: var(--muted); font-size: 12px;">Massa Gorda (RFM)</div><div id="calc-bf" style="font-size: 28px; font-weight: bold; margin-top: 5px;">--%</div></div>
         </div>
         
+        <!-- MISSÕES E CONQUISTAS JUNTAS AQUI -->
+        <div class="goal-container" style="margin-bottom: 20px;">
+            <h3 class="text-center">🎯 Missão Atual</h3>
+            <div id="profile-mission-display"></div>
+        </div>
         <div class="goal-container" style="margin-bottom: 20px;"><h3 class="text-center">🏆 As Tuas Conquistas</h3><div id="achievements-list"></div></div>
         
         <div class="goal-container" style="margin-bottom: 20px;">
@@ -251,7 +252,6 @@
             <div style="display:flex; gap:10px;"><button class="water-btn" onclick="addWater(250)">+ 250ml</button><button class="water-btn" onclick="addWater(500)">+ 500ml</button></div>
         </div>
 
-        <!-- LISTA DE COMPRAS ADDED HERE -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🛒 Lista de Compras</h3>
             <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px; text-align:center;">Meal Prep Titã.</p>
