@@ -367,7 +367,6 @@ function startFastingTimer() {
         let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); let mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); let secs = Math.floor((diff % (1000 * 60)) / 1000);
         text.innerText = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         
-        // Push notification se atingir 16h!
         if (hours === 16 && mins === 0 && secs === 0) { sendLocalPush("⏳ Jejum de 16h Atingido!", "Parabéns, atingiste a tua meta de queima de gordura. Podes quebrar o jejum."); }
     }, 1000);
 }
@@ -395,12 +394,36 @@ function renderPunishmentStatus() {
 function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); alert('⛓️ Estás perdoado. Volta ao foco!'); } }
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
+let currentBarWeight = 20; // Default Barra Olímpica
 function openPlateMath(targetWeightStr) {
-    const targetWeight = parseFloat(targetWeightStr); if (!targetWeight || targetWeight <= 20) { alert('Insere um peso > 20kg.'); return; } document.getElementById('plate-target-weight').innerText = targetWeight;
+    const targetWeight = parseFloat(targetWeightStr); if (!targetWeight || targetWeight <= currentBarWeight) { alert(`Insere um peso > ${currentBarWeight}kg para esta barra.`); return; } 
+    document.getElementById('plate-target-weight').innerText = targetWeight;
+    
+    let weightPerSide = (targetWeight - currentBarWeight) / 2; 
     const plates = [ { weight: 25, color: '#ef4444', height: '100px' }, { weight: 20, color: '#3b82f6', height: '90px' }, { weight: 15, color: '#eab308', height: '80px' }, { weight: 10, color: '#22c55e', height: '70px' }, { weight: 5, color: '#f8fafc', height: '50px' }, { weight: 2.5, color: '#334155', height: '40px' }, { weight: 1.25, color: '#94a3b8', height: '30px' } ];
-    let weightPerSide = (targetWeight - 20) / 2; let resultHTML = ''; let visualHTML = '';
-    plates.forEach(plate => { let count = Math.floor(weightPerSide / plate.weight); if (count > 0) { resultHTML += `<div class="plate-row"><div class="plate-info"><div class="plate-color-box" style="background: ${plate.color};"></div>Disco de ${plate.weight}kg</div><span class="plate-qty">${count}x</span></div>`; for(let i = 0; i < count; i++) visualHTML += `<div style="width:12px; height:${plate.height}; background:${plate.color}; border-radius:3px; border:1px solid #000;"></div>`; weightPerSide = Math.round((weightPerSide - count * plate.weight) * 100) / 100; } });
-    if (resultHTML === '') resultHTML = '<p style="color:var(--muted); text-align:center;">Não precisas de discos adicionais.</p>'; document.getElementById('plate-math-result').innerHTML = resultHTML; document.getElementById('visual-plates').innerHTML = visualHTML; document.getElementById('plate-math-modal').style.display = 'flex';
+    
+    let resultHTML = ''; let visualHTML = '';
+    plates.forEach(plate => { 
+        let count = Math.floor(weightPerSide / plate.weight); 
+        if (count > 0) { 
+            resultHTML += `<div class="plate-row"><div class="plate-info"><div class="plate-color-box" style="background: ${plate.color};"></div>Disco de ${plate.weight}kg</div><span class="plate-qty">${count}x</span></div>`; 
+            for(let i = 0; i < count; i++) visualHTML += `<div style="width:12px; height:${plate.height}; background:${plate.color}; border-radius:3px; border:1px solid #000;"></div>`; 
+            weightPerSide = Math.round((weightPerSide - count * plate.weight) * 100) / 100; 
+        } 
+    });
+    
+    if (resultHTML === '') resultHTML = '<p style="color:var(--muted); text-align:center;">Não precisas de discos adicionais.</p>'; 
+    
+    let barSelectorHtml = `
+    <div class="bar-type-selector">
+        <button class="bar-type-btn ${currentBarWeight===20?'active':''}" onclick="currentBarWeight=20; openPlateMath(${targetWeight})">Olímpica (20kg)</button>
+        <button class="bar-type-btn ${currentBarWeight===10?'active':''}" onclick="currentBarWeight=10; openPlateMath(${targetWeight})">Pequena (10kg)</button>
+        <button class="bar-type-btn ${currentBarWeight===8?'active':''}" onclick="currentBarWeight=8; openPlateMath(${targetWeight})">EZ (8kg)</button>
+    </div>`;
+
+    document.getElementById('plate-math-result').innerHTML = barSelectorHtml + resultHTML; 
+    document.getElementById('visual-plates').innerHTML = visualHTML; 
+    document.getElementById('plate-math-modal').style.display = 'flex';
 }
 function closePlateMath() { document.getElementById('plate-math-modal').style.display = 'none'; }
 function openWarmup() {
