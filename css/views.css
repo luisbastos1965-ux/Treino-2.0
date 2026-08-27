@@ -169,3 +169,23 @@ body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, 
 .rank-avançado { background: #8b5cf6; color: white; }
 .rank-elite { background: #f59e0b; color: black; }
 .rank-mutante { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239,68,68,0.8); }
+
+/* --- MURO DA DISCIPLINA (GitHub Style 365) --- */
+.discipline-wall { 
+    display: flex; 
+    flex-direction: column; 
+    flex-wrap: wrap; 
+    height: 100px; 
+    gap: 3px; 
+    align-content: flex-end; 
+    overflow-x: auto; 
+    padding-bottom: 5px; 
+}
+.discipline-block { 
+    width: 11px; 
+    height: 11px; 
+    border-radius: 2px; 
+    flex-shrink: 0; 
+}
+.discipline-wall::-webkit-scrollbar { height: 4px; }
+.discipline-wall::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
