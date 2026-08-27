@@ -192,7 +192,11 @@ function checkAchievements() {
 function generatePunishmentLogic(cals) { if (cals < 100) return null; return { cals: cals, date: new Date().toLocaleDateString('pt-PT'), burpees: Math.floor(cals / 15), squats: Math.floor(cals / 8), pushups: Math.floor(cals / 12) }; }
 
 function exportToCSV() { 
-    if(history.length === 0) { alert("Sem dados."); return; } 
+    if(history.length === 0) { 
+        if (typeof showPulseToast === 'function') showPulseToast("❌ Sem dados para exportar.", true);
+        else alert("Sem dados."); 
+        return; 
+    } 
     let csv = "Data,Exercicio,Serie,Peso_Kg,Repeticoes,Tipo,Notas\n"; 
     history.forEach(session => { 
         if(session.exercises) { 
@@ -212,6 +216,7 @@ function exportToCSV() {
     a.setAttribute('download', `Pulse_Relatorio_${new Date().toISOString().split('T')[0]}.csv`); 
     a.click(); 
     window.URL.revokeObjectURL(url); 
+    if (typeof showPulseToast === 'function') showPulseToast("✅ CSV Exportado com Sucesso!");
 }
 
 function exportData() { 
