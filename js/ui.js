@@ -29,9 +29,10 @@ window.onload = () => {
 };
 
 function goHome() { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-home').classList.add('active'); document.getElementById('fab-home').classList.remove('visible'); checkSundayDebrief(); }
+
 function navigateTo(id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('fab-home').classList.add('visible');
-    if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); }
+    if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); renderSBD(); }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); renderMissionProfile(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
     if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); startFastingTimer(); renderGroceryList(); }
@@ -39,7 +40,36 @@ function navigateTo(id) {
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
-function requestPushPermissions() { if ("Notification" in window) { Notification.requestPermission().then(permission => { if (permission === "granted") alert("✅ Notificações ativadas! Vais receber alertas de descanso."); else alert("❌ Notificações recusadas."); }); } else { alert("O teu navegador não suporta Notificações Push."); } }
+// SISTEMA DE TOASTS (Notificações Modernas)
+function showPulseToast(message, isError = false) {
+    let toast = document.getElementById('pulse-toast');
+    if(!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pulse-toast';
+        toast.style.cssText = 'display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:bold; z-index:20000; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; transition: opacity 0.3s; width: 90%; max-width: 350px; color: white;';
+        document.body.appendChild(toast);
+    }
+    toast.innerText = message;
+    toast.style.background = isError ? 'var(--danger)' : 'var(--success)';
+    toast.style.display = 'block';
+    toast.style.opacity = '1';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.style.display = 'none', 300);
+    }, 3000);
+}
+
+function requestPushPermissions() { 
+    if ("Notification" in window) { 
+        Notification.requestPermission().then(permission => { 
+            if (permission === "granted") showPulseToast("✅ Notificações ativadas com sucesso!"); 
+            else showPulseToast("❌ Notificações recusadas.", true); 
+        }); 
+    } else { 
+        showPulseToast("⚠️ O teu navegador não suporta Notificações.", true); 
+    } 
+}
+
 function sendLocalPush(title, bodyText) { if ("Notification" in window && Notification.permission === "granted") { try { if ('serviceWorker' in navigator && navigator.serviceWorker.controller) { navigator.serviceWorker.ready.then(sw => { sw.showNotification(title, { body: bodyText, icon: 'assets/img/logo.png', vibrate: [200, 100, 200] }); }); } else { new Notification(title, { body: bodyText, icon: 'assets/img/logo.png' }); } } catch (e) { console.log("Erro Push:", e); } } else if ("vibrate" in navigator) { navigator.vibrate([200, 100, 200]); } }
 
 function changeTheme(theme) { appTheme = theme; document.body.setAttribute('data-theme', theme); localStorage.setItem('gym_theme', theme); renderDisciplineWall(); }
@@ -59,7 +89,7 @@ function checkSundayDebrief() {
             
             setTimeout(() => {
                 sendLocalPush("🛡️ Guardião de Dados", "É Domingo! Exporta o Backup na aba ID Cartão para não perderes o legado.");
-                alert("🛡️ Guardião de Dados: Titã, é Domingo! Não te esqueças de ir à aba ID CARTÃO e clicar em 'Gravar .JSON' para exportares o teu Backup de segurança.");
+                showPulseToast("🛡️ Guardião de Dados: Não te esqueças do Backup (Menu Perfil)");
             }, 1000);
         }
     }
@@ -116,8 +146,8 @@ function renderWorkout() {
     });
 }
 function saveCurrentWorkout() {
-    if(currentDay === 'MOBILITY') { alert('🧘‍♂️ Rotina concluída!'); return; }
-    if (activePunishment) { alert('⛔ TENS UMA TAXA DO PECADO PENDENTE!'); return; }
+    if(currentDay === 'MOBILITY') { showPulseToast('🧘‍♂️ Rotina concluída!'); return; }
+    if (activePunishment) { showPulseToast('⛔ TENS UMA TAXA DO PECADO PENDENTE!', true); return; }
     const exercises = workoutData[currentDay]; let workoutRecord = { date: new Date().toLocaleDateString('pt-PT'), day: currentDay, exercises: {} };
     exercises.forEach((ex, exIdx) => {
         let setsDetails = []; let notes = document.getElementById(`notes-${currentDay}-${exIdx}`).value || "";
@@ -127,26 +157,26 @@ function saveCurrentWorkout() {
         }
         if (setsDetails.length > 0) workoutRecord.exercises[ex.name] = setsDetails;
     });
-    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); alert('✅ Treino guardado com sucesso!');
+    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); showPulseToast('✅ Treino guardado!');
     localStorage.removeItem('gym_active_session'); // Limpa o anti-crash
     updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); renderDisciplineWall(); backToWorkoutSlots();
 }
 function openReadinessModal() { if (painTracker.includes('Ombros')) document.getElementById('pain-ombros').checked = true; if (painTracker.includes('Lombar')) document.getElementById('pain-lombar').checked = true; if (painTracker.includes('Joelhos')) document.getElementById('pain-joelhos').checked = true; if (painTracker.includes('Cotovelos')) document.getElementById('pain-cotovelos').checked = true; document.getElementById('readiness-modal').style.display = 'flex'; }
-function closeReadinessModal() { let p = []; if(document.getElementById('pain-ombros').checked) p.push('Ombros'); if(document.getElementById('pain-lombar').checked) p.push('Lombar'); if(document.getElementById('pain-joelhos').checked) p.push('Joelhos'); if(document.getElementById('pain-cotovelos').checked) p.push('Cotovelos'); painTracker = p; localStorage.setItem('gym_pain_tracker', JSON.stringify(painTracker)); let slp = parseInt(document.getElementById('ready-sleep').value); let mus = parseInt(document.getElementById('ready-muscle').value); let nrg = parseInt(document.getElementById('ready-energy').value); if ((slp + mus + nrg) < 9) alert("⚠️ O teu SNC está sob stress. Considera ligar o Modo Deload hoje."); document.getElementById('readiness-modal').style.display = 'none'; renderWorkout(); updateHeatmap(); }
+function closeReadinessModal() { let p = []; if(document.getElementById('pain-ombros').checked) p.push('Ombros'); if(document.getElementById('pain-lombar').checked) p.push('Lombar'); if(document.getElementById('pain-joelhos').checked) p.push('Joelhos'); if(document.getElementById('pain-cotovelos').checked) p.push('Cotovelos'); painTracker = p; localStorage.setItem('gym_pain_tracker', JSON.stringify(painTracker)); let slp = parseInt(document.getElementById('ready-sleep').value); let mus = parseInt(document.getElementById('ready-muscle').value); let nrg = parseInt(document.getElementById('ready-energy').value); if ((slp + mus + nrg) < 9) showPulseToast("⚠️ O teu SNC está sob stress.", true); document.getElementById('readiness-modal').style.display = 'none'; renderWorkout(); updateHeatmap(); }
 
 // --- CONSTRUTOR 2.0 ---
 function setFatigue(level) { builderState.fatigue = level; document.querySelectorAll('.fatigue-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-fatigue-${level}`).classList.add('active'); }
 function setBuilderMode(mode) { builderState.mode = mode; document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-mode-${mode}`).classList.add('active'); document.getElementById('auto-focus-panel').style.display = 'none'; document.getElementById('manual-library-panel').style.display = 'none'; document.getElementById('directory-panel').style.display = 'none'; if (mode === 'auto') document.getElementById('auto-focus-panel').style.display = 'block'; else if (mode === 'manual') { document.getElementById('manual-library-panel').style.display = 'block'; renderLibrary(); } else if (mode === 'directory') { document.getElementById('directory-panel').style.display = 'block'; renderDirectory(); } }
 function renderLibrary() { const filterMuscle = document.getElementById('filter-muscle').value; const filterTier = document.getElementById('filter-tier').value; const list = document.getElementById('library-list'); list.innerHTML = ''; let filtered = exerciseLibrary; if (filterMuscle !== 'ALL') filtered = filtered.filter(ex => ex.muscle === filterMuscle); if (filterTier !== 'ALL') filtered = filtered.filter(ex => ex.tier === filterTier); filtered.forEach(ex => { list.innerHTML += `<div class="lib-item"><div class="lib-item-info"><span class="lib-item-title">${ex.name}</span><div class="lib-item-badges"><span class="badge muscle">${ex.muscle}</span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}-Tier</span></div></div><button class="add-btn" onclick="addExerciseToBuilder('${ex.name}', ${ex.defaultSets})">+</button></div>`; }); list.innerHTML += `<div class="lib-item" style="border:1px dashed var(--accent); background:transparent; justify-content:center; cursor:pointer;" onclick="promptCustomExercise()"><span style="color:var(--accent); font-weight:bold;">✚ Criar Exercício Novo</span></div>`; }
-function promptCustomExercise() { let name = prompt("Nome do Exercício:"); if(!name) return; let muscle = prompt("Músculo Alvo (Peito, Costas, Pernas, Ombros, Braços, Core):"); if(!muscle) return; let newEx = { name: name, muscle: muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase(), tier: "A", type: "machine", defaultSets: 3 }; customExercisesDB.push(newEx); exerciseLibrary.push(newEx); localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); alert("✅ Adicionado ao Diretório!"); renderLibrary(); }
+function promptCustomExercise() { let name = prompt("Nome do Exercício:"); if(!name) return; let muscle = prompt("Músculo Alvo (Peito, Costas, Pernas, Ombros, Braços, Core):"); if(!muscle) return; let newEx = { name: name, muscle: muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase(), tier: "A", type: "machine", defaultSets: 3 }; customExercisesDB.push(newEx); exerciseLibrary.push(newEx); localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); showPulseToast("✅ Adicionado ao Diretório!"); renderLibrary(); }
 function renderDirectory() { const container = document.getElementById('directory-list'); container.innerHTML = ''; const groups = ['Peito', 'Costas', 'Pernas', 'Ombros', 'Braços', 'Core']; groups.forEach(muscle => { let pool = exerciseLibrary.filter(ex => ex.muscle === muscle); if (pool.length > 0) { let html = `<div class="dir-group"><h4>${muscle}</h4>`; pool.forEach(ex => { html += `<div class="dir-item"><span>${ex.name}</span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}</span></div>`; }); html += `</div>`; container.innerHTML += html; } }); }
-function generateWorkout() { const focus = document.getElementById('auto-focus-select').value; const fatigue = builderState.fatigue; if(typeof generateWorkoutLogic === 'function') { builderState.routine = generateWorkoutLogic(focus, fatigue, exerciseLibrary); updateBuilderUI(); alert(`✨ Treino gerado!`); } }
+function generateWorkout() { const focus = document.getElementById('auto-focus-select').value; const fatigue = builderState.fatigue; if(typeof generateWorkoutLogic === 'function') { builderState.routine = generateWorkoutLogic(focus, fatigue, exerciseLibrary); updateBuilderUI(); showPulseToast(`✨ Treino gerado!`); } }
 function addExerciseToBuilder(name, sets) { builderState.routine.push({ name, sets }); updateBuilderUI(); }
 function removeExerciseFromBuilder(index) { builderState.routine.splice(index, 1); updateBuilderUI(); }
 function updateBuilderSets(index, value) { builderState.routine[index].sets = parseInt(value) || 1; updateBuilderUI(false); }
 function updateBuilderUI(rebuildList = true) { const list = document.getElementById('builder-routine-list'); const badge = document.getElementById('workout-volume-badge'); const actionBtns = document.getElementById('builder-action-buttons'); let totalSets = 0; if (rebuildList) list.innerHTML = ''; if (builderState.routine.length === 0) { if (rebuildList) list.innerHTML = `<p class="text-center" style="color: var(--muted); padding: 20px 0;">Nenhum exercício selecionado.</p>`; badge.innerText = `0 Séries`; actionBtns.style.display = 'none'; return; } builderState.routine.forEach((item, idx) => { totalSets += parseInt(item.sets); if (rebuildList) { list.innerHTML += `<div class="built-item"><div class="built-item-info"><span class="built-item-title">${idx + 1}. ${item.name}</span></div><div class="built-item-controls"><span style="font-size: 10px; color: var(--muted);">SÉRIES</span><input type="number" class="set-input" value="${item.sets}" onchange="updateBuilderSets(${idx}, this.value)"><button class="remove-btn" onclick="removeExerciseFromBuilder(${idx})">✖</button></div></div>`; } }); badge.innerText = `${totalSets} Séries`; badge.style.color = totalSets > 24 ? 'var(--danger)' : 'var(--accent)'; actionBtns.style.display = 'flex'; }
 function applyBuiltWorkout() { if (builderState.routine.length === 0) return; workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine)); navigateTo('view-treino'); document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block'; document.getElementById('active-workout-tabs').style.display = 'none'; currentDay = 'CUSTOM'; renderWorkout(); }
-function saveCurrentRoutine() { if (builderState.routine.length === 0) return; const routineName = prompt("Nome da rotina:"); if (!routineName) return; savedRoutines.push({ name: routineName, routine: JSON.parse(JSON.stringify(builderState.routine)) }); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); alert('✅ Guardada!'); builderState.routine = []; updateBuilderUI(); navigateTo('view-treino'); }
+function saveCurrentRoutine() { if (builderState.routine.length === 0) return; const routineName = prompt("Nome da rotina:"); if (!routineName) return; savedRoutines.push({ name: routineName, routine: JSON.parse(JSON.stringify(builderState.routine)) }); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); showPulseToast('✅ Guardada!'); builderState.routine = []; updateBuilderUI(); navigateTo('view-treino'); }
 
 // --- MAPA DE CALOR E GRÁFICOS AVANÇADOS ---
 function updateHeatmap() {
@@ -247,16 +277,38 @@ function showHistoryDetails(dateString) {
 function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); } }
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
-// --- PERFIL E SBD TOTAL E MISSÕES ---
+// --- PERFIL, SBD TOTAL E MISSÕES ---
+function renderSBD() {
+    let bestSquat=0, bestBench=0, bestDead=0;
+    history.forEach(log => {
+        if(log.exercises) {
+            Object.entries(log.exercises).forEach(([ex, sets]) => {
+                let max = Math.max(...sets.map(s => parseFloat(s.weight||s.w||0))); let n = ex.toLowerCase();
+                if(n.includes('supino plano') || n.includes('bench press')) { if(max > bestBench) bestBench = max; }
+                if(n.includes('agachamento livre') || n.includes('squat')) { if(max > bestSquat) bestSquat = max; }
+                if(n.includes('peso morto') || n.includes('deadlift') || n.includes('rdl')) { if(max > bestDead) bestDead = max; }
+            });
+        }
+    });
+    let sbdTotal = bestSquat + bestBench + bestDead;
+    const elSbd = document.getElementById('sbd-total-val');
+    const elRatio = document.getElementById('sbd-ratio');
+    if (elSbd && elRatio) {
+        elSbd.innerText = sbdTotal + ' kg';
+        let ratio = userProfile.weight > 0 ? (sbdTotal / userProfile.weight).toFixed(1) : 0;
+        elRatio.innerText = `${ratio}x o teu peso corporal`;
+    }
+}
+
 let isProfileEditing = false;
 function toggleProfileEdit() {
     isProfileEditing = !isProfileEditing;
     const formContainer = document.getElementById('profile-form-container');
     const editBtn = document.getElementById('btn-edit-profile');
-    const detailsPanel = document.getElementById('details-profile'); // Vai buscar a nova caixa expansível
+    const detailsPanel = document.getElementById('details-profile');
     
     if (isProfileEditing) {
-        if (detailsPanel) detailsPanel.open = true; // Se clicares em "Editar", a caixa abre-se automaticamente
+        if (detailsPanel) detailsPanel.open = true; // Força abertura do painel para editar
         formContainer.style.opacity = '1';
         formContainer.style.pointerEvents = 'auto';
         editBtn.innerHTML = '💾 Gravar';
@@ -269,6 +321,7 @@ function toggleProfileEdit() {
         editBtn.style.background = 'rgba(0,0,0,0.5)';
         editBtn.style.borderColor = 'var(--accent)';
         updateProfileData(); 
+        showPulseToast("✅ Perfil Atualizado!");
     }
 }
 
@@ -289,23 +342,6 @@ function renderProfile() {
         }
     }
     document.getElementById('avatar-initials').innerText = initials;
-    
-    let bestSquat=0, bestBench=0, bestDead=0;
-    history.forEach(log => {
-        if(log.exercises) {
-            Object.entries(log.exercises).forEach(([ex, sets]) => {
-                let max = Math.max(...sets.map(s => parseFloat(s.weight||s.w||0))); let n = ex.toLowerCase();
-                if(n.includes('supino plano') || n.includes('bench press')) { if(max > bestBench) bestBench = max; }
-                if(n.includes('agachamento livre') || n.includes('squat')) { if(max > bestSquat) bestSquat = max; }
-                if(n.includes('peso morto') || n.includes('deadlift') || n.includes('rdl')) { if(max > bestDead) bestDead = max; }
-            });
-        }
-    });
-    let sbdTotal = bestSquat + bestBench + bestDead;
-    document.getElementById('sbd-total-val').innerText = sbdTotal + ' kg';
-    let ratio = userProfile.weight > 0 ? (sbdTotal / userProfile.weight).toFixed(1) : 0;
-    document.getElementById('sbd-ratio').innerText = `${ratio}x o teu peso corporal`;
-
     updateProfileData();
 }
 
@@ -378,7 +414,7 @@ function addWater(ml) { waterIntake.ml += ml; localStorage.setItem('gym_water', 
 function quickAddFood(name, cals, pro) { dailyIntake.foods.push({ name, cals, pro }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
 function addDailyFood() {
     const name = document.getElementById('food-name').value; const cals = parseInt(document.getElementById('food-cals').value) || 0; const pro = parseInt(document.getElementById('food-pro').value) || 0;
-    if(!name || cals === 0) { alert('Insere o nome e as calorias!'); return; }
+    if(!name || cals === 0) { showPulseToast('Insere o nome e as calorias!', true); return; }
     dailyIntake.foods.push({ name, cals, pro }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
     if(!frequentFoods.find(f => f.name === name)) { frequentFoods.push({ name, cals, pro }); if(frequentFoods.length > 5) frequentFoods.shift(); localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); }
     document.getElementById('food-name').value = ''; document.getElementById('food-cals').value = ''; document.getElementById('food-pro').value = ''; renderDieta();
@@ -411,9 +447,9 @@ function openRecipesModal() { document.getElementById('recipes-modal').style.dis
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
 function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; document.getElementById('sin-fat').value = opt.getAttribute('data-f') || 0; } }
 function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let f = parseInt(document.getElementById('sin-fat').value) || 0; let cals = (p * 4) + (c * 4) + (f * 9); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
-function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { alert('Mínimo 100kcal!'); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); alert('🔥 Tens uma penitência para pagar!'); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
+function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 Tens uma penitência para pagar!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
 function renderPunishmentStatus() { const container = document.getElementById('punishment-status'); if (!container) return; if (!activePunishment) { container.innerHTML = `<p style="color:var(--muted); font-size:13px;">Estás limpo. Mantém a dieta.</p>`; container.style.borderLeft = "4px solid var(--success)"; } else { container.innerHTML = `<div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:15px;">Para voltares a gravar treinos, tens de pagar:<br>• <b>${activePunishment.burpees}</b> Burpees<br>• <b>${activePunishment.squats}</b> Agachamentos c/ Salto<br>• <b>${activePunishment.pushups}</b> Flexões</div><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:var(--danger);" onclick="completePunishment()">🩸 PENITÊNCIA CUMPRIDA</button>`; container.style.borderLeft = "4px solid var(--danger)"; } }
-function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); alert('⛓️ Estás perdoado. Volta ao foco!'); } }
+function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado. Volta ao foco!'); } }
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
 let currentBarWeight = 20; 
@@ -439,8 +475,8 @@ function renderVideoFrame(exerciseName) { let videoLibrary = JSON.parse(localSto
 
 function openModoFlex() { let totalVolume = 0; let totalSets = 0; const exercises = workoutData[currentDay]; if (exercises) { exercises.forEach((ex, exIdx) => { for (let setIdx = 1; setIdx <= 15; setIdx++) { let wInput = document.getElementById(`weight-${currentDay}-${exIdx}-${setIdx}`); let rInput = document.getElementById(`reps-${currentDay}-${exIdx}-${setIdx}`); let typeBtn = document.getElementById(`type-${currentDay}-${exIdx}-${setIdx}`); if (wInput && rInput && wInput.value && rInput.value && typeBtn && typeBtn.getAttribute('data-type') === 'work') { let w = parseFloat(wInput.value); let r = parseInt(rInput.value); if (!isNaN(w) && !isNaN(r)) { totalVolume += (w * r); totalSets++; } } } }); } document.getElementById('flex-card-name').innerText = userProfile.name ? '@' + userProfile.name.replace(/\s+/g, '').toLowerCase() : '@atleta_misterioso'; document.getElementById('flex-card-date').innerText = new Date().toLocaleDateString('pt-PT'); document.getElementById('flex-card-workout').innerText = currentDay.toUpperCase() + ' DAY'; document.getElementById('flex-card-volume').innerText = totalVolume.toLocaleString('en-US') + ' kg'; document.getElementById('flex-card-sets').innerText = totalSets + ' Sets'; document.getElementById('flex-modal').style.display = 'flex'; }
 function closeModoFlex() { document.getElementById('flex-modal').style.display = 'none'; }
-function copyFlexText() { navigator.clipboard.writeText(`🔥 ACABEI DE FRITAR O MEU TREINO!\n💪 Foco: ${document.getElementById('flex-card-workout').innerText}\n📈 Volume: ${document.getElementById('flex-card-volume').innerText}\n🥵 Séries: ${document.getElementById('flex-card-sets').innerText}\n🤖 Registado no Pulse`).then(() => alert('✅ Resumo copiado!')); }
+function copyFlexText() { navigator.clipboard.writeText(`🔥 ACABEI DE FRITAR O MEU TREINO!\n💪 Foco: ${document.getElementById('flex-card-workout').innerText}\n📈 Volume: ${document.getElementById('flex-card-volume').innerText}\n🥵 Séries: ${document.getElementById('flex-card-sets').innerText}\n🤖 Registado no Pulse`).then(() => showPulseToast('✅ Resumo copiado!')); }
 
-function shareToInstagram() { if(typeof html2canvas === 'undefined') { alert("Erro de imagem."); return; } const card = document.getElementById('flex-card'); html2canvas(card, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => { canvas.toBlob(blob => { const file = new File([blob], 'pulse-workout.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ title: 'Treino Pulse', text: '🔥', files: [file] }).catch(err => console.log(err)); } else { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'pulse_story.png'; a.click(); alert('📥 Imagem guardada na galeria!'); } }); }); }
+function shareToInstagram() { if(typeof html2canvas === 'undefined') { alert("Erro de imagem."); return; } const card = document.getElementById('flex-card'); html2canvas(card, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => { canvas.toBlob(blob => { const file = new File([blob], 'pulse-workout.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ title: 'Treino Pulse', text: '🔥', files: [file] }).catch(err => console.log(err)); } else { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'pulse_story.png'; a.click(); showPulseToast('📥 Imagem guardada na galeria!'); } }); }); }
 
 setTimeout(() => { updateGamificationLogic(); }, 1000);
