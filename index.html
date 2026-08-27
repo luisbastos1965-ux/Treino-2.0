@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <!-- PÁGINA INICIAL (AGORA TRANCADA E COM DESIGN CLÁSSICO) -->
+    <!-- PÁGINA INICIAL -->
     <div id="view-home" class="view-section active">
         <div class="pulse-title-container text-center">
             <h1 class="pulse-hero-title">PULSE</h1>
@@ -260,6 +260,18 @@
 
     <!-- NOTIFICAÇÃO FLUTUANTE (TOAST) -->
     <div id="pulse-toast" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:12px 24px; border-radius:12px; font-weight:bold; z-index:20000; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; transition: opacity 0.3s; width: 90%; max-width: 350px;"></div>
+
+    <!-- MODAL PARA REGISTAR HISTÓRICO VAZIO -->
+    <div id="manual-history-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+            <h3 style="color: white; margin-bottom: 10px;">📅 Registar Dia</h3>
+            <p id="manual-history-date-text" style="color: var(--muted); font-size: 13px; margin-bottom: 20px;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmManualHistory()" style="background: var(--success); flex: 1; padding: 12px; font-size: 14px;">Sim, Registar</button>
+                <button class="beast-action-btn" onclick="closeManualHistoryModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 14px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
