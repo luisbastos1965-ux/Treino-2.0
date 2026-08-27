@@ -10,6 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="assets/img/logo.png">
     
+    <!-- Bibliotecas Externas (Chart e Imagem) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -81,19 +82,19 @@
         </div>
     </div>
 
-    <!-- PÁGINA INICIAL (AGORA TRANCADA E SEM SCROLL) -->
+    <!-- PÁGINA INICIAL (LIMPA, TRANCADA E COM HALTÉRES LARGOS) -->
     <div id="view-home" class="view-section active">
         <div class="pulse-title-container text-center">
             <h1 class="pulse-hero-title">PULSE</h1>
         </div>
 
-        <div id="menu-rack" class="rack-container" style="margin-top:20px;">
+        <div id="menu-rack" class="rack-container">
             <button class="rack-btn" onclick="navigateTo('view-treino')"><div class="db-end left"></div><div class="db-bar">TREINAR</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-construtor')"><div class="db-end left"></div><div class="db-bar">CONSTRUTOR</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-evolucao')"><div class="db-end left"></div><div class="db-bar">PROGRESSO</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-dieta')"><div class="db-end left"></div><div class="db-bar">NUTRIÇÃO</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-calendario')"><div class="db-end left"></div><div class="db-bar">HISTÓRICO</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-perfil')"><div class="db-end left"></div><div class="db-bar">ID CARTÃO</div><div class="db-end right"></div></button>
+            <button class="rack-btn" onclick="navigateTo('view-perfil')"><div class="db-end left"></div><div class="db-bar">PERFIL</div><div class="db-end right"></div></button>
         </div>
     </div>
 
@@ -208,11 +209,12 @@
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155;"><div style="color: var(--muted); font-size: 12px;">Massa Gorda (RFM)</div><div id="calc-bf" style="font-size: 28px; font-weight: bold; margin-top: 5px;">--%</div></div>
         </div>
         
-        <!-- MISSÕES E CONQUISTAS JUNTAS AQUI -->
+        <!-- MISSÕES MOVIDAS PARA AQUI -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <h3 class="text-center">🎯 Missão Atual</h3>
             <div id="profile-mission-display"></div>
         </div>
+
         <div class="goal-container" style="margin-bottom: 20px;"><h3 class="text-center">🏆 As Tuas Conquistas</h3><div id="achievements-list"></div></div>
         
         <div class="goal-container" style="margin-bottom: 20px;">
