@@ -3,28 +3,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     overflow: hidden;
     height: 100vh;
     max-height: -webkit-fill-available;
     touch-action: none; /* Bloqueia o "arrastar" acidental para cima/baixo */
-    background: #0f172a;
-}
-
-.pulse-title-container {
-    width: 100%;
-    margin-top: 5vh;
-    margin-bottom: auto; 
-}
-
-.rack-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2.5vh; 
-    width: 100%;
-    margin-bottom: 5vh; 
-    padding: 10px; 
 }
 
 /* --- BEAST MODE OVERLAY --- */
