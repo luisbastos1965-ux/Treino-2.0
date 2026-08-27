@@ -2,6 +2,24 @@
 // BEASTMODE.JS: FOCO IMERSIVO E COACH DE VOZ
 // ==========================================
 
+let wakeLock = null;
+
+// Função para manter o ecrã ligado
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock ativo. Ecrã não vai adormecer.');
+        }
+    } catch (err) { console.error('Wake Lock falhou:', err); }
+}
+
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release().then(() => { wakeLock = null; console.log('Wake Lock desativado.'); });
+    }
+}
+
 function startBeastMode() {
     const exercises = workoutData[currentDay];
     if (!exercises || exercises.length === 0) {
@@ -12,6 +30,7 @@ function startBeastMode() {
     beastState.exIdx = 0;
     beastState.setIdx = 1;
     document.getElementById('beast-mode-overlay').style.display = 'flex';
+    requestWakeLock(); // Liga o ecrã constante
     renderBeastMode();
 }
 
@@ -48,7 +67,7 @@ function renderBeastMode() {
     checkProgressiveOverload(ex.name);
 }
 
-function completeBeastSet(skipRest = false, isDropSet = false) {
+function completeBeastSet(skipRest = false, isDropSet = false, isSuperset = false) {
     if ("vibrate" in navigator) navigator.vibrate(200);
 
     const exercises = workoutData[currentDay];
@@ -92,6 +111,11 @@ function completeBeastSet(skipRest = false, isDropSet = false) {
     if (isDropSet) {
         ex.sets++; 
         beastState.setIdx++;
+    } else if (isSuperset) {
+        // Fluxo de Supersérie: Salta para o ex seguinte sem avançar a SetIdx do atual
+        if (beastState.exIdx < exercises.length - 1) {
+            beastState.exIdx++;
+        }
     } else {
         beastState.setIdx++;
         if (beastState.setIdx > ex.sets) {
@@ -104,7 +128,9 @@ function completeBeastSet(skipRest = false, isDropSet = false) {
         if (skipRest) {
             renderBeastMode();
         } else {
-            startTimer(90); 
+            // Usa o temporizador inteligente baseado no exercício
+            let restTime = typeof getSmartRestTime === 'function' ? getSmartRestTime(ex.name) : 90;
+            startTimer(restTime); 
             renderBeastMode();
         }
     } else {
@@ -132,18 +158,19 @@ function nextBeastExercise() {
 
 function exitBeastMode() {
     beastState.active = false;
+    releaseWakeLock(); // Desliga a proteção do ecrã
     document.getElementById('beast-mode-overlay').style.display = 'none';
     if(typeof renderWorkout === 'function') renderWorkout(); 
 }
 
 function triggerDropSet() {
     if (voiceCoachActive) speakVoiceCoach("Drop set ativado. Tira algum peso e continua, sem desculpas!");
-    completeBeastSet(true, true);
+    completeBeastSet(true, true, false);
 }
 
 function triggerSuperset() {
-    if (voiceCoachActive) speakVoiceCoach("Supersérie concluída. Passa imediatamente para o próximo movimento!");
-    completeBeastSet(true, false);
+    if (voiceCoachActive) speakVoiceCoach("Supersérie iniciada. Salta já para o próximo exercício sem descansar!");
+    completeBeastSet(true, false, true); // O 'true' final indica fluxo de Supersérie
 }
 
 function toggleVoiceCoach() {
@@ -266,7 +293,10 @@ function startTimer(seconds) {
             triggerVoiceWarning();
         }
 
-        if (timeLeft <= 0) endTimer();
+        if (timeLeft <= 0) {
+            if ("vibrate" in navigator) navigator.vibrate([200, 100, 200]);
+            endTimer();
+        }
     }, 1000);
 
     gameInterval = setInterval(() => {
