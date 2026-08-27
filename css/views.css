@@ -66,7 +66,7 @@
 .set-input { width: 50px; padding: 6px; border-radius: 6px; border: none; background: var(--bg-color); color: white; text-align: center; font-size: 14px; }
 .remove-btn { background: var(--danger); color: white; border: none; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* --- CALCULADORA DE DISCOS (PLATE MATH) --- */
+/* --- CALCULADORA DE DISCOS (PLATE MATH 2.0) --- */
 .plate-calc-btn { background: transparent; border: none; font-size: 20px; cursor: pointer; padding: 0 5px; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 .plate-calc-btn:active { transform: scale(0.9); }
 .plate-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; }
@@ -74,6 +74,10 @@
 .plate-info { display: flex; align-items: center; color: white; font-size: 14px; font-weight: bold; }
 .plate-color-box { width: 16px; height: 16px; border-radius: 4px; margin-right: 12px; }
 .plate-qty { background: #334155; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 14px; }
+/* Seletor de Tipo de Barra no Modal */
+.bar-type-selector { display:flex; gap:5px; justify-content:center; margin-bottom:15px; }
+.bar-type-btn { background:#1e293b; border:1px solid #334155; color:white; padding:8px 12px; border-radius:8px; font-size:11px; cursor:pointer; }
+.bar-type-btn.active { background:var(--accent); color:black; border-color:var(--accent); font-weight:bold; }
 
 /* --- CALENDÁRIO --- */
 .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -108,39 +112,13 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
 
 /* --- EXTRA: DIETA E CONQUISTAS --- */
 .punishment-btn {
-    background: linear-gradient(135deg, #ef4444, #991b1b);
-    color: white;
-    font-weight: bold;
-    border: none;
-    padding: 15px;
-    border-radius: 12px;
-    width: 100%;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
-    font-size: 16px;
-    margin-top: 15px;
+    background: linear-gradient(135deg, #ef4444, #991b1b); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); font-size: 16px; margin-top: 15px;
 }
-
 .recipe-btn {
-    background: #334155;
-    color: var(--accent);
-    font-weight: bold;
-    border: 1px solid var(--accent);
-    padding: 15px;
-    border-radius: 12px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 15px;
+    background: #334155; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px;
 }
-
-#history-details-content::-webkit-scrollbar {
-    width: 6px;
-}
-#history-details-content::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 10px;
-}
+#history-details-content::-webkit-scrollbar { width: 6px; }
+#history-details-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
 /* --- NOVAS FUNCIONALIDADES: JEJUM, ÁGUA, STREAKS --- */
 .streak-badge { background: linear-gradient(135deg, #f97316, #ef4444); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); }
@@ -156,3 +134,13 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
 .set-type-btn.warmup { filter: grayscale(0%); opacity: 0.7; }
 .exercise-notes { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #334155; color: var(--accent); font-size: 12px; padding: 5px 0; margin-top: 10px; font-style: italic; }
 .exercise-notes:focus { outline: none; border-bottom-color: var(--success); }
+
+/* Animação para o Pain Tracker no V-Taper (Piscar Vermelho) */
+@keyframes pulsePain {
+    0% { fill: #334155; }
+    50% { fill: #ef4444; }
+    100% { fill: #334155; }
+}
+.muscle-pain-active {
+    animation: pulsePain 2s infinite;
+}
