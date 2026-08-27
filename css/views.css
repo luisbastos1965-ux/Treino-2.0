@@ -175,3 +175,69 @@ body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, 
 .discipline-block { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
 .discipline-wall::-webkit-scrollbar { height: 4px; }
 .discipline-wall::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+/* --- CORREÇÃO DO ECRÃ INICIAL E DOS HALTERES --- */
+#view-home.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Puxa tudo para cima */
+    align-items: center;
+    padding-top: 12vh; /* Dá espaço no topo para o título Pulse */
+    overflow: hidden;
+    height: 100vh;
+    max-height: -webkit-fill-available;
+    touch-action: none;
+}
+
+.pulse-title-container {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.rack-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px; /* Dá espaço a respirar entre cada haltere */
+    margin-top: 20px;
+    width: 100%;
+}
+
+.rack-btn {
+    display: flex;
+    align-items: center;
+    width: 85%; /* Quase a largura total da página */
+    max-width: 380px; /* Não fica absurdamente gigante em tablets */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.rack-btn:active {
+    transform: scale(0.95);
+}
+
+.db-bar {
+    flex: 1; /* Obriga o texto a esticar pelo espaço disponível */
+    background: #334155;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 16px 0;
+    text-align: center;
+    border-top: 2px solid #475569;
+    border-bottom: 2px solid #0f172a;
+    letter-spacing: 1px;
+    white-space: nowrap; /* Impede o texto de quebrar a linha */
+}
+
+.db-end {
+    width: 25px;
+    height: 48px;
+    background: #1e293b;
+    border-radius: 6px;
+    border: 2px solid #0f172a;
+}
+.db-end.left { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.db-end.right { border-top-left-radius: 0; border-bottom-left-radius: 0; }
