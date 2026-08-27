@@ -7,6 +7,7 @@
     height: 100vh;
     max-height: -webkit-fill-available;
     touch-action: none; /* Bloqueia o "arrastar" acidental para cima/baixo */
+    gap: 4vh;
 }
 
 /* --- BEAST MODE OVERLAY --- */
@@ -97,6 +98,7 @@
     align-items: center;
     gap: 16px; 
     width: 100%;
+    margin: 0;
 }
 
 .rack-btn {
