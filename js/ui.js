@@ -321,6 +321,21 @@ function updateProfileData() {
     userProfile.name = document.getElementById('prof-name').value; userProfile.age = parseInt(document.getElementById('prof-age').value) || 25; userProfile.gender = document.getElementById('prof-gender').value; userProfile.height = parseInt(document.getElementById('prof-height').value) || 170; userProfile.weight = parseInt(document.getElementById('prof-weight').value) || 70; userProfile.activity = parseFloat(document.getElementById('prof-activity').value) || 1.55; userProfile.goal = document.getElementById('prof-goal').value;
     if (!userProfile.measurements) userProfile.measurements = {}; userProfile.measurements.arm = document.getElementById('meas-arm').value; userProfile.measurements.chest = document.getElementById('meas-chest').value; userProfile.measurements.waist = document.getElementById('meas-waist').value; userProfile.measurements.leg = document.getElementById('meas-leg').value;
     localStorage.setItem('gym_profile', JSON.stringify(userProfile)); document.getElementById('height-val').innerText = userProfile.height; document.getElementById('weight-val').innerText = userProfile.weight;
+    
+    // ATUALIZAÇÃO IMEDIATA DO AVATAR E NOME
+    let displayName = userProfile.name ? userProfile.name : "Titã Misterioso";
+    document.getElementById('profile-display-name').innerText = displayName;
+    let initials = "--";
+    if (userProfile.name) {
+        let nameParts = userProfile.name.trim().split(' ');
+        if (nameParts.length >= 2) {
+            initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+        } else if (nameParts.length === 1 && nameParts[0].length > 0) {
+            initials = nameParts[0].substring(0, 2).toUpperCase();
+        }
+    }
+    document.getElementById('avatar-initials').innerText = initials;
+
     const bmi = userProfile.weight / Math.pow(userProfile.height / 100, 2); document.getElementById('calc-bmi').innerText = bmi.toFixed(1);
     let bmiStatus = "Normal"; let bmiColor = "var(--success)"; if (bmi < 18.5) { bmiStatus = "Baixo Peso"; bmiColor = "var(--accent)"; } else if (bmi >= 25 && bmi < 30) { bmiStatus = "Excesso de Peso"; bmiColor = "#f59e0b"; } else if (bmi >= 30) { bmiStatus = "Obesidade"; bmiColor = "var(--danger)"; }
     document.getElementById('calc-bmi-status').innerText = bmiStatus; document.getElementById('calc-bmi-status').style.color = bmiColor;
@@ -333,6 +348,7 @@ function updateProfileData() {
 
     renderDieta(); calculateBodyFat();
 }
+
 function renderAchievements() {
     const container = document.getElementById('achievements-list'); if(!container) return; container.innerHTML = '';
     allAchievements.forEach(ach => { const isUnlocked = achievementsUnlocked.includes(ach.id); const filter = isUnlocked ? 'none' : 'grayscale(100%) opacity(0.3)'; const color = isUnlocked ? 'var(--accent)' : 'var(--muted)'; container.innerHTML += `<div style="display:flex; align-items:center; gap:15px; padding:12px; background:var(--bg-color); border-radius:12px; margin-bottom:10px; filter:${filter}; transition:0.3s;"><div style="font-size:30px; background:#1e293b; padding:10px; border-radius:50%; border:2px solid ${color};">${ach.icon}</div><div><h4 style="color:white; margin:0; font-size:15px;">${ach.title}</h4><p style="color:var(--muted); font-size:12px; margin-top:3px;">${ach.desc}</p></div></div>`; });
