@@ -4,7 +4,6 @@
 
 let wakeLock = null;
 
-// Função para manter o ecrã ligado
 async function requestWakeLock() {
     try {
         if ('wakeLock' in navigator) {
@@ -20,17 +19,30 @@ function releaseWakeLock() {
     }
 }
 
+// CRASH RECOVERY
+function backupActiveSession() {
+    let backup = { day: currentDay, state: beastState, workout: workoutData[currentDay] };
+    localStorage.setItem('gym_active_session', JSON.stringify(backup));
+}
+
+// MICRO-LOADING BUTTONS
+function adjustVal(id, amount) {
+    let el = document.getElementById(id); if(!el) return;
+    let current = parseFloat(el.value || el.placeholder || 0);
+    let newVal = Math.max(0, current + amount);
+    el.value = (newVal % 1 !== 0) ? newVal.toFixed(1) : newVal; 
+}
+
 function startBeastMode() {
     const exercises = workoutData[currentDay];
     if (!exercises || exercises.length === 0) {
         alert('Não há exercícios para este dia! Usa o Construtor para criar um treino.');
         return;
     }
-    beastState.active = true;
-    beastState.exIdx = 0;
-    beastState.setIdx = 1;
+    beastState.active = true; beastState.exIdx = 0; beastState.setIdx = 1;
     document.getElementById('beast-mode-overlay').style.display = 'flex';
-    requestWakeLock(); // Liga o ecrã constante
+    requestWakeLock(); 
+    backupActiveSession(); 
     renderBeastMode();
 }
 
@@ -48,7 +60,7 @@ function renderBeastMode() {
 
     const weightInput = document.getElementById('beast-weight');
     const repsInput = document.getElementById('beast-reps');
-    
+
     weightInput.value = '';
     repsInput.value = '';
 
@@ -72,7 +84,7 @@ function completeBeastSet(skipRest = false, isDropSet = false, isSuperset = fals
 
     const exercises = workoutData[currentDay];
     const ex = exercises[beastState.exIdx];
-    
+
     const bw = document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder;
     const br = document.getElementById('beast-reps').value || document.getElementById('beast-reps').placeholder;
     const brir = document.getElementById('beast-rir').value;
@@ -123,6 +135,8 @@ function completeBeastSet(skipRest = false, isDropSet = false, isSuperset = fals
         }
     }
 
+    backupActiveSession(); 
+
     if (beastState.exIdx < exercises.length) {
         if (skipRest) {
             renderBeastMode();
@@ -141,6 +155,7 @@ function prevBeastExercise() {
     if (beastState.exIdx > 0) {
         beastState.exIdx--;
         beastState.setIdx = 1;
+        backupActiveSession();
         renderBeastMode();
     }
 }
@@ -150,6 +165,7 @@ function nextBeastExercise() {
     if (beastState.exIdx < exercises.length - 1) {
         beastState.exIdx++;
         beastState.setIdx = 1;
+        backupActiveSession();
         renderBeastMode();
     }
 }
@@ -157,6 +173,7 @@ function nextBeastExercise() {
 function exitBeastMode() {
     beastState.active = false;
     releaseWakeLock(); 
+    localStorage.removeItem('gym_active_session');
     document.getElementById('beast-mode-overlay').style.display = 'none';
     if(typeof renderWorkout === 'function') renderWorkout(); 
 }
@@ -210,7 +227,7 @@ function checkProgressiveOverload(exerciseName) {
             const match = Array.isArray(session.exercises) 
                 ? session.exercises.find(e => e.name.toLowerCase() === exerciseName.toLowerCase())
                 : (session.exercises[exerciseName] ? {setsDetails: session.exercises[exerciseName]} : null);
-                
+
             if (match && match.setsDetails && match.setsDetails.length > 0) {
                 lastSetFound = match.setsDetails[0]; break;
             } else if (session.exercises[exerciseName] && Array.isArray(session.exercises[exerciseName])) {
@@ -258,10 +275,10 @@ function startTimer(seconds) {
     const display = document.getElementById('rest-time-display');
     const scoreDisplay = document.getElementById('game-score');
     const barbell = document.getElementById('barbell');
-    
+
     if (overlay) overlay.style.display = 'flex';
-    
-    // Novo Sistema Timestamp
+
+    // Sistema Timestamp
     let targetTime = Date.now() + (seconds * 1000);
     let spokeWarning = false;
 
@@ -272,9 +289,9 @@ function startTimer(seconds) {
     timerInterval = setInterval(() => {
         let timeLeft = Math.ceil((targetTime - Date.now()) / 1000);
         if (timeLeft < 0) timeLeft = 0;
-        
+
         if (display) display.innerText = timeLeft + 's';
-        
+
         if (timeLeft <= 10 && timeLeft > 0 && voiceCoachActive && !spokeWarning) {
             spokeWarning = true;
             triggerVoiceWarning();
@@ -289,11 +306,11 @@ function startTimer(seconds) {
     gameInterval = setInterval(() => {
         barbellVelocity += 0.8; 
         barbellY += barbellVelocity;
-        
+
         if (barbellY > 90) { barbellY = 90; barbellVelocity = 0; }
         if (barbellY < 10) { barbellY = 10; barbellVelocity = 0; }
         if (barbell) barbell.style.top = barbellY + '%';
-        
+
         if (barbellY >= 30 && barbellY <= 70) {
             gameTicks++;
             if(gameTicks % 30 === 0) {
