@@ -27,11 +27,9 @@ let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity =
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] }; let beastState = { active: false, exIdx: 0, setIdx: 0 };
 let currentSwapIndex = -1; let fastingInterval = null;
 
-// Lógica de Deload Automático e Tema
-let isDeloadMode = false;
-let appTheme = localStorage.getItem('gym_theme') || 'default';
-document.body.setAttribute('data-theme', appTheme);
+let isDeloadMode = false; let appTheme = localStorage.getItem('gym_theme') || 'default'; document.body.setAttribute('data-theme', appTheme);
 
+// BD Locais
 let history = JSON.parse(localStorage.getItem('gym_tracker_history')) || [];
 let savedRoutines = JSON.parse(localStorage.getItem('gym_saved_routines')) || [];
 let userProfile = JSON.parse(localStorage.getItem('gym_profile')) || { name: '', age: 25, gender: 'male', height: 170, weight: 70, activity: '1.55', goal: 'maintain', measurements: { arm: '', chest: '', waist: '', leg: '' } };
@@ -43,13 +41,14 @@ let fastingState = JSON.parse(localStorage.getItem('gym_fasting')) || { active: 
 let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
 let activeMission = JSON.parse(localStorage.getItem('gym_mission')) || null;
 let painTracker = JSON.parse(localStorage.getItem('gym_pain_tracker')) || [];
-
 let customExercisesDB = JSON.parse(localStorage.getItem('gym_custom_exercises')) || [];
 exerciseLibrary.push(...customExercisesDB);
 
-// Lógica do Debrief
-let lastDebriefDate = localStorage.getItem('gym_last_debrief') || '';
+// Anti-Crash & Meal Prep
+let activeSessionBackup = JSON.parse(localStorage.getItem('gym_active_session')) || null;
+let groceryList = JSON.parse(localStorage.getItem('gym_groceries')) || [];
 
+let lastDebriefDate = localStorage.getItem('gym_last_debrief') || '';
 let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
 let waterIntake = JSON.parse(localStorage.getItem('gym_water')) || { date: new Date().toLocaleDateString('pt-PT'), ml: 0 };
 if (dailyIntake.date !== new Date().toLocaleDateString('pt-PT')) { dailyIntake = { date: new Date().toLocaleDateString('pt-PT'), foods: [] }; localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); }
