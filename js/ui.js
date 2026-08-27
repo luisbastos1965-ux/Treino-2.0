@@ -248,11 +248,46 @@ function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) {
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
 // --- PERFIL E SBD TOTAL E MISSÕES ---
+let isProfileEditing = false;
+function toggleProfileEdit() {
+    isProfileEditing = !isProfileEditing;
+    const formContainer = document.getElementById('profile-form-container');
+    const editBtn = document.getElementById('btn-edit-profile');
+    
+    if (isProfileEditing) {
+        formContainer.style.opacity = '1';
+        formContainer.style.pointerEvents = 'auto';
+        editBtn.innerHTML = '💾 Gravar';
+        editBtn.style.background = 'var(--success)';
+        editBtn.style.borderColor = 'var(--success)';
+    } else {
+        formContainer.style.opacity = '0.7';
+        formContainer.style.pointerEvents = 'none';
+        editBtn.innerHTML = '✏️ Editar Perfil';
+        editBtn.style.background = 'rgba(0,0,0,0.5)';
+        editBtn.style.borderColor = 'var(--accent)';
+        updateProfileData(); 
+    }
+}
+
 function renderProfile() {
     document.getElementById('prof-name').value = userProfile.name || ''; document.getElementById('prof-age').value = userProfile.age || 25; document.getElementById('prof-gender').value = userProfile.gender || 'male'; document.getElementById('prof-height').value = userProfile.height || 170; document.getElementById('prof-weight').value = userProfile.weight || 70; document.getElementById('prof-activity').value = userProfile.activity || '1.55'; document.getElementById('prof-goal').value = userProfile.goal || 'maintain';
     if (userProfile.measurements) { document.getElementById('meas-arm').value = userProfile.measurements.arm || ''; document.getElementById('meas-chest').value = userProfile.measurements.chest || ''; document.getElementById('meas-waist').value = userProfile.measurements.waist || ''; document.getElementById('meas-leg').value = userProfile.measurements.leg || ''; }
     
-    // POWERLIFTING SBD TOTAL
+    let displayName = userProfile.name ? userProfile.name : "Titã Misterioso";
+    document.getElementById('profile-display-name').innerText = displayName;
+    
+    let initials = "--";
+    if (userProfile.name) {
+        let nameParts = userProfile.name.trim().split(' ');
+        if (nameParts.length >= 2) {
+            initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+        } else if (nameParts.length === 1 && nameParts[0].length > 0) {
+            initials = nameParts[0].substring(0, 2).toUpperCase();
+        }
+    }
+    document.getElementById('avatar-initials').innerText = initials;
+    
     let bestSquat=0, bestBench=0, bestDead=0;
     history.forEach(log => {
         if(log.exercises) {
