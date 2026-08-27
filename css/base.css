@@ -15,6 +15,11 @@
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* BLOQUEIA O PULL-TO-REFRESH E O "BOUNCE" DO ECRÃ */
+html, body {
+    overscroll-behavior-y: none;
+}
+
 body {
     background-color: var(--bg-color);
     /* Novo Fundo Cyberpunk (Malha subtil) */
@@ -29,15 +34,13 @@ body {
     color: var(--text);
     padding: 15px;
     padding-bottom: 110px; /* Garante espaço de sobra para não cobrir itens no final */
-}
 
-/* --- BLOQUEAR SELEÇÃO DE TEXTO (ASPETO DE APP NATIVA) --- */
-body {
+    /* --- BLOQUEAR SELEÇÃO DE TEXTO (ASPETO DE APP NATIVA) --- */
     -webkit-user-select: none; /* Safari / iOS */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE/Edge */
     user-select: none; /* Standard */
-    -webkit-tap-highlight-color: transparent; /* Remove aquele piscar cinzento irritante ao tocar no ecrã no telemóvel */
+    -webkit-tap-highlight-color: transparent; /* Remove piscar cinzento ao tocar no ecrã */
 }
 
 /* Permitir seleção e escrita apenas onde interessa (Inputs e Selects) */
