@@ -178,31 +178,33 @@ body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, 
 
 dius: 0; border-bottom-left-radius: 0; }
 
-/* --- ECRÃ INICIAL E HALTERES (DESIGN ORIGINAL RESTAURADO E AFINADO) --- */
+/* --- ECRÃ INICIAL E HALTERES (DESIGN CORRIGIDO E CENTRADO) --- */
 #view-home.active {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Encosta os botões todos para baixo */
+    justify-content: center;
     align-items: center;
     overflow: hidden;
     height: 100vh;
     max-height: -webkit-fill-available;
     touch-action: none;
-    padding-bottom: 12vh; /* Fixa o botão PERFIL no sítio exato da tua foto */
+    background: #0f172a;
 }
 
 .pulse-title-container {
     width: 100%;
-    margin-top: 12vh; /* Puxa o título PULSE lá para cima */
-    margin-bottom: auto; /* A magia: cria um espaço invisível que afasta o Título do Rack */
+    margin-top: 10vh; /* Fixa o título PULSE confortavelmente no topo */
+    margin-bottom: auto; /* Funciona como uma mola: empurra a Rack para baixo */
 }
 
 .rack-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3.5vh; /* Aumenta o espaço entre os halteres (dinâmico com o tamanho do ecrã) */
+    gap: 4vh; /* Dá um fosso dinâmico lindo entre os halteres */
     width: 100%;
+    margin-bottom: 10vh; /* Levanta o Haltere PERFIL do fundo (acaba com o corte) */
+    padding: 10px; /* Garante espaço lateral para as sombras existirem */
 }
 
 .rack-btn {
