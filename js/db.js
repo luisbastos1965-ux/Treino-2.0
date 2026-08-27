@@ -20,7 +20,48 @@ let exerciseLibrary = [
 ];
 
 const recipesDB = [ { name: "Papas de Aveia Titã", type: "Pequeno-Almoço", cals: 450, pro: 35, desc: "60g aveia, 1 scoop whey, 150ml leite, canela." }, { name: "Arroz de Frango Anabólico", type: "Pós-Treino", cals: 600, pro: 50, desc: "150g peito de frango, 100g arroz basmati, brócolos." } ];
-const allAchievements = [ { id: 'first_blood', icon: '🩸', title: 'Primeiro Sangue', desc: 'Completaste o teu primeiro treino.', reqWorkouts: 1 }, { id: 'consistency', icon: '🔥', title: 'Máquina Oleada', desc: 'Completaste 10 treinos.', reqWorkouts: 10 }, { id: 'titan', icon: '🦍', title: 'Titã do Ferro', desc: 'Completaste 50 treinos.', reqWorkouts: 50 }, { id: 'volume_10k', icon: '🧱', title: 'Construtor', desc: 'Moveste 10.000 kg de volume total.', reqVol: 10000 }, { id: 'volume_100k', icon: '🏗️', title: 'Guindaste', desc: 'Moveste 100.000 kg de volume total.', reqVol: 100000 } ];
+
+// NOVO SISTEMA MASSIVO DE CONQUISTAS
+const allAchievements = [
+    // --- ASSIDUIDADE (Treinos Concluídos) ---
+    { id: 'w_1', title: 'Primeiro Sangue', desc: 'Completaste o teu 1º treino.', reqWorkouts: 1, icon: '🩸' },
+    { id: 'w_5', title: 'O Despertar', desc: 'Completaste 5 treinos.', reqWorkouts: 5, icon: '👀' },
+    { id: 'w_10', title: 'Disciplina Iniciada', desc: 'Completaste 10 treinos.', reqWorkouts: 10, icon: '🌱' },
+    { id: 'w_25', title: 'Hábito Forjado', desc: 'Completaste 25 treinos.', reqWorkouts: 25, icon: '🔥' },
+    { id: 'w_50', title: 'Meio Centenário', desc: 'Completaste 50 treinos.', reqWorkouts: 50, icon: '🥉' },
+    { id: 'w_100', title: 'Centurião', desc: 'Completaste 100 treinos.', reqWorkouts: 100, icon: '🥈' },
+    { id: 'w_200', title: 'Duplo Centurião', desc: 'Completaste 200 treinos.', reqWorkouts: 200, icon: '🥇' },
+    { id: 'w_365', title: 'O Ano de Ferro', desc: 'Completaste 365 treinos.', reqWorkouts: 365, icon: '📅' },
+    { id: 'w_500', title: 'Meio Milhar', desc: 'Completaste 500 treinos.', reqWorkouts: 500, icon: '💎' },
+    { id: 'w_1000', title: 'Lenda do Ginásio', desc: 'Completaste 1000 treinos.', reqWorkouts: 1000, icon: '👑' },
+
+    // --- CARGA BRUTA MOVIDA (Tonagem Total) ---
+    { id: 'v_1k', title: 'Levantador Leve', desc: 'Moveste 1.000 kg no total.', reqVol: 1000, icon: '🪶' },
+    { id: 'v_5k', title: 'Aquecimento Feito', desc: 'Moveste 5.000 kg no total.', reqVol: 5000, icon: '💨' },
+    { id: 'v_10k', title: '10 Toneladas', desc: 'Moveste 10.000 kg no total.', reqVol: 10000, icon: '🚗' },
+    { id: 'v_25k', title: 'Camião de Carga', desc: 'Moveste 25.000 kg no total.', reqVol: 25000, icon: '🚚' },
+    { id: 'v_50k', title: '50 Toneladas', desc: 'Moveste 50.000 kg no total.', reqVol: 50000, icon: '🐘' },
+    { id: 'v_100k', title: 'Cem Toneladas', desc: 'Moveste 100.000 kg no total.', reqVol: 100000, icon: '🐋' },
+    { id: 'v_250k', title: 'Um Quarto de Milhão', desc: 'Moveste 250.000 kg no total.', reqVol: 250000, icon: '🏗️' },
+    { id: 'v_500k', title: "Meio Milhão", desc: "Moveste 500.000 kg no total.", reqVol: 500000, icon: "🚂" },
+    { id: 'v_1m', title: "O Milionário", desc: "Moveste 1.000.000 kg no total.", reqVol: 1000000, icon: "🚢" },
+    { id: 'v_2m', title: "A Montanha", desc: "Moveste 2.000.000 kg no total.", reqVol: 2000000, icon: "🏔️" },
+    { id: 'v_5m', title: "Atlas", desc: "Moveste 5.000.000 kg no total.", reqVol: 5000000, icon: "🌍" },
+
+    // --- MARCOS ESPECÍFICOS ---
+    // SUPINO
+    { id: 'b_60', title: 'O Standard', desc: 'Levantaste 60kg no Supino Plano.', reqBench: 60, icon: '🛡️' },
+    { id: 'b_100', title: 'As Duas Chapas', desc: 'Levantaste 100kg no Supino Plano.', reqBench: 100, icon: '💿' },
+    { id: 'b_140', title: 'Peitoral Mutante', desc: 'Levantaste 140kg no Supino Plano.', reqBench: 140, icon: '🦍' },
+    // AGACHAMENTO
+    { id: 's_100', title: 'Pernas de Aço', desc: 'Levantaste 100kg no Agachamento.', reqSquat: 100, icon: '🦵' },
+    { id: 's_140', title: 'Três Chapas', desc: 'Levantaste 140kg no Agachamento.', reqSquat: 140, icon: '🚜' },
+    { id: 's_180', title: 'Colunas do Templo', desc: 'Levantaste 180kg no Agachamento.', reqSquat: 180, icon: '🏛️' },
+    // PESO MORTO
+    { id: 'd_100', title: 'Força Bruta', desc: 'Levantaste 100kg no Peso Morto.', reqDeadlift: 100, icon: '💥' },
+    { id: 'd_140', title: 'Levanta-Mortos', desc: 'Levantaste 140kg no Peso Morto.', reqDeadlift: 140, icon: '🧟' },
+    { id: 'd_200', title: 'Urso Pardo', desc: 'Levantaste 200kg no Peso Morto.', reqDeadlift: 200, icon: '🐻' }
+];
 
 let currentDay = 'PUSH'; let currentCalendarDate = new Date(); let chartInstance;
 let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity = 0, score = 0; let currentModalExercise = ""; let voiceCoachActive = false; let deleteMode = false; 
