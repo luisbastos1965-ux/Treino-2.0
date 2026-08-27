@@ -3,11 +3,30 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     overflow: hidden;
     height: 100vh;
     max-height: -webkit-fill-available;
     touch-action: none; /* Bloqueia o "arrastar" acidental para cima/baixo */
-    gap: 4vh;
+    gap: 3.5vh;
+    margin: 0;
+    padding: 0; /* Removemos o padding que empurrava tudo para baixo */
+}
+
+/* --- CAIXA DO TÍTULO (Para garantir o centro absoluto) --- */
+.pulse-title-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pulse-hero-title {
+    margin: 0;
+    padding: 0;
+    line-height: 1; /* Elimina as folgas invisíveis da fonte */
 }
 
 /* --- BEAST MODE OVERLAY --- */
