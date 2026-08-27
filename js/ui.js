@@ -267,13 +267,37 @@ function renderCalendar() {
     }
 }
 function changeMonth(direction) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction); renderCalendar(); }
+
+let selectedCalendarDate = '';
+
 function showHistoryDetails(dateString) {
     const sessions = history.filter(h => h.date === dateString);
-    if (sessions.length === 0) { if(confirm("Registar treino vazio neste dia?")) { history.push({ date: dateString, day: 'MANUAL', exercises: {} }); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); renderCalendar(); } return; }
+    if (sessions.length === 0) {
+        selectedCalendarDate = dateString;
+        document.getElementById('manual-history-date-text').innerText = `Queres registar um dia de treino em ${dateString}?`;
+        document.getElementById('manual-history-modal').style.display = 'flex';
+        return;
+    }
     let html = ''; sessions.forEach(session => { let vol = 0; let exs = 0; if(session.exercises) Object.entries(session.exercises).forEach(([ex, sets]) => { exs++; sets.forEach(s => { if(s.type !== 'W') vol += (s.weight||s.w||0) * (s.reps||s.r||0); }); }); html += `<div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent); text-align:left;"><h4 style="color:white; margin-bottom:5px;">${session.day || 'Treino'}</h4><p style="color:var(--muted); font-size:12px;">Exercícios: ${exs} | Tonagem: ${Math.round(vol)}kg</p></div>`; });
     html += `<button onclick="deleteDayHistory('${dateString}')" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;">Apagar Registo</button>`;
     document.getElementById('history-details-content').innerHTML = html; document.getElementById('history-modal-date').innerText = dateString; document.getElementById('history-details-modal').style.display = 'flex';
 }
+
+function confirmManualHistory() {
+    if (selectedCalendarDate) {
+        history.push({ date: selectedCalendarDate, day: 'MANUAL', exercises: {} }); 
+        localStorage.setItem('gym_tracker_history', JSON.stringify(history)); 
+        closeManualHistoryModal(); 
+        renderCalendar(); 
+        showPulseToast("✅ Dia registado com sucesso!");
+    }
+}
+
+function closeManualHistoryModal() {
+    document.getElementById('manual-history-modal').style.display = 'none';
+    selectedCalendarDate = '';
+}
+
 function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); showPulseToast("🗑️ Registo apagado."); } }
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
