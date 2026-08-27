@@ -88,16 +88,160 @@ function generateWorkoutLogic(focus, fatigue, library) {
 
 function updateGamificationLogic() {
     let today = new Date(); let todayStr = today.toLocaleDateString('pt-PT');
-    if (appStreaks.lastDate !== todayStr) { if (!appStreaks.lastDate) { appStreaks.current = 1; } else { let parts = appStreaks.lastDate.split('/'); let lastDateObj = new Date(parts[2], parts[1]-1, parts[0]); let diffDays = Math.ceil(Math.abs(today - lastDateObj) / (1000 * 60 * 60 * 24)); if (diffDays === 1) appStreaks.current += 1; else if (diffDays > 2) appStreaks.current = 1; } appStreaks.lastDate = todayStr; localStorage.setItem('gym_streaks', JSON.stringify(appStreaks)); }
+    let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
+    
+    if (appStreaks.lastDate !== todayStr) { 
+        if (!appStreaks.lastDate) { 
+            appStreaks.current = 1; 
+        } else { 
+            let parts = appStreaks.lastDate.split('/'); let lastDateObj = new Date(parts[2], parts[1]-1, parts[0]); 
+            let diffDays = Math.ceil(Math.abs(today - lastDateObj) / (1000 * 60 * 60 * 24)); 
+            if (diffDays === 1) appStreaks.current += 1; 
+            else if (diffDays > 2) appStreaks.current = 1; 
+        } 
+        appStreaks.lastDate = todayStr; 
+        localStorage.setItem('gym_streaks', JSON.stringify(appStreaks)); 
+    }
+    
     let currentMonth = today.getMonth();
-    if (!activeMission || activeMission.month !== currentMonth) { const missions = [ { type: 'volume', target: 30000, desc: "Mover 30.000 kg de Carga Total" }, { type: 'workouts', target: 16, desc: "Completar 16 Treinos no Mês" } ]; let randMission = missions[Math.floor(Math.random() * missions.length)]; activeMission = { month: currentMonth, type: randMission.type, target: randMission.target, desc: randMission.desc, progress: 0, completed: false }; }
+    if (!activeMission || activeMission.month !== currentMonth) { 
+        const missions = [ 
+            { type: 'volume', target: 30000, desc: "Mover 30.000 kg de Carga Total" }, 
+            { type: 'workouts', target: 16, desc: "Completar 16 Treinos no Mês" } 
+        ]; 
+        let randMission = missions[Math.floor(Math.random() * missions.length)]; 
+        activeMission = { month: currentMonth, type: randMission.type, target: randMission.target, desc: randMission.desc, progress: 0, completed: false }; 
+    }
+    
     let volToday = 0; let lastLog = history[history.length - 1];
-    if (lastLog && lastLog.date === todayStr && lastLog.exercises) { if(activeMission.type === 'volume') { Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => volToday += (s.weight||s.w||0) * (s.reps||s.r||0))); activeMission.progress += volToday; } else if (activeMission.type === 'workouts') { activeMission.progress += 1; } }
-    if (activeMission.progress >= activeMission.target && !activeMission.completed) { activeMission.completed = true; alert("🎖️ MISSÃO MENSAL CONCLUÍDA! O Valhalla aprova."); } localStorage.setItem('gym_mission', JSON.stringify(activeMission));
+    if (lastLog && lastLog.date === todayStr && lastLog.exercises) { 
+        if(activeMission.type === 'volume') { 
+            Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => volToday += (s.weight||s.w||0) * (s.reps||s.r||0))); 
+            activeMission.progress += volToday; 
+        } else if (activeMission.type === 'workouts') { 
+            activeMission.progress += 1; 
+        } 
+    }
+    
+    if (activeMission.progress >= activeMission.target && !activeMission.completed) { 
+        activeMission.completed = true; 
+        alert("🎖️ MISSÃO MENSAL CONCLUÍDA! O Valhalla aprova."); 
+    } 
+    localStorage.setItem('gym_mission', JSON.stringify(activeMission));
 }
 
-function checkAchievements() { let newlyUnlocked = false; let totalWorkouts = history.length; let totalVol = 0; history.forEach(log => { if(log.exercises) Object.values(log.exercises).forEach(sets => { sets.forEach(set => totalVol += (set.weight||set.w||0) * (set.reps||set.r||0)); }); }); allAchievements.forEach(ach => { if (!achievementsUnlocked.includes(ach.id)) { let unlock = false; if (ach.reqWorkouts && totalWorkouts >= ach.reqWorkouts) unlock = true; if (ach.reqVol && totalVol >= ach.reqVol) unlock = true; if (unlock) { achievementsUnlocked.push(ach.id); newlyUnlocked = true; setTimeout(() => alert(`🏆 NOVA CONQUISTA DESBLOQUEADA: ${ach.title}!`), 500); } } }); if (newlyUnlocked) { localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked)); } }
+function checkAchievements() {
+    let newlyUnlocked = false;
+    let totalWorkouts = history.length;
+    let totalVol = 0;
+    
+    let maxBench = 0;
+    let maxSquat = 0;
+    let maxDeadlift = 0;
+
+    history.forEach(log => {
+        if(log.exercises) {
+            Object.entries(log.exercises).forEach(([exName, sets]) => {
+                let n = exName.toLowerCase();
+                let isBench = n.includes('supino plano') || n.includes('bench press');
+                let isSquat = n.includes('agachamento livre') || n.includes('squat');
+                let isDead = n.includes('peso morto') || n.includes('deadlift');
+
+                sets.forEach(set => {
+                    let w = parseFloat(set.weight || set.w || 0);
+                    let r = parseInt(set.reps || set.r || 0);
+                    
+                    if (w > 0 && r > 0) {
+                        if (set.type !== 'W') totalVol += (w * r); // Apenas carga de trabalho conta
+                        
+                        // Atualizar recordes absolutos do utilizador
+                        if (isBench && w > maxBench) maxBench = w;
+                        if (isSquat && w > maxSquat) maxSquat = w;
+                        if (isDead && w > maxDeadlift) maxDeadlift = w;
+                    }
+                });
+            });
+        }
+    });
+
+    allAchievements.forEach(ach => {
+        if (!achievementsUnlocked.includes(ach.id)) {
+            let unlock = false;
+            
+            // Lógica de Desbloqueio
+            if (ach.reqWorkouts && totalWorkouts >= ach.reqWorkouts) unlock = true;
+            if (ach.reqVol && totalVol >= ach.reqVol) unlock = true;
+            if (ach.reqBench && maxBench >= ach.reqBench) unlock = true;
+            if (ach.reqSquat && maxSquat >= ach.reqSquat) unlock = true;
+            if (ach.reqDeadlift && maxDeadlift >= ach.reqDeadlift) unlock = true;
+
+            if (unlock) {
+                achievementsUnlocked.push(ach.id);
+                newlyUnlocked = true;
+                setTimeout(() => alert(`🏆 NOVA CONQUISTA DESBLOQUEADA: ${ach.title}!\n${ach.desc}`), 500);
+            }
+        }
+    });
+
+    if (newlyUnlocked) {
+        localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked));
+        if (typeof renderAchievements === 'function') renderAchievements();
+    }
+}
+
 function generatePunishmentLogic(cals) { if (cals < 100) return null; return { cals: cals, date: new Date().toLocaleDateString('pt-PT'), burpees: Math.floor(cals / 15), squats: Math.floor(cals / 8), pushups: Math.floor(cals / 12) }; }
-function exportToCSV() { if(history.length === 0) { alert("Sem dados."); return; } let csv = "Data,Exercicio,Serie,Peso_Kg,Repeticoes,Tipo,Notas\n"; history.forEach(session => { if(session.exercises) { Object.entries(session.exercises).forEach(([ex, sets]) => { sets.forEach((s, i) => { let type = s.type === 'W' ? 'Aquecimento' : 'Trabalho'; let notes = s.notes ? `"${s.notes}"` : ""; csv += `${session.date},"${ex}",${i+1},${s.weight||s.w||0},${s.reps||s.r||0},${type},${notes}\n`; }); }); } }); const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.setAttribute('href', url); a.setAttribute('download', `Pulse_Relatorio_${new Date().toISOString().split('T')[0]}.csv`); a.click(); window.URL.revokeObjectURL(url); }
-function exportData() { const data = { history: history, profile: userProfile, achievements: achievementsUnlocked, custom: customExercisesDB }; const dataStr = JSON.stringify(data, null, 2); const blob = new Blob([dataStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.download = `pulse_backup_${new Date().toISOString().split('T')[0]}.json`; a.href = url; a.click(); URL.revokeObjectURL(url); }
-function importData(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const data = JSON.parse(e.target.result); if (data.history) { history = data.history; localStorage.setItem('gym_history', JSON.stringify(history)); } if (data.profile) { userProfile = data.profile; localStorage.setItem('gym_profile', JSON.stringify(userProfile)); } if (data.achievements) { achievementsUnlocked = data.achievements; localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked)); } if(data.custom) { customExercisesDB = data.custom; localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); } alert('✅ Backup carregado com sucesso!'); location.reload(); } catch (error) { alert('❌ Erro.'); } }; reader.readAsText(file); }
+
+function exportToCSV() { 
+    if(history.length === 0) { alert("Sem dados."); return; } 
+    let csv = "Data,Exercicio,Serie,Peso_Kg,Repeticoes,Tipo,Notas\n"; 
+    history.forEach(session => { 
+        if(session.exercises) { 
+            Object.entries(session.exercises).forEach(([ex, sets]) => { 
+                sets.forEach((s, i) => { 
+                    let type = s.type === 'W' ? 'Aquecimento' : 'Trabalho'; 
+                    let notes = s.notes ? `"${s.notes}"` : ""; 
+                    csv += `${session.date},"${ex}",${i+1},${s.weight||s.w||0},${s.reps||s.r||0},${type},${notes}\n`; 
+                }); 
+            }); 
+        } 
+    }); 
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); 
+    const url = window.URL.createObjectURL(blob); 
+    const a = document.createElement('a'); 
+    a.setAttribute('href', url); 
+    a.setAttribute('download', `Pulse_Relatorio_${new Date().toISOString().split('T')[0]}.csv`); 
+    a.click(); 
+    window.URL.revokeObjectURL(url); 
+}
+
+function exportData() { 
+    const data = { history: history, profile: userProfile, achievements: achievementsUnlocked, custom: customExercisesDB }; 
+    const dataStr = JSON.stringify(data, null, 2); 
+    const blob = new Blob([dataStr], { type: "application/json" }); 
+    const url = URL.createObjectURL(blob); 
+    const a = document.createElement('a'); 
+    a.download = `pulse_backup_${new Date().toISOString().split('T')[0]}.json`; 
+    a.href = url; 
+    a.click(); 
+    URL.revokeObjectURL(url); 
+}
+
+function importData(event) { 
+    const file = event.target.files[0]; 
+    if (!file) return; 
+    const reader = new FileReader(); 
+    reader.onload = function(e) { 
+        try { 
+            const data = JSON.parse(e.target.result); 
+            if (data.history) { history = data.history; localStorage.setItem('gym_history', JSON.stringify(history)); } 
+            if (data.profile) { userProfile = data.profile; localStorage.setItem('gym_profile', JSON.stringify(userProfile)); } 
+            if (data.achievements) { achievementsUnlocked = data.achievements; localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked)); } 
+            if(data.custom) { customExercisesDB = data.custom; localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); } 
+            alert('✅ Backup carregado com sucesso!'); 
+            location.reload(); 
+        } catch (error) { 
+            alert('❌ Erro a ler o ficheiro.'); 
+        } 
+    }; 
+    reader.readAsText(file); 
+}
