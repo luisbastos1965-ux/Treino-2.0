@@ -253,8 +253,10 @@ function toggleProfileEdit() {
     isProfileEditing = !isProfileEditing;
     const formContainer = document.getElementById('profile-form-container');
     const editBtn = document.getElementById('btn-edit-profile');
+    const detailsPanel = document.getElementById('details-profile'); // Vai buscar a nova caixa expansível
     
     if (isProfileEditing) {
+        if (detailsPanel) detailsPanel.open = true; // Se clicares em "Editar", a caixa abre-se automaticamente
         formContainer.style.opacity = '1';
         formContainer.style.pointerEvents = 'auto';
         editBtn.innerHTML = '💾 Gravar';
@@ -263,7 +265,7 @@ function toggleProfileEdit() {
     } else {
         formContainer.style.opacity = '0.7';
         formContainer.style.pointerEvents = 'none';
-        editBtn.innerHTML = '✏️ Editar Perfil';
+        editBtn.innerHTML = '✏️ Editar';
         editBtn.style.background = 'rgba(0,0,0,0.5)';
         editBtn.style.borderColor = 'var(--accent)';
         updateProfileData(); 
