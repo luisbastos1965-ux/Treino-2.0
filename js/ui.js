@@ -4,7 +4,6 @@
 
 let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance;
 
-// Arranca o check de domingo assim que a app carrega
 window.onload = () => { checkSundayDebrief(); };
 
 function goHome() { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-home').classList.add('active'); document.getElementById('fab-home').classList.remove('visible'); renderHomeGamification(); checkSundayDebrief(); }
@@ -12,21 +11,42 @@ function navigateTo(id) {
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('fab-home').classList.add('visible');
     if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); }
     if (id === 'view-calendario') { renderCalendar(); }
-    if (id === 'view-perfil') { renderProfile(); renderAchievements(); document.getElementById('theme-selector').value = appTheme; }
+    if (id === 'view-perfil') { renderProfile(); renderAchievements(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
     if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); startFastingTimer(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
-function changeTheme(theme) {
-    appTheme = theme;
-    document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('gym_theme', theme);
+// --- NOTIFICAÇÕES PUSH ---
+function requestPushPermissions() {
+    if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === "granted") alert("✅ Notificações ativadas! Vais receber alertas de descanso.");
+            else alert("❌ Notificações recusadas.");
+        });
+    } else { alert("O teu navegador não suporta Notificações Push."); }
+}
+function sendLocalPush(title, bodyText) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        try {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(sw => { sw.showNotification(title, { body: bodyText, icon: 'assets/img/logo.png', vibrate: [200, 100, 200] }); });
+            } else { new Notification(title, { body: bodyText, icon: 'assets/img/logo.png' }); }
+        } catch (e) { console.log("Erro Push:", e); }
+    } else if ("vibrate" in navigator) { navigator.vibrate([200, 100, 200]); }
 }
 
+function renderHomeGamification() {
+    if(appStreaks && appStreaks.current > 0) { document.getElementById('home-streak-display').innerHTML = `<div class="streak-badge">🔥 ${appStreaks.current} Dias em Fogo</div>`; }
+    if(activeMission) { document.getElementById('home-mission-display').innerHTML = `<div class="mission-box"><strong>🎯 Missão:</strong> ${activeMission.desc}<br><div style="background:#334155; height:6px; border-radius:3px; margin-top:5px;"><div style="background:var(--accent); height:100%; width:${Math.min((activeMission.progress / activeMission.target) * 100, 100)}%;"></div></div></div>`; }
+}
+
+function changeTheme(theme) { appTheme = theme; document.body.setAttribute('data-theme', theme); localStorage.setItem('gym_theme', theme); renderDisciplineWall(); }
+
+// O GUARDIÃO DE DOMINGO (Debrief + Alerta de Backup)
 function checkSundayDebrief() {
     let today = new Date();
-    if (today.getDay() === 0) { // Se for Domingo
+    if (today.getDay() === 0) { 
         let todayStr = today.toLocaleDateString('pt-PT');
         if (lastDebriefDate !== todayStr) {
             let stats = generateSundayDebrief();
@@ -35,17 +55,18 @@ function checkSundayDebrief() {
             document.getElementById('sunday-debrief-modal').style.display = 'flex';
             lastDebriefDate = todayStr;
             localStorage.setItem('gym_last_debrief', lastDebriefDate);
+            
+            // O Guardião de Dados
+            setTimeout(() => {
+                sendLocalPush("🛡️ Guardião de Dados", "É Domingo! Exporta o Backup na aba ID Cartão para não perderes o legado.");
+                alert("🛡️ Guardião de Dados: Titã, é Domingo! Não te esqueças de ir à aba ID CARTÃO e clicar em 'Gravar .JSON' para exportares o teu Backup de segurança.");
+            }, 1000);
         }
     }
 }
 function closeDebrief() { document.getElementById('sunday-debrief-modal').style.display = 'none'; }
 
-function renderHomeGamification() {
-    if(appStreaks && appStreaks.current > 0) { document.getElementById('home-streak-display').innerHTML = `<div class="streak-badge">🔥 ${appStreaks.current} Dias em Fogo</div>`; }
-    if(activeMission) { document.getElementById('home-mission-display').innerHTML = `<div class="mission-box"><strong>🎯 Missão:</strong> ${activeMission.desc}<br><div style="background:#334155; height:6px; border-radius:3px; margin-top:5px;"><div style="background:var(--accent); height:100%; width:${Math.min((activeMission.progress / activeMission.target) * 100, 100)}%;"></div></div></div>`; }
-}
-
-// --- BIBLIOTECA E DELOAD AUTOMÁTICO ---
+// --- BIBLIOTECA E DELOAD ---
 function toggleDeleteMode() { deleteMode = !deleteMode; renderWorkoutSlots(); }
 function renderWorkoutSlots() {
     const container = document.getElementById('workout-slots-container'); if(!container) return; container.innerHTML = ''; let slotCount = 0; const minSlots = 7;
@@ -70,9 +91,7 @@ function closeWorkoutInfo() { document.getElementById('workout-info-modal').styl
 
 function openWorkoutSlot(type, index = 0) {
     if (deleteMode) return; document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block';
-    isDeloadMode = false; // Reset deload
-    document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload';
-    document.getElementById('btn-deload-toggle').style.background = '#1e293b';
+    isDeloadMode = false; document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload'; document.getElementById('btn-deload-toggle').style.background = '#1e293b';
     
     const tabsContainer = document.getElementById('active-workout-tabs'); const beastBtn = document.getElementById('main-beast-btn');
     if (type === 'TITAN') { tabsContainer.style.display = 'flex'; tabsContainer.innerHTML = `<button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button><button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button><button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>`; currentDay = 'PUSH'; } 
@@ -85,20 +104,13 @@ function backToWorkoutSlots() { document.getElementById('treino-slots-view').sty
 function switchWorkout(event, day) { currentDay = day; document.querySelectorAll('#active-workout-tabs .tab-btn').forEach(btn => btn.classList.remove('active')); event.currentTarget.classList.add('active'); const beastBtn = document.getElementById('main-beast-btn'); if (beastBtn) beastBtn.style.display = (day === 'MOBILITY') ? 'none' : 'block'; renderWorkout(); }
 
 function toggleDeloadMode() {
-    isDeloadMode = !isDeloadMode;
-    const btn = document.getElementById('btn-deload-toggle');
-    if(isDeloadMode) {
-        btn.innerHTML = '🧘 Deload ON (Cargas 70%)';
-        btn.style.background = 'var(--success)';
-        alert("Modo Deload Ativado: Todas as séries foram reduzidas e o peso anterior será calculado a 70%.");
-    } else {
-        btn.innerHTML = '📉 Modo Deload';
-        btn.style.background = '#1e293b';
-    }
+    isDeloadMode = !isDeloadMode; const btn = document.getElementById('btn-deload-toggle');
+    if(isDeloadMode) { btn.innerHTML = '🧘 Deload ON (Cargas 70%)'; btn.style.background = 'var(--success)'; alert("Modo Deload Ativado: Todas as séries foram reduzidas e o peso anterior será calculado a 70%."); } 
+    else { btn.innerHTML = '📉 Modo Deload'; btn.style.background = '#1e293b'; }
     renderWorkout();
 }
 
-// --- TREINO, SWAP, SET-TYPE E NOTAS ---
+// --- TREINO, SWAP E SET-TYPE ---
 function toggleSetType(btn) {
     let type = btn.getAttribute('data-type');
     if (type === 'work') { btn.setAttribute('data-type', 'warmup'); btn.innerHTML = '🔥'; btn.className = 'set-type-btn warmup'; }
@@ -120,10 +132,15 @@ function toggleSetDone(btn, exName) {
 }
 
 function startCustomRestTimer(seconds) {
-    document.getElementById('rest-timer-overlay').style.display = 'flex'; let timeLeft = seconds; document.getElementById('rest-time-display').innerText = timeLeft + 's';
+    document.getElementById('rest-timer-overlay').style.display = 'flex'; 
+    let targetTime = Date.now() + (seconds * 1000);
+    document.getElementById('rest-time-display').innerText = seconds + 's';
     if(timerInterval) clearInterval(timerInterval);
+    
     timerInterval = setInterval(() => {
-        timeLeft--; document.getElementById('rest-time-display').innerText = timeLeft + 's';
+        let timeLeft = Math.ceil((targetTime - Date.now()) / 1000);
+        if(timeLeft < 0) timeLeft = 0;
+        document.getElementById('rest-time-display').innerText = timeLeft + 's';
         if (timeLeft <= 0) { clearInterval(timerInterval); sendLocalPush("⏱️ Descanso Terminado!", "Bora ao aço!"); if("vibrate" in navigator) navigator.vibrate([200, 100, 200]); document.getElementById('rest-timer-overlay').style.display='none'; }
     }, 1000);
 }
@@ -141,7 +158,6 @@ function renderWorkout() {
             preReps = lastPerf[0].reps || lastPerf[0].r || ''; 
         }
         let painWarn = checkPainWarning(ex.name); let painHtml = painWarn ? `<div style="background:rgba(239,68,68,0.1); color:var(--danger); padding:8px; border-radius:8px; font-size:11px; margin-bottom:10px; border:1px solid var(--danger);">${painWarn}</div>` : '';
-        
         let setsToRender = isDeloadMode ? Math.max(2, ex.sets - 1) : ex.sets;
 
         let html = `<div class="exercise-card">${painHtml}<div class="exercise-name">${ex.name}</div><div class="exercise-buttons"><button class="exercise-tip-btn" onclick="openSwapModal('${ex.name}', ${exIdx})">🔄 Trocar</button><button class="exercise-video-btn" onclick="openModal('${ex.name}', 'Consulta a execução.')">🎥 Vídeo</button></div>`;
@@ -165,7 +181,7 @@ function saveCurrentWorkout() {
     });
 
     history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); alert('✅ Treino guardado com sucesso!');
-    updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); backToWorkoutSlots();
+    updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); renderDisciplineWall(); backToWorkoutSlots();
 }
 
 function openReadinessModal() { 
@@ -180,10 +196,10 @@ function closeReadinessModal() {
     painTracker = p; localStorage.setItem('gym_pain_tracker', JSON.stringify(painTracker));
     let slp = parseInt(document.getElementById('ready-sleep').value); let mus = parseInt(document.getElementById('ready-muscle').value); let nrg = parseInt(document.getElementById('ready-energy').value);
     if ((slp + mus + nrg) < 9) alert("⚠️ O teu SNC está sob stress. Considera ligar o Modo Deload hoje.");
-    document.getElementById('readiness-modal').style.display = 'none'; renderWorkout(); updateHeatmap(); // Update heatmap pulsações
+    document.getElementById('readiness-modal').style.display = 'none'; renderWorkout(); updateHeatmap(); 
 }
 
-// --- CONSTRUTOR 2.0 E CRIADOR DE EXERCÍCIOS ---
+// --- CONSTRUTOR E CRIADOR DE EXERCÍCIOS ---
 function setFatigue(level) { builderState.fatigue = level; document.querySelectorAll('.fatigue-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-fatigue-${level}`).classList.add('active'); }
 function setBuilderMode(mode) {
     builderState.mode = mode; document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-mode-${mode}`).classList.add('active');
@@ -201,7 +217,7 @@ function renderLibrary() {
 }
 
 function promptCustomExercise() {
-    let name = prompt("Nome do Exercício (Ex: Máquina Convergente de Peito):"); if(!name) return;
+    let name = prompt("Nome do Exercício:"); if(!name) return;
     let muscle = prompt("Músculo Alvo (Peito, Costas, Pernas, Ombros, Braços, Core):"); if(!muscle) return;
     let newEx = { name: name, muscle: muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase(), tier: "A", type: "machine", defaultSets: 3 };
     customExercisesDB.push(newEx); exerciseLibrary.push(newEx); localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); alert("✅ Exercício adicionado ao Diretório!"); renderLibrary();
@@ -211,7 +227,7 @@ function renderDirectory() {
     const container = document.getElementById('directory-list'); container.innerHTML = ''; const groups = ['Peito', 'Costas', 'Pernas', 'Ombros', 'Braços', 'Core'];
     groups.forEach(muscle => { let pool = exerciseLibrary.filter(ex => ex.muscle === muscle); if (pool.length > 0) { let html = `<div class="dir-group"><h4>${muscle}</h4>`; pool.forEach(ex => { html += `<div class="dir-item"><span>${ex.name}</span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}</span></div>`; }); html += `</div>`; container.innerHTML += html; } });
 }
-function generateWorkout() { const focus = document.getElementById('auto-focus-select').value; const fatigue = builderState.fatigue; if(typeof generateWorkoutLogic === 'function') { builderState.routine = generateWorkoutLogic(focus, fatigue, exerciseLibrary); updateBuilderUI(); alert(`✨ Treino gerado: ${builderState.routine.length} exercícios adaptados!`); } }
+function generateWorkout() { const focus = document.getElementById('auto-focus-select').value; const fatigue = builderState.fatigue; if(typeof generateWorkoutLogic === 'function') { builderState.routine = generateWorkoutLogic(focus, fatigue, exerciseLibrary); updateBuilderUI(); alert(`✨ Treino gerado!`); } }
 function addExerciseToBuilder(name, sets) { builderState.routine.push({ name, sets }); updateBuilderUI(); }
 function removeExerciseFromBuilder(index) { builderState.routine.splice(index, 1); updateBuilderUI(); }
 function updateBuilderSets(index, value) { builderState.routine[index].sets = parseInt(value) || 1; updateBuilderUI(false); }
@@ -235,14 +251,10 @@ function updateHeatmap() {
     });
     const getColor = (sets) => { if (sets === 0) return '#334155'; if (sets <= 6) return '#eab308'; if (sets <= 12) return '#f97316'; return '#ef4444'; };
     const c = { peito: getColor(volume['Peito']), costas: getColor(volume['Costas']), pernas: getColor(volume['Pernas']), ombros: getColor(volume['Ombros']), bracos: getColor(volume['Braços']), core: getColor(volume['Core']) };
-    
-    // Atualiza cores normais
     const els = { peito: document.getElementById('hm-peito'), ombrosL: document.getElementById('hm-ombros-l'), ombrosR: document.getElementById('hm-ombros-r'), bicepsL: document.getElementById('hm-biceps-l'), bicepsR: document.getElementById('hm-biceps-r'), quadsL: document.getElementById('hm-quads-l'), quadsR: document.getElementById('hm-quads-r'), core: document.getElementById('hm-core'), costas: document.getElementById('hm-costas'), tricepsL: document.getElementById('hm-triceps-l'), tricepsR: document.getElementById('hm-triceps-r'), femL: document.getElementById('hm-femorais-l'), femR: document.getElementById('hm-femorais-r'), gemL: document.getElementById('hm-gemeos-l'), gemR: document.getElementById('hm-gemeos-r') };
     
     if(els.peito) {
         els.peito.setAttribute('fill', c.peito); els.ombrosL.setAttribute('fill', c.ombros); els.ombrosR.setAttribute('fill', c.ombros); els.bicepsL.setAttribute('fill', c.bracos); els.bicepsR.setAttribute('fill', c.bracos); els.quadsL.setAttribute('fill', c.pernas); els.quadsR.setAttribute('fill', c.pernas); els.core.setAttribute('fill', c.core); els.costas.setAttribute('fill', c.costas); els.tricepsL.setAttribute('fill', c.bracos); els.tricepsR.setAttribute('fill', c.bracos); els.femL.setAttribute('fill', c.pernas); els.femR.setAttribute('fill', c.pernas); els.gemL.setAttribute('fill', c.pernas); els.gemR.setAttribute('fill', c.pernas); 
-
-        // Adiciona classe de Pulsar se houver dor registada no Tracker
         els.ombrosL.classList.toggle('muscle-pain-active', painTracker.includes('Ombros')); els.ombrosR.classList.toggle('muscle-pain-active', painTracker.includes('Ombros'));
         els.costas.classList.toggle('muscle-pain-active', painTracker.includes('Lombar'));
         els.quadsL.classList.toggle('muscle-pain-active', painTracker.includes('Joelhos')); els.quadsR.classList.toggle('muscle-pain-active', painTracker.includes('Joelhos'));
@@ -306,6 +318,36 @@ function renderRPGStats(muscleXP) {
     for (let muscle in muscleXP) { let stats = getLevelAndProgress(muscleXP[muscle]); let color = colors[muscle] || '#94a3b8'; container.innerHTML += `<div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);"><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="font-weight: bold; color: white; font-size: 14px;">${muscle}</span><span style="color: ${color}; font-weight: bold; font-size: 14px;">Lvl ${stats.level}</span></div><div class="progress-bar" style="height: 8px; background: #1e293b; margin-bottom: 5px; border-radius: 4px; overflow: hidden;"><div style="height: 100%; width: ${stats.progress}%; background: ${color};"></div></div></div>`; }
 }
 
+// O MURO DA DISCIPLINA (GitHub Style 365 Dias)
+function renderDisciplineWall() {
+    const wall = document.getElementById('discipline-wall'); if(!wall) return; wall.innerHTML = '';
+    let workoutMap = {};
+    history.forEach(log => {
+        let vol = 0;
+        if(log.exercises) Object.values(log.exercises).forEach(sets => sets.forEach(s => { if(s.type !== 'W') vol += (s.weight||s.w||0) * (s.reps||s.r||0); }));
+        workoutMap[log.date] = (workoutMap[log.date] || 0) + vol;
+    });
+
+    let today = new Date(); let html = '';
+    for(let i = 364; i >= 0; i--) {
+        let d = new Date(today); d.setDate(today.getDate() - i);
+        let dStr = d.toLocaleDateString('pt-PT');
+        let vol = workoutMap[dStr];
+        
+        let bg = '#1e293b'; let op = 1;
+        if(vol !== undefined) {
+            bg = 'var(--accent)';
+            if (vol === 0) op = 0.2;
+            else if (vol < 5000) op = 0.4;
+            else if (vol < 10000) op = 0.7;
+            else op = 1.0;
+        }
+        html += `<div class="discipline-block" style="background:${bg}; opacity:${op};" title="${dStr}${vol !== undefined ? ' - ' + Math.round(vol) + 'kg' : ''}"></div>`;
+    }
+    wall.innerHTML = html;
+    setTimeout(() => { wall.scrollLeft = wall.scrollWidth; }, 100);
+}
+
 // --- CALENDÁRIO ---
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid'); if (!grid) return; grid.innerHTML = '';
@@ -327,7 +369,7 @@ function showHistoryDetails(dateString) {
     html += `<button onclick="deleteDayHistory('${dateString}')" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;">Apagar Registo</button>`;
     document.getElementById('history-details-content').innerHTML = html; document.getElementById('history-modal-date').innerText = dateString; document.getElementById('history-details-modal').style.display = 'flex';
 }
-function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); } }
+function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); } }
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
 // --- PERFIL E MEDIDAS ---
@@ -505,5 +547,4 @@ function shareToInstagram() {
     });
 }
 
-// Inicia as gamificações
 setTimeout(() => { updateGamificationLogic(); }, 1000);
