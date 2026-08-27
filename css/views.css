@@ -1,8 +1,16 @@
-/* --- BEAST MODE OVERLAY --- */
-#beast-mode-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 10000; display: none; flex-direction: column;
+/* --- TRANCAR A PÁGINA INICIAL --- */
+#view-home.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    height: 100vh;
+    max-height: -webkit-fill-available;
+    touch-action: none; /* Bloqueia o "arrastar" acidental para cima/baixo */
 }
+
+/* --- BEAST MODE OVERLAY --- */
+#beast-mode-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; }
 .beast-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; padding-top: 40px; }
 .beast-exit { background: transparent; border: none; color: var(--danger); font-size: 16px; font-weight: bold; cursor: pointer; }
 #beast-progress-text { color: var(--muted); font-size: 14px; font-weight: bold; }
@@ -20,6 +28,10 @@
 .beast-action-btn:active { transform: scale(0.95); }
 .beast-action-btn.dropset { background: #f59e0b; }
 .beast-action-btn.superset { background: #8b5cf6; }
+
+/* Botões de Micro-Loading (+ e -) */
+.micro-btn { background: #334155; color: white; border: none; width: 35px; height: 45px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.1s; font-size:18px;}
+.micro-btn:active { background: var(--accent); color: #0f172a; transform: scale(0.9); }
 
 /* --- MINI-JOGO DE DESCANSO --- */
 #rest-timer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10001; }
@@ -74,7 +86,6 @@
 .plate-info { display: flex; align-items: center; color: white; font-size: 14px; font-weight: bold; }
 .plate-color-box { width: 16px; height: 16px; border-radius: 4px; margin-right: 12px; }
 .plate-qty { background: #334155; color: var(--accent); padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 14px; }
-/* Seletor de Tipo de Barra no Modal */
 .bar-type-selector { display:flex; gap:5px; justify-content:center; margin-bottom:15px; }
 .bar-type-btn { background:#1e293b; border:1px solid #334155; color:white; padding:8px 12px; border-radius:8px; font-size:11px; cursor:pointer; }
 .bar-type-btn.active { background:var(--accent); color:black; border-color:var(--accent); font-weight:bold; }
@@ -111,18 +122,13 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
 .macro-box { background: #334155; padding: 15px; border-radius: 12px; flex: 1; margin: 0 5px; border: 1px solid #1e293b; }
 
 /* --- EXTRA: DIETA E CONQUISTAS --- */
-.punishment-btn {
-    background: linear-gradient(135deg, #ef4444, #991b1b); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); font-size: 16px; margin-top: 15px;
-}
-.recipe-btn {
-    background: #334155; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px;
-}
+.punishment-btn { background: linear-gradient(135deg, #ef4444, #991b1b); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); font-size: 16px; margin-top: 15px; }
+.recipe-btn { background: #334155; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px; }
 #history-details-content::-webkit-scrollbar { width: 6px; }
 #history-details-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-/* --- NOVAS FUNCIONALIDADES: JEJUM, ÁGUA, STREAKS --- */
-.streak-badge { background: linear-gradient(135deg, #f97316, #ef4444); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4); }
-.mission-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: white; font-size: 13px; margin-top: 15px; text-align: left; }
+/* --- MISSÕES, JEJUM E ÁGUA --- */
+.mission-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: white; font-size: 13px; text-align: left; }
 .water-btn { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; transition: 0.2s; }
 .water-btn:active { background: #38bdf8; color: #0f172a; }
 .fasting-ring { width: 150px; height: 150px; border-radius: 50%; border: 8px solid #334155; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold; color: var(--accent); position: relative; }
@@ -135,15 +141,9 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
 .exercise-notes { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #334155; color: var(--accent); font-size: 12px; padding: 5px 0; margin-top: 10px; font-style: italic; }
 .exercise-notes:focus { outline: none; border-bottom-color: var(--success); }
 
-/* Animação para o Pain Tracker no V-Taper (Piscar Vermelho) */
-@keyframes pulsePain {
-    0% { fill: #334155; }
-    50% { fill: #ef4444; }
-    100% { fill: #334155; }
-}
-.muscle-pain-active {
-    animation: pulsePain 2s infinite;
-}
+/* Animação para o Pain Tracker no V-Taper */
+@keyframes pulsePain { 0% { fill: #334155; } 50% { fill: #ef4444; } 100% { fill: #334155; } }
+.muscle-pain-active { animation: pulsePain 2s infinite; }
 
 /* --- TEMAS (SKINS) --- */
 body[data-theme="spartan"] { --accent: #ef4444; --success: #b91c1c; }
@@ -171,21 +171,7 @@ body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, 
 .rank-mutante { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239,68,68,0.8); }
 
 /* --- MURO DA DISCIPLINA (GitHub Style 365) --- */
-.discipline-wall { 
-    display: flex; 
-    flex-direction: column; 
-    flex-wrap: wrap; 
-    height: 100px; 
-    gap: 3px; 
-    align-content: flex-end; 
-    overflow-x: auto; 
-    padding-bottom: 5px; 
-}
-.discipline-block { 
-    width: 11px; 
-    height: 11px; 
-    border-radius: 2px; 
-    flex-shrink: 0; 
-}
+.discipline-wall { display: flex; flex-direction: column; flex-wrap: wrap; height: 100px; gap: 3px; align-content: flex-end; overflow-x: auto; padding-bottom: 5px; }
+.discipline-block { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
 .discipline-wall::-webkit-scrollbar { height: 4px; }
 .discipline-wall::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
