@@ -144,3 +144,28 @@ canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-
 .muscle-pain-active {
     animation: pulsePain 2s infinite;
 }
+
+/* --- TEMAS (SKINS) --- */
+body[data-theme="spartan"] { --accent: #ef4444; --success: #b91c1c; }
+body[data-theme="cyberpunk"] { --accent: #f0abfc; --success: #eab308; }
+body[data-theme="silverback"] { --accent: #94a3b8; --success: #64748b; }
+body[data-theme="hulk"] { --accent: #22c55e; --success: #15803d; }
+
+body[data-theme="spartan"] .pulse-hero-title { background: linear-gradient(135deg, #ef4444 0%, #fca5a5 50%, #991b1b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(239,68,68,0.4)); }
+body[data-theme="cyberpunk"] .pulse-hero-title { background: linear-gradient(135deg, #f0abfc 0%, #fdf4ff 50%, #c026d3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(240,171,252,0.4)); }
+body[data-theme="silverback"] .pulse-hero-title { background: linear-gradient(135deg, #94a3b8 0%, #f8fafc 50%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(148,163,184,0.4)); }
+body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, #22c55e 0%, #bbf7d0 50%, #15803d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(34,197,94,0.4)); }
+
+/* --- DEBRIEF DE DOMINGO --- */
+.debrief-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--accent); padding: 30px; border-radius: 20px; text-align: left; }
+.debrief-stat { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; }
+.debrief-stat span { color: var(--muted); font-size: 13px; }
+.debrief-stat strong { color: white; font-size: 18px; }
+
+/* --- RANKING DE FORÇA --- */
+.strength-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
+.rank-iniciante { background: #334155; color: white; }
+.rank-intermédio { background: #3b82f6; color: white; }
+.rank-avançado { background: #8b5cf6; color: white; }
+.rank-elite { background: #f59e0b; color: black; }
+.rank-mutante { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239,68,68,0.8); }
