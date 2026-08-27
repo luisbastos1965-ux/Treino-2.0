@@ -96,6 +96,8 @@
         <div id="treino-active-view" style="display: none;">
             <button onclick="backToWorkoutSlots()" style="background:transparent; border:none; color:var(--accent); font-size:14px; font-weight:bold; margin-bottom:15px; cursor:pointer;">◀ Voltar à Biblioteca</button>
             <button onclick="openReadinessModal()" style="width:100%; background:#1e293b; color:var(--success); border:1px solid var(--success); padding:12px; border-radius:12px; font-weight:bold; margin-bottom:15px; cursor:pointer;">🧠 Avaliação Diária (SNC & Dores)</button>
+            <button id="btn-deload-toggle" onclick="toggleDeloadMode()" style="width:100%; background:#1e293b; color:var(--muted); border:1px solid #334155; padding:12px; border-radius:12px; font-weight:bold; margin-bottom:15px; cursor:pointer;">📉 Modo Deload</button>
+            
             <div class="tabs" id="active-workout-tabs" style="display: flex;"></div>
             <div id="workout-container"></div>
             <div class="footer-action">
@@ -159,6 +161,17 @@
             <div class="form-group"><label>Atividade Base</label><select id="prof-activity" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">Muito Ativo</option></select></div>
             <div class="form-group"><label>Objetivo</label><select id="prof-goal" onchange="updateProfileData()"><option value="cut">Cut</option><option value="maintain">Manter</option><option value="bulk">Bulk</option></select></div>
             <div class="form-group" style="margin-top:10px;"><label>🎧 Playlist do Spotify (Opcional)</label><input type="text" id="prof-spotify" placeholder="Cola o link da playlist..." onchange="updateProfileData()" style="font-size:12px; background:#1e293b; border:1px solid #334155;"></div>
+            
+            <div class="form-group" style="margin-top:10px; border-top: 1px solid #334155; padding-top: 15px;">
+                <label>🎨 Tema da Pulse</label>
+                <select id="theme-selector" onchange="changeTheme(this.value)">
+                    <option value="default">Pulse Classic (Azul)</option>
+                    <option value="spartan">Spartan Blood (Vermelho)</option>
+                    <option value="cyberpunk">Cyberpunk (Néon Rosa)</option>
+                    <option value="silverback">Silverback (Metálico)</option>
+                    <option value="hulk">Mutant Serum (Verde)</option>
+                </select>
+            </div>
         </div>
 
         <div class="goal-container text-center" style="margin-bottom: 20px;">
@@ -270,6 +283,23 @@
                 <button class="btn-primary" style="flex:1; background: #38bdf8; color: black;" onclick="copyFlexText()">📋 Copiar</button>
                 <button class="btn-primary" style="flex:2; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; border:none;" onclick="shareToInstagram()">📸 Partilhar no IG</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DEBRIEF SEMANAL (DOMINGO) -->
+    <div id="sunday-debrief-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10015;">
+        <div class="debrief-card" style="width: 100%; max-width: 360px; position: relative;">
+            <button onclick="closeDebrief()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h2 style="color:var(--accent); font-size:24px; margin-bottom:5px;">📊 Relatório Semanal</h2>
+            <p style="color:var(--muted); font-size:12px; margin-bottom:25px;">É domingo. Hora de avaliar o dano causado.</p>
+            
+            <div class="debrief-stat"><span>Carga Movida:</span> <strong id="debrief-vol" style="color:var(--success);">0 kg</strong></div>
+            <div class="debrief-stat"><span>Treinos Fritados:</span> <strong id="debrief-work">0</strong></div>
+            
+            <p style="color:white; font-size:13px; font-style:italic; margin-top:20px; padding:10px; background:rgba(255,255,255,0.05); border-left:3px solid var(--accent);">
+                "O progresso não se mede num dia. Mede-se nos dias em que não te apetece treinar e vais na mesma."
+            </p>
+            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="closeDebrief()">Siga para a nova semana 🚀</button>
         </div>
     </div>
 
