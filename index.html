@@ -143,6 +143,14 @@
         <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
         <div class="goal-container" style="margin-top: 20px;"><h3 class="text-center">🎮 Níveis Musculares</h3><div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div></div>
         
+        <!-- SBD TOTAL MOVIDO PARA AQUI -->
+        <div class="goal-container text-center" style="margin-top: 20px;">
+            <h3>🏋️ Powerlifting Total (SBD)</h3>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
+            <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg</div>
+            <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso corporal</div>
+        </div>
+
         <div style="margin-top: 20px;"><select id="exercise-select" class="chart-select"></select><canvas id="progressChart"></canvas><p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p></div>
         <div id="pr-display" class="goal-container" style="margin-top: 20px;"><h3>🏆 PRs</h3><div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;"><div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div><div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div><div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div></div></div>
         <div id="global-stats" class="goal-container"><h3>📊 Estatísticas Globais</h3></div>
@@ -153,8 +161,6 @@
         <div class="calendar-header"><button onclick="changeMonth(-1)">◀</button><h2 id="calendar-title">Mês</h2><button onclick="changeMonth(1)">▶</button></div>
         <div class="weekdays"><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div></div>
         <div class="calendar-grid" id="calendar-grid"></div>
-        
-        <!-- MURO DA DISCIPLINA (Movido para aqui!) -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🧱 Muro da Disciplina</h3>
             <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px; text-align:center;">O teu legado dos últimos 365 dias.</p>
@@ -162,15 +168,20 @@
         </div>
     </div>
 
-    <!-- ABA 5: PERFIL (VISUAL RESTAURADO) -->
+    <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         
-        <!-- HEADER COMPACTO E MODERNO -->
+        <!-- ESTILOS LOCAIS PARA AS CAIXAS EXPANSÍVEIS (ACORDEÃO MODERNO) -->
+        <style>
+            .custom-details summary { list-style: none; display: flex; justify-content: space-between; align-items: center; }
+            .custom-details summary::-webkit-details-marker { display: none; }
+            .custom-details .acc-icon { transition: transform 0.3s ease; color: var(--muted); font-size: 14px; }
+            .custom-details[open] .acc-icon { transform: rotate(180deg); color: var(--accent); }
+        </style>
+
         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 16px; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div id="avatar-initials" style="width: 55px; height: 55px; background: var(--accent); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">
-                    --
-                </div>
+                <div id="avatar-initials" style="width: 55px; height: 55px; background: var(--accent); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">--</div>
                 <div style="color: white; font-weight: bold; font-size: 16px; max-width: 120px; word-wrap: break-word;" id="profile-display-name">Titã Misterioso</div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -179,47 +190,31 @@
             </div>
         </div>
 
-        <!-- INFORMAÇÕES & MEDIDAS (COM O VISUAL BONITO RECUPERADO) -->
-        <details id="details-profile" class="exercise-card" open style="margin-bottom: 20px;">
+        <details id="details-profile" class="exercise-card custom-details" open style="margin-bottom: 20px;">
             <summary style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; padding: 5px 0;">
-                ⚙️ Perfil e Medidas
+                <span>⚙️ Perfil e Medidas</span>
+                <span class="acc-icon">▼</span>
             </summary>
             
-            <!-- Recuperei a classe "profile-form" para teres o design escuro e alinhado -->
             <div id="profile-form-container" class="profile-form" style="opacity: 0.7; pointer-events: none; margin-top: 15px; border-top: 1px dashed #334155; padding-top: 15px;">
                 <div class="form-group"><label>Nome</label><input type="text" id="prof-name" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                
                 <div class="form-row">
                     <div class="form-group"><label>Idade</label><input type="number" id="prof-age" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
                     <div class="form-group"><label>Género</label><select id="prof-gender" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-group"><label>Atividade</label><select id="prof-activity" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">M. Ativo</option></select></div>
                     <div class="form-group"><label>Objetivo</label><select id="prof-goal" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="cut">🔪 Secar</option><option value="maintain">⚡ Manter</option><option value="bulk">🔥 Bulk</option></select></div>
                 </div>
-
                 <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
                 <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
 
-                <!-- ID CARD (Integrado perfeitamente no escuro do formulário) -->
                 <div style="display: flex; justify-content: space-around; background: #0f172a; padding: 15px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px;">
-                    <div class="text-center">
-                        <div style="color: var(--muted); font-size: 11px;">IMC</div>
-                        <div id="calc-bmi" style="font-size: 20px; font-weight: bold; color: white; margin: 3px 0;">--</div>
-                        <div id="calc-bmi-status" style="font-size: 10px;">--</div>
-                    </div>
-                    <div class="text-center">
-                        <div style="color: var(--muted); font-size: 11px;">Kcal Base</div>
-                        <div id="calc-cals" style="font-size: 20px; font-weight: bold; color: var(--success); margin: 3px 0;">--</div>
-                    </div>
-                    <div class="text-center">
-                        <div style="color: var(--muted); font-size: 11px;">Massa Gorda</div>
-                        <div id="calc-bf" style="font-size: 20px; font-weight: bold; color: var(--accent); margin: 3px 0;">--%</div>
-                    </div>
+                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">IMC</div><div id="calc-bmi" style="font-size: 20px; font-weight: bold; color: white; margin: 3px 0;">--</div><div id="calc-bmi-status" style="font-size: 10px;">--</div></div>
+                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">Kcal Base</div><div id="calc-cals" style="font-size: 20px; font-weight: bold; color: var(--success); margin: 3px 0;">--</div></div>
+                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">Massa Gorda</div><div id="calc-bf" style="font-size: 20px; font-weight: bold; color: var(--accent); margin: 3px 0;">--%</div></div>
                 </div>
 
-                <!-- RASTREIO CORPORAL (Alinhado com form-row para não sair das margens) -->
                 <label style="font-size: 13px; color: var(--muted); font-weight: bold; margin-bottom: 8px; display: block;">Rastreio Corporal (cm)</label>
                 <div class="form-row">
                     <div class="form-group"><label style="font-size: 11px;">💪 Braços</label><input type="number" id="meas-arm" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
@@ -242,35 +237,29 @@
                 </div>
             </div>
         </details>
-
-        <!-- SBD TOTAL -->
-        <div class="goal-container text-center" style="margin-bottom: 20px;">
-            <h3>🏋️ Powerlifting Total (SBD)</h3>
-            <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
-            <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg</div>
-            <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso corporal</div>
-        </div>
         
-        <!-- CONQUISTAS E DESAFIOS (FUNDIDOS NUM ACORDEÃO) -->
-        <details class="goal-container" style="margin-bottom: 20px; padding: 15px;">
+        <details class="goal-container custom-details" style="margin-bottom: 20px; padding: 15px;">
             <summary style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; margin-bottom: 5px;">
-                🏆 Conquistas & Desafios
+                <span>🏆 Conquistas & Desafios</span>
+                <span class="acc-icon">▼</span>
             </summary>
-            <!-- A missão atual fica aqui no topo das conquistas -->
             <div id="profile-mission-display" style="margin-top: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #334155;"></div>
             <div id="achievements-list"></div>
         </details>
 
-        <!-- BACKUP -->
+        <!-- BOTÕES DE DADOS & BACKUP UNIFORMIZADOS -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Dados & Backup</h3>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap:wrap;">
-                <button class="btn-primary" onclick="exportData()" style="flex:1;">📥 Gravar .JSON</button>
-                <label class="btn-secondary" style="flex:1; cursor: pointer; display: flex; align-items: center; justify-content: center;">📤 Importar<input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)"></label>
-                <button class="btn-primary" onclick="exportToCSV()" style="flex:100%; margin-top:5px; background:#10b981; border:1px solid #059669;">📋 Exportar CSV</button>
+                <button class="beast-action-btn" onclick="exportData()" style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); padding: 12px; font-size: 13px;">📥 Exportar</button>
+                <label class="beast-action-btn" style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 12px; font-size: 13px;">📤 Importar<input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)"></label>
+                <button class="beast-action-btn" onclick="exportToCSV()" style="flex:100%; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); margin-top:5px; padding: 12px; font-size: 13px;">📋 Exportar CSV</button>
             </div>
         </div>
     </div>
+
+    <!-- NOTIFICAÇÃO FLUTUANTE (TOAST) -->
+    <div id="pulse-toast" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:12px 24px; border-radius:12px; font-weight:bold; z-index:20000; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; transition: opacity 0.3s; width: 90%; max-width: 350px;"></div>
 
     <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
