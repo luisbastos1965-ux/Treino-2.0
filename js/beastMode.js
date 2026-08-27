@@ -112,7 +112,6 @@ function completeBeastSet(skipRest = false, isDropSet = false, isSuperset = fals
         ex.sets++; 
         beastState.setIdx++;
     } else if (isSuperset) {
-        // Fluxo de Supersérie: Salta para o ex seguinte sem avançar a SetIdx do atual
         if (beastState.exIdx < exercises.length - 1) {
             beastState.exIdx++;
         }
@@ -128,7 +127,6 @@ function completeBeastSet(skipRest = false, isDropSet = false, isSuperset = fals
         if (skipRest) {
             renderBeastMode();
         } else {
-            // Usa o temporizador inteligente baseado no exercício
             let restTime = typeof getSmartRestTime === 'function' ? getSmartRestTime(ex.name) : 90;
             startTimer(restTime); 
             renderBeastMode();
@@ -158,7 +156,7 @@ function nextBeastExercise() {
 
 function exitBeastMode() {
     beastState.active = false;
-    releaseWakeLock(); // Desliga a proteção do ecrã
+    releaseWakeLock(); 
     document.getElementById('beast-mode-overlay').style.display = 'none';
     if(typeof renderWorkout === 'function') renderWorkout(); 
 }
@@ -170,7 +168,7 @@ function triggerDropSet() {
 
 function triggerSuperset() {
     if (voiceCoachActive) speakVoiceCoach("Supersérie iniciada. Salta já para o próximo exercício sem descansar!");
-    completeBeastSet(true, false, true); // O 'true' final indica fluxo de Supersérie
+    completeBeastSet(true, false, true);
 }
 
 function toggleVoiceCoach() {
@@ -214,27 +212,18 @@ function checkProgressiveOverload(exerciseName) {
                 : (session.exercises[exerciseName] ? {setsDetails: session.exercises[exerciseName]} : null);
                 
             if (match && match.setsDetails && match.setsDetails.length > 0) {
-                lastSetFound = match.setsDetails[0];
-                break;
+                lastSetFound = match.setsDetails[0]; break;
             } else if (session.exercises[exerciseName] && Array.isArray(session.exercises[exerciseName])) {
-                lastSetFound = session.exercises[exerciseName][0];
-                break;
+                lastSetFound = session.exercises[exerciseName][0]; break;
             }
         }
     }
 
-    if (!lastSetFound) {
-        suggestionPanel.style.display = 'none';
-        return;
-    }
+    if (!lastSetFound) { suggestionPanel.style.display = 'none'; return; }
 
     const lastWeight = parseFloat(lastSetFound.w || lastSetFound.weight || 0);
     const lastRir = parseInt(lastSetFound.rir || 0);
-
-    if (isNaN(lastWeight) || lastWeight === 0) {
-        suggestionPanel.style.display = 'none';
-        return;
-    }
+    if (isNaN(lastWeight) || lastWeight === 0) { suggestionPanel.style.display = 'none'; return; }
 
     let message = "";
     suggestionPanel.style.background = "rgba(34,197,94,0.1)";
@@ -243,15 +232,11 @@ function checkProgressiveOverload(exerciseName) {
     suggestionPanel.style.borderRadius = "10px";
     suggestionPanel.style.border = "1px solid rgba(34,197,94,0.2)";
 
-    if (lastRir >= 3) {
-        message = `🧠 Smart Coach: Última vez foi fácil (RIR 3+). Tenta subir para ${lastWeight + 5}kg ou faz +2 Reps!`;
-    } else if (lastRir === 2) {
-        message = `🧠 Smart Coach: Progressão ideal. Tenta carregar ${lastWeight + 2.5}kg hoje!`;
-    } else if (lastRir === 1) {
-        message = `🧠 Smart Coach: Perto do limite (RIR 1). Mantém os ${lastWeight}kg e tenta mais 1 repetição.`;
-    } else {
-        suggestionPanel.style.background = "rgba(245,158,11,0.1)";
-        suggestionPanel.style.color = "#f59e0b";
+    if (lastRir >= 3) { message = `🧠 Smart Coach: Última vez foi fácil (RIR 3+). Tenta subir para ${lastWeight + 5}kg ou faz +2 Reps!`; } 
+    else if (lastRir === 2) { message = `🧠 Smart Coach: Progressão ideal. Tenta carregar ${lastWeight + 2.5}kg hoje!`; } 
+    else if (lastRir === 1) { message = `🧠 Smart Coach: Perto do limite (RIR 1). Mantém os ${lastWeight}kg e tenta mais 1 repetição.`; } 
+    else {
+        suggestionPanel.style.background = "rgba(245,158,11,0.1)"; suggestionPanel.style.color = "#f59e0b";
         suggestionPanel.style.border = "1px solid rgba(245,158,11,0.2)";
         message = `🧠 Smart Coach: Treino ao limite (RIR 0). Repete os ${lastWeight}kg com técnica perfeita antes de subir.`;
     }
@@ -264,7 +249,7 @@ function checkProgressiveOverload(exerciseName) {
     }
 }
 
-// --- TEMPORIZADOR E MINI-JOGO ---
+// --- TEMPORIZADOR BULLETPROOF E MINI-JOGO ---
 function startTimer(seconds) {
     clearInterval(timerInterval);
     clearInterval(gameInterval);
@@ -276,19 +261,21 @@ function startTimer(seconds) {
     
     if (overlay) overlay.style.display = 'flex';
     
-    let timeLeft = seconds;
-    if (display) display.innerText = timeLeft + 's';
-    
-    barbellY = 50; barbellVelocity = 0; score = 0; gameTicks = 0;
-    if (scoreDisplay) scoreDisplay.innerText = score;
-    
+    // Novo Sistema Timestamp
+    let targetTime = Date.now() + (seconds * 1000);
     let spokeWarning = false;
 
+    barbellY = 50; barbellVelocity = 0; score = 0; gameTicks = 0;
+    if (scoreDisplay) scoreDisplay.innerText = score;
+    if (display) display.innerText = seconds + 's';
+
     timerInterval = setInterval(() => {
-        timeLeft--;
+        let timeLeft = Math.ceil((targetTime - Date.now()) / 1000);
+        if (timeLeft < 0) timeLeft = 0;
+        
         if (display) display.innerText = timeLeft + 's';
         
-        if (timeLeft === 10 && voiceCoachActive && !spokeWarning) {
+        if (timeLeft <= 10 && timeLeft > 0 && voiceCoachActive && !spokeWarning) {
             spokeWarning = true;
             triggerVoiceWarning();
         }
