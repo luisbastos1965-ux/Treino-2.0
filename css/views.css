@@ -3,10 +3,28 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     overflow: hidden;
     height: 100vh;
     max-height: -webkit-fill-available;
     touch-action: none; /* Bloqueia o "arrastar" acidental para cima/baixo */
+    background: #0f172a;
+}
+
+.pulse-title-container {
+    width: 100%;
+    margin-top: 5vh;
+    margin-bottom: auto; 
+}
+
+.rack-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5vh; 
+    width: 100%;
+    margin-bottom: 5vh; 
+    padding: 10px; 
 }
 
 /* --- BEAST MODE OVERLAY --- */
@@ -90,127 +108,19 @@
 .bar-type-btn { background:#1e293b; border:1px solid #334155; color:white; padding:8px 12px; border-radius:8px; font-size:11px; cursor:pointer; }
 .bar-type-btn.active { background:var(--accent); color:black; border-color:var(--accent); font-weight:bold; }
 
-/* --- CALENDÁRIO --- */
-.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.calendar-header button { border: none; background: var(--card-bg); color: white; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
-.weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-.weekdays { margin-bottom: 8px; color: var(--muted); text-align: center; }
-.day-box { min-height: 60px; background: #334155; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.day-box.trained { background: var(--success); font-weight: bold; }
-.day-box.empty { background: transparent; }
-
-/* --- GRAFICOS --- */
-canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-top: 20px; }
-.chart-select { width: 100%; margin-top: 15px; padding: 12px; border: none; border-radius: 10px; background: var(--card-bg); color: white; }
-
-/* --- PERFIL E AVATAR --- */
-.avatar-container { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 250px; background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; margin-bottom: 20px; position: relative; overflow: hidden; }
-#dynamic-avatar { width: 120px; height: 200px; transform-origin: bottom center; transition: transform 0.2s ease-out; }
-#avatar-shadow { width: 80px; height: 10px; background: rgba(0,0,0,0.5); border-radius: 50%; margin-top: 5px; margin-bottom: 10px; }
-.profile-form .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
-.profile-form .form-row { display: flex; gap: 15px; }
-.profile-form .form-row .form-group { flex: 1; }
-.profile-form label { font-size: 13px; color: var(--muted); font-weight: bold; }
-.profile-form input[type="text"], .profile-form input[type="number"], .profile-form select { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #334155; color: white; font-size: 15px; }
-.accent-text { color: var(--accent); }
-.text-center { text-align: center; }
-
-.slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #334155; outline: none; }
-.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-.slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-
-.macro-box { background: #334155; padding: 15px; border-radius: 12px; flex: 1; margin: 0 5px; border: 1px solid #1e293b; }
-
-/* --- EXTRA: DIETA E CONQUISTAS --- */
-.punishment-btn { background: linear-gradient(135deg, #ef4444, #991b1b); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); font-size: 16px; margin-top: 15px; }
-.recipe-btn { background: #334155; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px; }
-#history-details-content::-webkit-scrollbar { width: 6px; }
-#history-details-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-/* --- MISSÕES, JEJUM E ÁGUA --- */
-.mission-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: white; font-size: 13px; text-align: left; }
-.water-btn { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; transition: 0.2s; }
-.water-btn:active { background: #38bdf8; color: #0f172a; }
-.fasting-ring { width: 150px; height: 150px; border-radius: 50%; border: 8px solid #334155; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold; color: var(--accent); position: relative; }
-.fasting-ring.active { border-color: var(--success); color: var(--success); box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
-.freq-food-chip { background: #334155; color: white; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; white-space: nowrap; }
-.freq-foods-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-top: 10px; }
-.set-type-btn { background: transparent; border: none; font-size: 16px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
-.set-type-btn.work { filter: grayscale(0%); }
-.set-type-btn.warmup { filter: grayscale(0%); opacity: 0.7; }
-.exercise-notes { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #334155; color: var(--accent); font-size: 12px; padding: 5px 0; margin-top: 10px; font-style: italic; }
-.exercise-notes:focus { outline: none; border-bottom-color: var(--success); }
-
-/* Animação para o Pain Tracker no V-Taper */
-@keyframes pulsePain { 0% { fill: #334155; } 50% { fill: #ef4444; } 100% { fill: #334155; } }
-.muscle-pain-active { animation: pulsePain 2s infinite; }
-
-/* --- TEMAS (SKINS) --- */
-body[data-theme="spartan"] { --accent: #ef4444; --success: #b91c1c; }
-body[data-theme="cyberpunk"] { --accent: #f0abfc; --success: #eab308; }
-body[data-theme="silverback"] { --accent: #94a3b8; --success: #64748b; }
-body[data-theme="hulk"] { --accent: #22c55e; --success: #15803d; }
-
-body[data-theme="spartan"] .pulse-hero-title { background: linear-gradient(135deg, #ef4444 0%, #fca5a5 50%, #991b1b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(239,68,68,0.4)); }
-body[data-theme="cyberpunk"] .pulse-hero-title { background: linear-gradient(135deg, #f0abfc 0%, #fdf4ff 50%, #c026d3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(240,171,252,0.4)); }
-body[data-theme="silverback"] .pulse-hero-title { background: linear-gradient(135deg, #94a3b8 0%, #f8fafc 50%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(148,163,184,0.4)); }
-body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, #22c55e 0%, #bbf7d0 50%, #15803d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(34,197,94,0.4)); }
-
-/* --- DEBRIEF DE DOMINGO --- */
-.debrief-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--accent); padding: 30px; border-radius: 20px; text-align: left; }
-.debrief-stat { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; }
-.debrief-stat span { color: var(--muted); font-size: 13px; }
-.debrief-stat strong { color: white; font-size: 18px; }
-
-/* --- RANKING DE FORÇA --- */
-.strength-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
-.rank-iniciante { background: #334155; color: white; }
-.rank-intermédio { background: #3b82f6; color: white; }
-.rank-avançado { background: #8b5cf6; color: white; }
-.rank-elite { background: #f59e0b; color: black; }
-.rank-mutante { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239,68,68,0.8); }
-
-/* --- MURO DA DISCIPLINA (GitHub Style 365) --- */
-.discipline-wall { display: flex; flex-direction: column; flex-wrap: wrap; height: 100px; gap: 3px; align-content: flex-end; overflow-x: auto; padding-bottom: 5px; }
-.discipline-block { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
-.discipline-wall::-webkit-scrollbar { height: 4px; }
-.discipline-wall::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-
-dius: 0; border-bottom-left-radius: 0; }
-
-/* --- ECRÃ INICIAL E HALTERES (DESIGN CORRIGIDO E CENTRADO) --- */
-#view-home.active {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    height: 100vh;
-    max-height: -webkit-fill-available;
-    touch-action: none;
-    background: #0f172a;
-}
-
-.pulse-title-container {
-    width: 100%;
-    margin-top: 10vh; /* Fixa o título PULSE confortavelmente no topo */
-    margin-bottom: auto; /* Funciona como uma mola: empurra a Rack para baixo */
-}
-
+/* --- RACK DE HALTERES ORIGINAL --- */
 .rack-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4vh; /* Dá um fosso dinâmico lindo entre os halteres */
+    gap: 16px; 
     width: 100%;
-    margin-bottom: 10vh; /* Levanta o Haltere PERFIL do fundo (acaba com o corte) */
-    padding: 10px; /* Garante espaço lateral para as sombras existirem */
 }
 
 .rack-btn {
     display: flex;
     align-items: center;
-    width: 85%;
+    width: 88%; 
     max-width: 380px;
     background: transparent;
     border: none;
@@ -254,3 +164,89 @@ dius: 0; border-bottom-left-radius: 0; }
 
 .db-end.left::before { content: ''; position: absolute; left: 0px; top: 15%; height: 70%; width: 2px; background: #38bdf8; border-radius: 2px; box-shadow: 0 0 5px #38bdf8; }
 .db-end.right::after { content: ''; position: absolute; right: 0px; top: 15%; height: 70%; width: 2px; background: #38bdf8; border-radius: 2px; box-shadow: 0 0 5px #38bdf8; }
+
+/* --- CALENDÁRIO --- */
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.calendar-header button { border: none; background: var(--card-bg); color: white; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
+.weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.weekdays { margin-bottom: 8px; color: var(--muted); text-align: center; }
+.day-box { min-height: 60px; background: #334155; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.day-box.trained { background: var(--success); font-weight: bold; }
+.day-box.empty { background: transparent; }
+
+/* --- GRAFICOS --- */
+canvas { background: var(--card-bg); padding: 10px; border-radius: 16px; margin-top: 20px; }
+.chart-select { width: 100%; margin-top: 15px; padding: 12px; border: none; border-radius: 10px; background: var(--card-bg); color: white; }
+
+/* --- PERFIL E AVATAR --- */
+.avatar-container { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 250px; background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; margin-bottom: 20px; position: relative; overflow: hidden; }
+#dynamic-avatar { width: 120px; height: 200px; transform-origin: bottom center; transition: transform 0.2s ease-out; }
+#avatar-shadow { width: 80px; height: 10px; background: rgba(0,0,0,0.5); border-radius: 50%; margin-top: 5px; margin-bottom: 10px; }
+.profile-form .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+.profile-form .form-row { display: flex; gap: 15px; }
+.profile-form .form-row .form-group { flex: 1; }
+.profile-form label { font-size: 13px; color: var(--muted); font-weight: bold; }
+.profile-form input[type="text"], .profile-form input[type="number"], .profile-form select { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #334155; color: white; font-size: 15px; }
+.accent-text { color: var(--accent); }
+.text-center { text-align: center; }
+
+.slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #334155; outline: none; }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+.slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+
+.macro-box { background: #334155; padding: 15px; border-radius: 12px; flex: 1; margin: 0 5px; border: 1px solid #1e293b; }
+
+/* --- EXTRA: DIETA E CONQUISTAS --- */
+.punishment-btn { background: linear-gradient(135deg, #ef4444, #991b1b); color: white; font-weight: bold; border: none; padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); font-size: 16px; margin-top: 15px; }
+.recipe-btn { background: #334155; color: var(--accent); font-weight: bold; border: 1px solid var(--accent); padding: 15px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 16px; margin-top: 15px; }
+#history-details-content::-webkit-scrollbar { width: 6px; }
+#history-details-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+/* --- NOVAS FUNCIONALIDADES: JEJUM, ÁGUA, STREAKS --- */
+.mission-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 12px; color: white; font-size: 13px; text-align: left; }
+.water-btn { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.water-btn:active { background: #38bdf8; color: #0f172a; }
+.fasting-ring { width: 150px; height: 150px; border-radius: 50%; border: 8px solid #334155; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; font-weight: bold; color: var(--accent); position: relative; }
+.fasting-ring.active { border-color: var(--success); color: var(--success); box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); }
+.freq-food-chip { background: #334155; color: white; padding: 5px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.freq-foods-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-top: 10px; }
+.set-type-btn { background: transparent; border: none; font-size: 16px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
+.set-type-btn.work { filter: grayscale(0%); }
+.set-type-btn.warmup { filter: grayscale(0%); opacity: 0.7; }
+.exercise-notes { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #334155; color: var(--accent); font-size: 12px; padding: 5px 0; margin-top: 10px; font-style: italic; }
+.exercise-notes:focus { outline: none; border-bottom-color: var(--success); }
+
+/* Animação para o Pain Tracker no V-Taper (Piscar Vermelho) */
+@keyframes pulsePain { 0% { fill: #334155; } 50% { fill: #ef4444; } 100% { fill: #334155; } }
+.muscle-pain-active { animation: pulsePain 2s infinite; }
+
+/* --- TEMAS (SKINS) --- */
+body[data-theme="spartan"] { --accent: #ef4444; --success: #b91c1c; }
+body[data-theme="cyberpunk"] { --accent: #f0abfc; --success: #eab308; }
+body[data-theme="silverback"] { --accent: #94a3b8; --success: #64748b; }
+body[data-theme="hulk"] { --accent: #22c55e; --success: #15803d; }
+
+body[data-theme="spartan"] .pulse-hero-title { background: linear-gradient(135deg, #ef4444 0%, #fca5a5 50%, #991b1b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(239,68,68,0.4)); }
+body[data-theme="cyberpunk"] .pulse-hero-title { background: linear-gradient(135deg, #f0abfc 0%, #fdf4ff 50%, #c026d3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(240,171,252,0.4)); }
+body[data-theme="silverback"] .pulse-hero-title { background: linear-gradient(135deg, #94a3b8 0%, #f8fafc 50%, #475569 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(148,163,184,0.4)); }
+body[data-theme="hulk"] .pulse-hero-title { background: linear-gradient(135deg, #22c55e 0%, #bbf7d0 50%, #15803d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 8px 12px rgba(34,197,94,0.4)); }
+
+/* --- DEBRIEF DE DOMINGO --- */
+.debrief-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 2px solid var(--accent); padding: 30px; border-radius: 20px; text-align: left; }
+.debrief-stat { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; }
+.debrief-stat span { color: var(--muted); font-size: 13px; }
+.debrief-stat strong { color: white; font-size: 18px; }
+
+/* --- RANKING DE FORÇA --- */
+.strength-badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
+.rank-iniciante { background: #334155; color: white; }
+.rank-intermédio { background: #3b82f6; color: white; }
+.rank-avançado { background: #8b5cf6; color: white; }
+.rank-elite { background: #f59e0b; color: black; }
+.rank-mutante { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239,68,68,0.8); }
+
+/* --- MURO DA DISCIPLINA (GitHub Style 365) --- */
+.discipline-wall { display: flex; flex-direction: column; flex-wrap: wrap; height: 100px; gap: 3px; align-content: flex-end; overflow-x: auto; padding-bottom: 5px; }
+.discipline-block { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+.discipline-wall::-webkit-scrollbar { height: 4px; }
+.discipline-wall::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
