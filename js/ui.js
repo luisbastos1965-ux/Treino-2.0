@@ -89,7 +89,7 @@ function checkSundayDebrief() {
             
             setTimeout(() => {
                 sendLocalPush("🛡️ Guardião de Dados", "É Domingo! Exporta o Backup na aba ID Cartão para não perderes o legado.");
-                showPulseToast("🛡️ Guardião de Dados: Não te esqueças do Backup (Menu Perfil)");
+                showPulseToast("🛡️ Guardião de Dados: Faz o Backup no Perfil!");
             }, 1000);
         }
     }
@@ -122,7 +122,7 @@ function openWorkoutSlot(type, index = 0) {
 }
 function backToWorkoutSlots() { document.getElementById('treino-slots-view').style.display = 'block'; document.getElementById('treino-active-view').style.display = 'none'; }
 function switchWorkout(event, day) { currentDay = day; document.querySelectorAll('#active-workout-tabs .tab-btn').forEach(btn => btn.classList.remove('active')); event.currentTarget.classList.add('active'); const beastBtn = document.getElementById('main-beast-btn'); if (beastBtn) beastBtn.style.display = (day === 'MOBILITY') ? 'none' : 'block'; renderWorkout(); }
-function toggleDeloadMode() { isDeloadMode = !isDeloadMode; const btn = document.getElementById('btn-deload-toggle'); if(isDeloadMode) { btn.innerHTML = '🧘 Deload ON (Cargas 70%)'; btn.style.background = 'var(--success)'; alert("Modo Deload Ativado: Todas as séries foram reduzidas e o peso anterior será calculado a 70%."); } else { btn.innerHTML = '📉 Modo Deload'; btn.style.background = '#1e293b'; } renderWorkout(); }
+function toggleDeloadMode() { isDeloadMode = !isDeloadMode; const btn = document.getElementById('btn-deload-toggle'); if(isDeloadMode) { btn.innerHTML = '🧘 Deload ON (Cargas 70%)'; btn.style.background = 'var(--success)'; showPulseToast("Modo Deload Ativado: Cargas a 70%."); } else { btn.innerHTML = '📉 Modo Deload'; btn.style.background = '#1e293b'; showPulseToast("Modo Deload Desativado."); } renderWorkout(); }
 function toggleSetType(btn) { let type = btn.getAttribute('data-type'); if (type === 'work') { btn.setAttribute('data-type', 'warmup'); btn.innerHTML = '🔥'; btn.className = 'set-type-btn warmup'; } else { btn.setAttribute('data-type', 'work'); btn.innerHTML = '💪'; btn.className = 'set-type-btn work'; } }
 function openSwapModal(exName, idx) { currentSwapIndex = idx; let m = getMuscleForExercise(exName); let pool = exerciseLibrary.filter(x => x.muscle === m && x.name !== exName); let html = ''; pool.forEach(ex => { html += `<div class="dir-item" onclick="swapExercise('${ex.name}')" style="cursor:pointer;"><span>${ex.name}</span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}</span></div>`; }); if(html === '') html = '<p>Nenhum exercício similar encontrado.</p>'; document.getElementById('swap-modal-content').innerHTML = html; document.getElementById('swap-modal').style.display = 'flex'; }
 function closeSwapModal() { document.getElementById('swap-modal').style.display = 'none'; }
@@ -157,7 +157,7 @@ function saveCurrentWorkout() {
         }
         if (setsDetails.length > 0) workoutRecord.exercises[ex.name] = setsDetails;
     });
-    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); showPulseToast('✅ Treino guardado!');
+    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); showPulseToast('✅ Treino guardado com sucesso!');
     localStorage.removeItem('gym_active_session'); // Limpa o anti-crash
     updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); renderDisciplineWall(); backToWorkoutSlots();
 }
@@ -274,7 +274,7 @@ function showHistoryDetails(dateString) {
     html += `<button onclick="deleteDayHistory('${dateString}')" style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:10px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;">Apagar Registo</button>`;
     document.getElementById('history-details-content').innerHTML = html; document.getElementById('history-modal-date').innerText = dateString; document.getElementById('history-details-modal').style.display = 'flex';
 }
-function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); } }
+function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); showPulseToast("🗑️ Registo apagado."); } }
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
 // --- PERFIL, SBD TOTAL E MISSÕES ---
@@ -305,10 +305,10 @@ function toggleProfileEdit() {
     isProfileEditing = !isProfileEditing;
     const formContainer = document.getElementById('profile-form-container');
     const editBtn = document.getElementById('btn-edit-profile');
-    const detailsPanel = document.getElementById('details-profile');
+    const detailsPanel = document.getElementById('details-profile'); 
     
     if (isProfileEditing) {
-        if (detailsPanel) detailsPanel.open = true; // Força abertura do painel para editar
+        if (detailsPanel) detailsPanel.open = true; 
         formContainer.style.opacity = '1';
         formContainer.style.pointerEvents = 'auto';
         editBtn.innerHTML = '💾 Gravar';
@@ -454,7 +454,7 @@ function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
 let currentBarWeight = 20; 
 function openPlateMath(targetWeightStr) {
-    const targetWeight = parseFloat(targetWeightStr); if (!targetWeight || targetWeight <= currentBarWeight) { alert(`Insere um peso > ${currentBarWeight}kg para esta barra.`); return; } 
+    const targetWeight = parseFloat(targetWeightStr); if (!targetWeight || targetWeight <= currentBarWeight) { showPulseToast(`Insere um peso > ${currentBarWeight}kg para esta barra.`, true); return; } 
     document.getElementById('plate-target-weight').innerText = targetWeight;
     let weightPerSide = (targetWeight - currentBarWeight) / 2; 
     const plates = [ { weight: 25, color: '#ef4444', height: '100px' }, { weight: 20, color: '#3b82f6', height: '90px' }, { weight: 15, color: '#eab308', height: '80px' }, { weight: 10, color: '#22c55e', height: '70px' }, { weight: 5, color: '#f8fafc', height: '50px' }, { weight: 2.5, color: '#334155', height: '40px' }, { weight: 1.25, color: '#94a3b8', height: '30px' } ];
@@ -465,18 +465,18 @@ function openPlateMath(targetWeightStr) {
     document.getElementById('plate-math-result').innerHTML = barSelectorHtml + resultHTML; document.getElementById('visual-plates').innerHTML = visualHTML; document.getElementById('plate-math-modal').style.display = 'flex';
 }
 function closePlateMath() { document.getElementById('plate-math-modal').style.display = 'none'; }
-function openWarmup() { const targetW = parseFloat(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder); if (!targetW || targetW <= 20) { alert("Insere peso alvo > 20kg."); return; } document.getElementById('warmup-results').innerHTML = `<div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #94a3b8;"><strong style="color: var(--accent);">Set 1:</strong> Barra (20kg) x 15 reps</div><div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #38bdf8;"><strong style="color: var(--accent);">Set 2:</strong> ${Math.round(targetW * 0.5)}kg x 8 reps</div><div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #ef4444;"><strong style="color: var(--accent);">Set 3:</strong> ${Math.round(targetW * 0.75)}kg x 3 reps</div>`; document.getElementById('warmup-modal').style.display = 'flex'; }
+function openWarmup() { const targetW = parseFloat(document.getElementById('beast-weight').value || document.getElementById('beast-weight').placeholder); if (!targetW || targetW <= 20) { showPulseToast("Insere peso alvo > 20kg.", true); return; } document.getElementById('warmup-results').innerHTML = `<div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #94a3b8;"><strong style="color: var(--accent);">Set 1:</strong> Barra (20kg) x 15 reps</div><div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #38bdf8;"><strong style="color: var(--accent);">Set 2:</strong> ${Math.round(targetW * 0.5)}kg x 8 reps</div><div style="background: #334155; padding: 15px; border-radius: 12px; color: white; text-align: left; border-left: 4px solid #ef4444;"><strong style="color: var(--accent);">Set 3:</strong> ${Math.round(targetW * 0.75)}kg x 3 reps</div>`; document.getElementById('warmup-modal').style.display = 'flex'; }
 function closeWarmup() { document.getElementById('warmup-modal').style.display = 'none'; }
 function openModal(title, content) { document.getElementById('modal-title').innerText = title; document.getElementById('modal-content').innerText = content; currentModalExercise = title; document.getElementById('custom-video-input').value = ""; renderVideoFrame(title); document.getElementById('exercise-modal').style.display = 'flex'; }
 function closeModal() { document.getElementById('exercise-modal').style.display = 'none'; document.getElementById('modal-video-container').innerHTML = ''; }
 function showExerciseTips(exerciseName) { openModal(exerciseName, "Foca-te na execução perfeita e numa descida controlada!"); }
-function saveCustomVideo() { const inputLink = document.getElementById('custom-video-input').value.trim(); if (!inputLink) return; let embedLink = inputLink; if (inputLink.includes('watch?v=')) { embedLink = inputLink.replace('watch?v=', 'embed/'); if(embedLink.includes('&')) embedLink = embedLink.split('&')[0]; } else if (inputLink.includes('youtu.be/')) { embedLink = inputLink.replace('youtu.be/', 'youtube.com/embed/'); if(embedLink.includes('?')) embedLink = embedLink.split('?')[0]; } let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {}; videoLibrary[currentModalExercise] = embedLink; localStorage.setItem('gym_tracker_videos', JSON.stringify(videoLibrary)); renderVideoFrame(currentModalExercise); document.getElementById('custom-video-input').value = ""; document.getElementById('custom-video-input').placeholder = "Gravado!"; if ("vibrate" in navigator) navigator.vibrate(50); }
+function saveCustomVideo() { const inputLink = document.getElementById('custom-video-input').value.trim(); if (!inputLink) return; let embedLink = inputLink; if (inputLink.includes('watch?v=')) { embedLink = inputLink.replace('watch?v=', 'embed/'); if(embedLink.includes('&')) embedLink = embedLink.split('&')[0]; } else if (inputLink.includes('youtu.be/')) { embedLink = inputLink.replace('youtu.be/', 'youtube.com/embed/'); if(embedLink.includes('?')) embedLink = embedLink.split('?')[0]; } let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {}; videoLibrary[currentModalExercise] = embedLink; localStorage.setItem('gym_tracker_videos', JSON.stringify(videoLibrary)); renderVideoFrame(currentModalExercise); document.getElementById('custom-video-input').value = ""; document.getElementById('custom-video-input').placeholder = "Gravado!"; if ("vibrate" in navigator) navigator.vibrate(50); showPulseToast("🎥 Vídeo associado!"); }
 function renderVideoFrame(exerciseName) { let videoLibrary = JSON.parse(localStorage.getItem('gym_tracker_videos')) || {}; const container = document.getElementById('modal-video-container'); if (videoLibrary[exerciseName]) container.innerHTML = `<iframe width="100%" height="100%" src="${videoLibrary[exerciseName]}" frameborder="0" allowfullscreen></iframe>`; else container.innerHTML = `<div style="text-align: center;"><span style="font-size: 30px; display: block; margin-bottom: 5px;">🎥</span><span style="color: var(--muted); font-size: 12px;">Sem vídeo. Cola um link abaixo!</span></div>`; }
 
 function openModoFlex() { let totalVolume = 0; let totalSets = 0; const exercises = workoutData[currentDay]; if (exercises) { exercises.forEach((ex, exIdx) => { for (let setIdx = 1; setIdx <= 15; setIdx++) { let wInput = document.getElementById(`weight-${currentDay}-${exIdx}-${setIdx}`); let rInput = document.getElementById(`reps-${currentDay}-${exIdx}-${setIdx}`); let typeBtn = document.getElementById(`type-${currentDay}-${exIdx}-${setIdx}`); if (wInput && rInput && wInput.value && rInput.value && typeBtn && typeBtn.getAttribute('data-type') === 'work') { let w = parseFloat(wInput.value); let r = parseInt(rInput.value); if (!isNaN(w) && !isNaN(r)) { totalVolume += (w * r); totalSets++; } } } }); } document.getElementById('flex-card-name').innerText = userProfile.name ? '@' + userProfile.name.replace(/\s+/g, '').toLowerCase() : '@atleta_misterioso'; document.getElementById('flex-card-date').innerText = new Date().toLocaleDateString('pt-PT'); document.getElementById('flex-card-workout').innerText = currentDay.toUpperCase() + ' DAY'; document.getElementById('flex-card-volume').innerText = totalVolume.toLocaleString('en-US') + ' kg'; document.getElementById('flex-card-sets').innerText = totalSets + ' Sets'; document.getElementById('flex-modal').style.display = 'flex'; }
 function closeModoFlex() { document.getElementById('flex-modal').style.display = 'none'; }
 function copyFlexText() { navigator.clipboard.writeText(`🔥 ACABEI DE FRITAR O MEU TREINO!\n💪 Foco: ${document.getElementById('flex-card-workout').innerText}\n📈 Volume: ${document.getElementById('flex-card-volume').innerText}\n🥵 Séries: ${document.getElementById('flex-card-sets').innerText}\n🤖 Registado no Pulse`).then(() => showPulseToast('✅ Resumo copiado!')); }
 
-function shareToInstagram() { if(typeof html2canvas === 'undefined') { alert("Erro de imagem."); return; } const card = document.getElementById('flex-card'); html2canvas(card, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => { canvas.toBlob(blob => { const file = new File([blob], 'pulse-workout.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ title: 'Treino Pulse', text: '🔥', files: [file] }).catch(err => console.log(err)); } else { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'pulse_story.png'; a.click(); showPulseToast('📥 Imagem guardada na galeria!'); } }); }); }
+function shareToInstagram() { if(typeof html2canvas === 'undefined') { showPulseToast("❌ Erro de imagem.", true); return; } const card = document.getElementById('flex-card'); html2canvas(card, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => { canvas.toBlob(blob => { const file = new File([blob], 'pulse-workout.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ title: 'Treino Pulse', text: '🔥', files: [file] }).catch(err => console.log(err)); } else { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'pulse_story.png'; a.click(); showPulseToast('📥 Imagem guardada na galeria!'); } }); }); }
 
 setTimeout(() => { updateGamificationLogic(); }, 1000);
