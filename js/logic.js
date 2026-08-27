@@ -87,14 +87,16 @@ function generateWorkoutLogic(focus, fatigue, library) {
 }
 
 function updateGamificationLogic() {
-    let today = new Date(); let todayStr = today.toLocaleDateString('pt-PT');
+    let today = new Date(); 
+    let todayStr = today.toLocaleDateString('pt-PT');
     let appStreaks = JSON.parse(localStorage.getItem('gym_streaks')) || { current: 0, lastDate: null };
     
     if (appStreaks.lastDate !== todayStr) { 
         if (!appStreaks.lastDate) { 
             appStreaks.current = 1; 
         } else { 
-            let parts = appStreaks.lastDate.split('/'); let lastDateObj = new Date(parts[2], parts[1]-1, parts[0]); 
+            let parts = appStreaks.lastDate.split('/'); 
+            let lastDateObj = new Date(parts[2], parts[1]-1, parts[0]); 
             let diffDays = Math.ceil(Math.abs(today - lastDateObj) / (1000 * 60 * 60 * 24)); 
             if (diffDays === 1) appStreaks.current += 1; 
             else if (diffDays > 2) appStreaks.current = 1; 
@@ -103,30 +105,63 @@ function updateGamificationLogic() {
         localStorage.setItem('gym_streaks', JSON.stringify(appStreaks)); 
     }
     
-    let currentMonth = today.getMonth();
-    if (!activeMission || activeMission.month !== currentMonth) { 
-        const missions = [ 
-            { type: 'volume', target: 30000, desc: "Mover 30.000 kg de Carga Total" }, 
-            { type: 'workouts', target: 16, desc: "Completar 16 Treinos no Mês" } 
-        ]; 
-        let randMission = missions[Math.floor(Math.random() * missions.length)]; 
-        activeMission = { month: currentMonth, type: randMission.type, target: randMission.target, desc: randMission.desc, progress: 0, completed: false }; 
+    // Lista alargada de missões possíveis para o loop infinito
+    const possibleMissions = [ 
+        { type: 'volume', target: 10000, desc: "Mover 10.000 kg de Carga Total" },
+        { type: 'volume', target: 25000, desc: "Mover 25.000 kg de Carga Total" },
+        { type: 'volume', target: 50000, desc: "Mover 50.000 kg de Carga Total" },
+        { type: 'workouts', target: 2, desc: "Completar 2 Treinos" }, 
+        { type: 'workouts', target: 4, desc: "Completar 4 Treinos" } 
+    ];
+
+    // Se não houver missão ativa ou se a anterior foi completada, gera uma nova imediatamente!
+    if (!activeMission || activeMission.completed) { 
+        let randMission = possibleMissions[Math.floor(Math.random() * possibleMissions.length)]; 
+        activeMission = { 
+            type: randMission.type, 
+            target: randMission.target, 
+            desc: randMission.desc, 
+            progress: 0, 
+            completed: false 
+        }; 
     }
     
-    let volToday = 0; let lastLog = history[history.length - 1];
-    if (lastLog && lastLog.date === todayStr && lastLog.exercises) { 
-        if(activeMission.type === 'volume') { 
-            Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => volToday += (s.weight||s.w||0) * (s.reps||s.r||0))); 
+    let volToday = 0; 
+    let lastLog = history[history.length - 1];
+    
+    // Se acabaste de gravar um treino hoje, contabiliza o progresso
+    if (lastLog && lastLog.date === todayStr && lastLog.exercises && !activeMission.countedToday) { 
+        if (activeMission.type === 'volume') { 
+            Object.values(lastLog.exercises).forEach(sets => sets.forEach(s => {
+                if (s.type !== 'W') volToday += (s.weight || s.w || 0) * (s.reps || s.r || 0);
+            })); 
             activeMission.progress += volToday; 
         } else if (activeMission.type === 'workouts') { 
             activeMission.progress += 1; 
         } 
+        activeMission.countedToday = true; // Evita duplicar o mesmo treino se fores ver o perfil várias vezes
     }
     
+    // Se atingiste o objetivo, avisa e gera logo a próxima missão no mesmo instante!
     if (activeMission.progress >= activeMission.target && !activeMission.completed) { 
         activeMission.completed = true; 
-        alert("🎖️ MISSÃO MENSAL CONCLUÍDA! O Valhalla aprova."); 
+        if (typeof showPulseToast === 'function') {
+            showPulseToast("🎖️ MISSÃO CONCLUÍDA! Nova missão atribuída!");
+        } else {
+            alert("🎖️ MISSÃO CONCLUÍDA!");
+        }
+        
+        // Loop infinito: reseta e puxa um novo desafio logo a seguir
+        let randMission = possibleMissions[Math.floor(Math.random() * possibleMissions.length)]; 
+        activeMission = { 
+            type: randMission.type, 
+            target: randMission.target, 
+            desc: randMission.desc, 
+            progress: 0, 
+            completed: false 
+        };
     } 
+    
     localStorage.setItem('gym_mission', JSON.stringify(activeMission));
 }
 
