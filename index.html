@@ -163,14 +163,51 @@
 
     <!-- ABA 5: PERFIL (ID CARTÃO E MISSÕES) -->
     <div id="view-perfil" class="view-section">
-        <div class="avatar-container"><svg id="dynamic-avatar" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="20" r="14" fill="#38bdf8" /><path d="M 25 45 Q 50 60 75 45 L 65 105 L 35 105 Z" fill="#38bdf8" /><path d="M 18 52 L 30 52 L 25 90 L 12 90 Z" fill="#38bdf8" /><path d="M 70 52 L 82 52 L 88 90 L 75 90 Z" fill="#38bdf8" /><path d="M 38 110 L 48 110 L 45 180 L 32 170 Z" fill="#38bdf8" /><path d="M 52 110 L 62 110 L 68 170 L 55 180 Z" fill="#38bdf8" /></svg><div id="avatar-shadow"></div></div>
-        <div class="profile-form exercise-card">
+        
+        <!-- O Novo Avatar Minimalista (Iniciais) -->
+        <div class="avatar-container" style="justify-content: center; height: 180px; position: relative;">
+            <!-- Botão de Editar Perfil posicionado no topo direito do Avatar -->
+            <button id="btn-edit-profile" onclick="toggleProfileEdit()" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--accent); padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; z-index: 10;">
+                ✏️ Editar Perfil
+            </button>
+            <div id="avatar-initials" style="width: 90px; height: 90px; background: var(--accent); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); border: 4px solid #0f172a;">
+                --
+            </div>
+            <div style="color: white; font-weight: bold; margin-top: 15px; font-size: 18px;" id="profile-display-name">Titã Misterioso</div>
+        </div>
+
+        <!-- Formulário de Perfil (Bloqueado por defeito) -->
+        <div class="profile-form exercise-card" id="profile-form-container" style="opacity: 0.7; pointer-events: none;">
             <div class="form-group"><label>Nome</label><input type="text" id="prof-name" oninput="updateProfileData()"></div>
-            <div class="form-row"><div class="form-group"><label>Idade</label><input type="number" id="prof-age" oninput="updateProfileData()"></div><div class="form-group"><label>Género</label><select id="prof-gender" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Idade</label><input type="number" id="prof-age" oninput="updateProfileData()"></div>
+                <div class="form-group">
+                    <label>Género</label>
+                    <select id="prof-gender" onchange="updateProfileData()">
+                        <option value="male">Masculino</option>
+                        <option value="female">Feminino</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
             <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
-            <div class="form-group"><label>Atividade Base</label><select id="prof-activity" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">Muito Ativo</option></select></div>
-            <div class="form-group"><label>Objetivo</label><select id="prof-goal" onchange="updateProfileData()"><option value="cut">Cut</option><option value="maintain">Manter</option><option value="bulk">Bulk</option></select></div>
+            <div class="form-group">
+                <label>Atividade Base</label>
+                <select id="prof-activity" onchange="updateProfileData()">
+                    <option value="1.2">Sedentário</option>
+                    <option value="1.375">Leve</option>
+                    <option value="1.55">Moderado</option>
+                    <option value="1.725">Muito Ativo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Objetivo</label>
+                <select id="prof-goal" onchange="updateProfileData()">
+                    <option value="cut">🔪 Definição (Cut)</option>
+                    <option value="maintain">⚡ Manutenção (Recomp)</option>
+                    <option value="bulk">🔥 Ganho de Massa (Bulk)</option>
+                </select>
+            </div>
             <div class="form-group" style="margin-top:10px;"><label>🎧 Playlist do Spotify (Opcional)</label><input type="text" id="prof-spotify" placeholder="Cola o link da playlist..." onchange="updateProfileData()" style="font-size:12px; background:#1e293b; border:1px solid #334155;"></div>
             
             <div class="form-group" style="margin-top:10px; border-top: 1px solid #334155; padding-top: 15px;">
