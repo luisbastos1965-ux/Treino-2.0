@@ -1,15 +1,16 @@
 // ==========================================
-// UI-CORE.JS: NAVEGAÇÃO, TOASTS E ARRANQUE
+// UI-CORE.JS: NAVEGAÇÃO E ARRANQUE
 // ==========================================
+
+let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance;
 
 window.onload = () => { 
     checkSundayDebrief(); 
     if(typeof checkPunishmentExpiration === 'function') checkPunishmentExpiration();
 
-    // CRASH RECOVERY BOOT
     if(activeSessionBackup) {
         setTimeout(() => {
-            if(confirm("⚠️ O teu último treino foi interrompido (A app foi fechada). Queres retomar de onde ficaste?")) {
+            if(confirm("⚠️ O teu último treino foi interrompido. Queres retomar de onde ficaste?")) {
                 currentDay = activeSessionBackup.day;
                 workoutData[currentDay] = activeSessionBackup.workout;
                 beastState = activeSessionBackup.state;
@@ -39,7 +40,6 @@ function navigateTo(id) {
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
-// SISTEMA DE TOASTS
 function showPulseToast(message, isError = false) {
     let toast = document.getElementById('pulse-toast');
     if(!toast) {
@@ -56,16 +56,11 @@ function showPulseToast(message, isError = false) {
 }
 
 function requestPushPermissions() { 
-    if ("Notification" in window) { 
-        Notification.requestPermission().then(permission => { 
-            if (permission === "granted") showPulseToast("✅ Notificações ativadas!"); 
-            else showPulseToast("❌ Notificações recusadas.", true); 
-        }); 
-    } else { showPulseToast("⚠️ O teu navegador não suporta Notificações.", true); } 
+    if ("Notification" in window) { Notification.requestPermission().then(p => { if(p === "granted") showPulseToast("✅ Notificações ativadas com sucesso!"); else showPulseToast("❌ Notificações recusadas.", true); }); } 
+    else showPulseToast("⚠️ Sem suporte para Notificações.", true); 
 }
 
-function sendLocalPush(title, bodyText) { if ("Notification" in window && Notification.permission === "granted") { try { if ('serviceWorker' in navigator && navigator.serviceWorker.controller) { navigator.serviceWorker.ready.then(sw => { sw.showNotification(title, { body: bodyText, icon: 'assets/img/logo.png', vibrate: [200, 100, 200] }); }); } else { new Notification(title, { body: bodyText, icon: 'assets/img/logo.png' }); } } catch (e) { console.log("Erro Push:", e); } } else if ("vibrate" in navigator) { navigator.vibrate([200, 100, 200]); } }
-
+function sendLocalPush(title, bodyText) { if ("Notification" in window && Notification.permission === "granted") { try { if ('serviceWorker' in navigator && navigator.serviceWorker.controller) { navigator.serviceWorker.ready.then(sw => { sw.showNotification(title, { body: bodyText, icon: 'assets/img/logo.png', vibrate: [200, 100, 200] }); }); } else { new Notification(title, { body: bodyText, icon: 'assets/img/logo.png' }); } } catch (e) { console.log(e); } } else if ("vibrate" in navigator) { navigator.vibrate([200, 100, 200]); } }
 function changeTheme(theme) { appTheme = theme; document.body.setAttribute('data-theme', theme); localStorage.setItem('gym_theme', theme); if(typeof renderDisciplineWall === 'function') renderDisciplineWall(); }
 
 function checkSundayDebrief() {
@@ -79,10 +74,9 @@ function checkSundayDebrief() {
             document.getElementById('sunday-debrief-modal').style.display = 'flex';
             lastDebriefDate = todayStr;
             localStorage.setItem('gym_last_debrief', lastDebriefDate);
-            setTimeout(() => { sendLocalPush("🛡️ Guardião", "Exporta o Backup!"); showPulseToast("🛡️ Guardião: Faz Backup!"); }, 1000);
+            setTimeout(() => { sendLocalPush("🛡️ Guardião de Dados", "Exporta o Backup no Perfil."); showPulseToast("🛡️ Guardião de Dados: Faz o Backup no Perfil!"); }, 1000);
         }
     }
 }
 function closeDebrief() { document.getElementById('sunday-debrief-modal').style.display = 'none'; }
-
 setTimeout(() => { if(typeof updateGamificationLogic === 'function') updateGamificationLogic(); }, 1000);
