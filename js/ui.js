@@ -417,6 +417,33 @@ function renderAchievements() {
 }
 
 // --- NUTRIÇÃO E LISTA DE COMPRAS ---
+
+const commonFoodsDB = [
+    {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0},
+    {name: "Peito de Frango (100g)", cals: 165, pro: 31, car: 0},
+    {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28},
+    {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25},
+    {name: "Aveia (50g)", cals: 190, pro: 7, car: 33},
+    {name: "Whey Protein (1 scoop)", cals: 120, pro: 24, car: 3},
+    {name: "Banana (1 uni)", cals: 105, pro: 1, car: 27},
+    {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3},
+    {name: "Atum em água (1 lata)", cals: 110, pro: 25, car: 0},
+    {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13},
+    {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
+];
+
+function fillCommonFood() {
+    let sel = document.getElementById('db-food-select').value;
+    if(!sel) return;
+    let food = commonFoodsDB.find(f => f.name === sel);
+    if(food) {
+        document.getElementById('food-name').value = food.name;
+        document.getElementById('food-cals').value = food.cals;
+        document.getElementById('food-pro').value = food.pro;
+        document.getElementById('food-car').value = food.car;
+    }
+}
+
 function renderDieta() {
     const calsElement = document.getElementById('calc-cals'); if(!calsElement) return; 
     let tdee = parseInt(calsElement.innerText) || 0; 
@@ -487,7 +514,7 @@ function openWaterModal(type) {
     if (type === 'garrafas') {
         document.getElementById('water-garrafas-modal').style.display = 'flex';
     } else {
-        document.getElementById('glass-count').innerText = '1'; // Reseta o contador
+        document.getElementById('glass-count').innerText = '1'; 
         document.getElementById('water-copos-modal').style.display = 'flex';
     }
 }
@@ -512,7 +539,7 @@ function adjustGlasses(direction) {
 
 function confirmGlasses() {
     let count = parseInt(document.getElementById('glass-count').innerText);
-    let ml = count * 250; // Cada copo = 250ml
+    let ml = count * 250; 
     addWater(ml);
     closeWaterModal('copos');
     showPulseToast(`💧 ${count} Copo(s) registado(s)! (+${ml}ml)`);
@@ -531,7 +558,6 @@ function addDailyFood() {
     let pro = parseInt(document.getElementById('food-pro').value) || 0;
     let car = parseInt(document.getElementById('food-car').value) || 0;
 
-    // Auto-cálculo de Kcal caso o utilizador não saiba as calorias, mas preencha os macros
     if (cals === 0 && (pro > 0 || car > 0)) {
         cals = (pro * 4) + (car * 4);
     }
@@ -554,6 +580,7 @@ function addDailyFood() {
     document.getElementById('food-cals').value = ''; 
     document.getElementById('food-pro').value = ''; 
     document.getElementById('food-car').value = ''; 
+    document.getElementById('db-food-select').value = '';
     renderDieta();
 }
 
@@ -573,7 +600,56 @@ function startFastingTimer() {
 
 function calculateBodyFat() { const waist = parseFloat(document.getElementById('meas-waist').value); const height = userProfile.height; const gender = userProfile.gender; const bfDisplay = document.getElementById('calc-bf'); if (waist > 0 && height > 0) { let rfm = calculateBodyFatFormula(waist, height, gender); bfDisplay.innerText = rfm.toFixed(1) + '%'; if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8'; else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') bfDisplay.style.color = 'var(--success)'; else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') bfDisplay.style.color = '#f59e0b'; else bfDisplay.style.color = 'var(--danger)'; } else { bfDisplay.innerText = '--%'; bfDisplay.style.color = 'var(--accent)'; } }
 
-function openRecipesModal() { document.getElementById('recipes-modal').style.display = 'flex'; } function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
+// --- RECEITAS PARA HIPERTROFIA ---
+function openRecipesModal() { 
+    const recipes = {
+        "🌅 Pequeno-Almoço": [
+            { name: "Papas de Aveia Proteicas", prep: "5 min", cals: 380, pro: 35, car: 45, desc: "60g de aveia, 1 scoop de Whey, 200ml água/leite. Leva ao micro-ondas por 2 min." },
+            { name: "Panquecas Mutantes", prep: "10 min", cals: 420, pro: 30, car: 45, desc: "2 ovos, 1 banana esmagada, 40g de aveia, canela. Frigideira anti-aderente." },
+            { name: "Ovos Mexidos c/ Pão", prep: "5 min", cals: 350, pro: 20, car: 26, desc: "3 ovos inteiros mexidos + 2 fatias de pão integral escuro." },
+            { name: "Iogurte Grego Titã", prep: "2 min", cals: 300, pro: 25, car: 30, desc: "200g Iogurte Grego Ligeiro, 1 banana picada, fio de mel." }
+        ],
+        "☀️ Almoço": [
+            { name: "Clássico Bodybuilder", prep: "15 min", cals: 550, pro: 50, car: 60, desc: "150g peito de frango grelhado, 80g de arroz basmati (cru), brócolos a gosto." },
+            { name: "Massa do Poder", prep: "15 min", cals: 620, pro: 45, car: 70, desc: "100g de massa (crua), 120g de carne de vaca picada magra, molho tomate natural." },
+            { name: "Atum com Batata Doce", prep: "20 min", cals: 450, pro: 35, car: 55, desc: "1 lata e meia de atum natural, 200g batata doce cozida/forno, fio de azeite." },
+            { name: "Salmão com Quinoa", prep: "20 min", cals: 600, pro: 35, car: 45, desc: "150g salmão (rico em omega-3), 60g quinoa, espargos." }
+        ],
+        "🥪 Lanche / Pós-Treino": [
+            { name: "Batido SOS", prep: "2 min", cals: 320, pro: 30, car: 40, desc: "250ml leite magro, 1 scoop Whey, 1 banana pequena. Liquidificador e bebe." },
+            { name: "Tostas de Amendoim", prep: "2 min", cals: 280, pro: 10, car: 35, desc: "4 tostas de arroz/milho, 2 colheres de Manteiga de Amendoim espalhada." },
+            { name: "Queijo Quark c/ Fruta", prep: "2 min", cals: 220, pro: 25, car: 20, desc: "250g Queijo Quark (baixo em gordura), 1 mão de frutos vermelhos congelados." },
+            { name: "Sandes de Peito de Peru", prep: "3 min", cals: 310, pro: 25, car: 35, desc: "2 fatias pão integral, 4 fatias peito de peru, queijo fresco para barrar." }
+        ],
+        "🌙 Jantar": [
+            { name: "Omelete Titã", prep: "8 min", cals: 320, pro: 35, car: 5, desc: "1 ovo inteiro + 150ml claras, espinafres frescos, 30g queijo magro. Fazer na frigideira." },
+            { name: "Bife Vaca Magro", prep: "12 min", cals: 450, pro: 40, car: 35, desc: "150g bife de vaca magro grelhado, 50g arroz (cru), salada mista." },
+            { name: "Pescada no Forno", prep: "25 min", cals: 380, pro: 30, car: 40, desc: "2 filetes pescada, 150g batata assada, curgete. Refeição leve e de digestão fácil." },
+            { name: "Salada Rica de Frango", prep: "10 min", cals: 350, pro: 35, car: 15, desc: "120g frango desfiado, alface, tomate, milho, azeite e vinagre balsâmico." }
+        ]
+    };
+
+    let html = '';
+    Object.keys(recipes).forEach(category => {
+        html += `<h3 style="color:var(--accent); margin-top:15px; margin-bottom:10px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`;
+        recipes[category].forEach(r => {
+            html += `<div style="background:#1e293b; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent); text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                    <h4 style="color:white; margin:0;">${r.name}</h4>
+                    <span style="font-size:11px; color:var(--muted);">⏱️ ${r.prep}</span>
+                </div>
+                <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:8px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
+                <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
+                <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car})" style="margin-top:10px; width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
+            </div>`;
+        });
+    });
+
+    document.getElementById('recipes-list').innerHTML = html;
+    document.getElementById('recipes-modal').style.display = 'flex'; 
+} 
+function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
+
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
 function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; } }
 function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
