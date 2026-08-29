@@ -16,6 +16,12 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/views.css">
+    
+    <style>
+        html, body {
+            overscroll-behavior-y: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -143,7 +149,6 @@
         <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
         <div class="goal-container" style="margin-top: 20px;"><h3 class="text-center">🎮 Níveis Musculares</h3><div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div></div>
         
-        <!-- SBD TOTAL MOVIDO PARA AQUI -->
         <div class="goal-container text-center" style="margin-top: 20px;">
             <h3>🏋️ Powerlifting Total (SBD)</h3>
             <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
@@ -171,7 +176,6 @@
     <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
         
-        <!-- ESTILOS LOCAIS PARA AS CAIXAS EXPANSÍVEIS (ACORDEÃO MODERNO) -->
         <style>
             .custom-details summary { list-style: none; display: flex; justify-content: space-between; align-items: center; }
             .custom-details summary::-webkit-details-marker { display: none; }
@@ -247,7 +251,6 @@
             <div id="achievements-list"></div>
         </details>
 
-        <!-- BOTÕES DE DADOS & BACKUP UNIFORMIZADOS -->
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Dados & Backup</h3>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap:wrap;">
@@ -336,7 +339,7 @@
             <div id="grocery-list"></div>
         </div>
 
-        <!-- 4. REGISTO ALIMENTAR (AGORA COM CARBS E FAT) -->
+        <!-- 4. REGISTO ALIMENTAR -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3>📝 Registo Alimentar</h3>
             <div style="background:#0f172a; padding:15px; border-radius:12px; margin-top:15px; margin-bottom:15px; border: 1px dashed #334155;">
@@ -427,6 +430,36 @@
             <div class="debrief-stat"><span>Treinos Fritados:</span> <strong id="debrief-work">0</strong></div>
             <p style="color:white; font-size:13px; font-style:italic; margin-top:20px; padding:10px; background:rgba(255,255,255,0.05); border-left:3px solid var(--accent);">"O progresso não se mede num dia. Mede-se nos dias em que não te apetece treinar e vais na mesma."</p>
             <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="closeDebrief()">Siga para a nova semana 🚀</button>
+        </div>
+    </div>
+
+    <!-- MODAL ÁGUA: GARRAFAS -->
+    <div id="water-garrafas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
+            <button onclick="closeWaterModal('garrafas')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white; margin-bottom: 20px;">💧 Garrafas</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="beast-action-btn" onclick="addWaterGarrafa(330)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Pequena (33 cl)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(500)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Média (50 cl)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(1500)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Grande (1.5 L)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ÁGUA: COPOS -->
+    <div id="water-copos-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
+            <button onclick="closeWaterModal('copos')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white; margin-bottom: 5px;">🥛 Copos de Água</h3>
+            <p style="color: var(--muted); font-size: 11px; margin-bottom: 20px;">(~250 ml por copo)</p>
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px;">
+                <button onclick="adjustGlasses(-1)" style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
+                <div id="glass-count" style="font-size: 32px; font-weight: bold; color: var(--accent); width: 40px;">1</div>
+                <button onclick="adjustGlasses(1)" style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
+            </div>
+            
+            <button class="beast-action-btn" onclick="confirmGlasses()" style="background: var(--accent); color: black; width: 100%; padding: 12px; font-weight: bold;">Adicionar</button>
         </div>
     </div>
 
