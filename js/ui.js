@@ -38,7 +38,7 @@ function navigateTo(id) {
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); renderMissionProfile(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
     if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); startFastingTimer(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
-    if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
+    if (id === 'view-treino') { (); backToWorkoutSlots(); }
 }
 
 // SISTEMA DE TABS DO PROGRESSO
@@ -108,15 +108,9 @@ function closeDebrief() { document.getElementById('sunday-debrief-modal').style.
 // --- BIBLIOTECA E TREINOS ---
 function toggleDeleteMode() { deleteMode = !deleteMode; renderWorkoutSlots(); }
 
-// Nova função para apagar o treino guardado
-function deleteSavedRoutine(index) {
-    if(confirm("Tens a certeza que queres apagar este treino permanentemente?")) {
-        savedRoutines.splice(index, 1);
-        localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines));
-        renderWorkoutSlots();
-        showPulseToast("🗑️ Treino apagado da biblioteca.");
-    }
-}
+let routineToDeleteIndex = -1;
+function deleteSavedRoutine(index) { routineToDeleteIndex = index; document.getElementById('delete-routine-modal').style.display = 'flex'; }
+function confirmDeleteRoutine() { if(routineToDeleteIndex !== -1) { savedRoutines.splice(routineToDeleteIndex, 1); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); renderWorkoutSlots(); showPulseToast("🗑️ Treino apagado."); document.getElementById('delete-routine-modal').style.display = 'none'; routineToDeleteIndex = -1; } }
 
 function renderWorkoutSlots() {
     const container = document.getElementById('workout-slots-container'); if(!container) return; container.innerHTML = ''; let slotCount = 0; const minSlots = 7;
@@ -128,7 +122,6 @@ function renderWorkoutSlots() {
     if(typeof savedRoutines !== 'undefined') {
         savedRoutines.forEach((item, index) => { 
             let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0); 
-            // O botão do "X" elegante em modo Delete:
             let actionBtn = deleteMode 
                 ? `<button class="info-btn" style="color:var(--danger); border-color:var(--danger); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; padding:0;" onclick="deleteSavedRoutine(${index})">✖</button>` 
                 : `<button class="info-btn" onclick="showWorkoutInfo('SAVED', ${index})">i</button>`; 
@@ -137,7 +130,7 @@ function renderWorkoutSlots() {
         });
     }
     
-    // Slots Inativas Largas
+    // Slots Vazias a 100% de largura
     while(slotCount < minSlots) { 
         container.innerHTML += `<div class="slot-container-flex"><div class="built-item empty-slot" style="flex:1; border:1px dashed #334155; background:transparent;"><div class="built-item-info" style="width:100%; text-align:center;"><span class="built-item-title" style="color:#64748b; font-size:14px;">Slot Vazio</span></div></div></div>`; 
         slotCount++; 
@@ -281,7 +274,8 @@ function closeReadinessModal() { let p = []; if(document.getElementById('pain-om
 function setFatigue(level) { builderState.fatigue = level; document.querySelectorAll('.fatigue-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-fatigue-${level}`).classList.add('active'); }
 function setBuilderMode(mode) { builderState.mode = mode; document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-mode-${mode}`).classList.add('active'); document.getElementById('auto-focus-panel').style.display = 'none'; document.getElementById('manual-library-panel').style.display = 'none'; document.getElementById('directory-panel').style.display = 'none'; if (mode === 'auto') document.getElementById('auto-focus-panel').style.display = 'block'; else if (mode === 'manual') { document.getElementById('manual-library-panel').style.display = 'block'; renderLibrary(); } else if (mode === 'directory') { document.getElementById('directory-panel').style.display = 'block'; renderDirectory(); } }
 function renderLibrary() { const filterMuscle = document.getElementById('filter-muscle').value; const filterTier = document.getElementById('filter-tier').value; const list = document.getElementById('library-list'); list.innerHTML = ''; let filtered = exerciseLibrary; if (filterMuscle !== 'ALL') filtered = filtered.filter(ex => ex.muscle === filterMuscle); if (filterTier !== 'ALL') filtered = filtered.filter(ex => ex.tier === filterTier); filtered.forEach(ex => { list.innerHTML += `<div class="lib-item"><div class="lib-item-info"><span class="lib-item-title" onclick="showExerciseTips('${ex.name}')" style="cursor:pointer; border-bottom:1px dashed var(--accent); padding-bottom:2px;">${ex.name} <span style="font-size:13px; margin-left:5px;">🎥</span></span><div class="lib-item-badges"><span class="badge muscle">${ex.muscle}</span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}-Tier</span></div></div><button class="add-btn" onclick="addExerciseToBuilder('${ex.name}', ${ex.defaultSets})">+</button></div>`; }); list.innerHTML += `<div class="lib-item" style="border:1px dashed var(--accent); background:transparent; justify-content:center; cursor:pointer;" onclick="promptCustomExercise()"><span style="color:var(--accent); font-weight:bold;">✚ Criar Exercício Novo</span></div>`; }
-function promptCustomExercise() { let name = prompt("Nome do Exercício:"); if(!name) return; let muscle = prompt("Músculo Alvo (Peito, Costas, Pernas, Ombros, Braços, Core):"); if(!muscle) return; let newEx = { name: name, muscle: muscle.charAt(0).toUpperCase() + muscle.slice(1).toLowerCase(), tier: "A", type: "machine", defaultSets: 3 }; customExercisesDB.push(newEx); exerciseLibrary.push(newEx); localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); showPulseToast("✅ Adicionado ao Diretório!"); renderLibrary(); }
+function promptCustomExercise() { document.getElementById('custom-ex-name').value = ""; document.getElementById('custom-ex-muscle').value = ""; document.getElementById('custom-exercise-modal').style.display = 'flex'; }
+function confirmCustomExercise() { let name = document.getElementById('custom-ex-name').value.trim(); let muscle = document.getElementById('custom-ex-muscle').value; if(!name || !muscle) { showPulseToast("⚠️ Preenche o nome e músculo!", true); return; } let newEx = { name: name, muscle: muscle, tier: "A", type: "machine", defaultSets: 3 }; customExercisesDB.push(newEx); exerciseLibrary.push(newEx); localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); showPulseToast("✅ Adicionado ao Diretório!"); document.getElementById('custom-exercise-modal').style.display = 'none'; renderLibrary(); }
 function renderDirectory() { const container = document.getElementById('directory-list'); container.innerHTML = ''; const groups = ['Peito', 'Costas', 'Pernas', 'Ombros', 'Braços', 'Core']; groups.forEach(muscle => { let pool = exerciseLibrary.filter(ex => ex.muscle === muscle); if (pool.length > 0) { let html = `<div class="dir-group"><h4>${muscle}</h4>`; pool.forEach(ex => { html += `<div class="dir-item" onclick="showExerciseTips('${ex.name}')" style="cursor:pointer; display:flex; justify-content:space-between; padding:12px; background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:5px;"><span>${ex.name} <span style="font-size:13px; margin-left:5px;">🎥</span></span><span class="badge tier-${ex.tier.toLowerCase()}">${ex.tier}</span></div>`; }); html += `</div>`; container.innerHTML += html; } }); }
 function generateWorkout() { const focus = document.getElementById('auto-focus-select').value; const fatigue = builderState.fatigue; if(typeof generateWorkoutLogic === 'function') { builderState.routine = generateWorkoutLogic(focus, fatigue, exerciseLibrary); updateBuilderUI(); showPulseToast(`✨ Treino gerado!`); } }
 function addExerciseToBuilder(name, sets) { builderState.routine.push({ name, sets }); updateBuilderUI(); }
@@ -294,7 +288,8 @@ function confirmClearBuilder() { builderState.routine = []; updateBuilderUI(); c
 function updateBuilderSets(index, value) { builderState.routine[index].sets = parseInt(value) || 1; updateBuilderUI(false); }
 function updateBuilderUI(rebuildList = true) { const list = document.getElementById('builder-routine-list'); const badge = document.getElementById('workout-volume-badge'); const actionBtns = document.getElementById('builder-action-buttons'); let totalSets = 0; if (rebuildList) list.innerHTML = ''; if (builderState.routine.length === 0) { if (rebuildList) list.innerHTML = `<p class="text-center" style="color: var(--muted); padding: 20px 0;">Nenhum exercício selecionado.</p>`; badge.innerHTML = `0 Séries`; actionBtns.style.display = 'none'; return; } builderState.routine.forEach((item, idx) => { totalSets += parseInt(item.sets); if (rebuildList) { list.innerHTML += `<div class="built-item" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; background: #0f172a; padding: 12px; border-radius: 12px; border: 1px solid #334155;"><div class="built-item-info" style="flex: 1; min-width: 120px;"><span class="built-item-title" style="font-size:14px; font-weight:bold;">${idx + 1}. ${item.name}</span></div><div class="built-item-controls" style="display:flex; gap:6px; align-items:center;"><div style="display:flex; flex-direction:column; align-items:center; margin-right:5px;"><span style="font-size: 8px; color: var(--muted); margin-bottom:2px; font-weight:bold;">SÉRIES</span><input type="number" class="set-input" value="${item.sets}" onchange="updateBuilderSets(${idx}, this.value)" style="width:36px; padding:4px; text-align:center; background:#1e293b; border:1px solid var(--accent); color:white; border-radius:6px;"></div><button class="remove-btn" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer;" onclick="moveExerciseUp(${idx})">▲</button><button class="remove-btn" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer;" onclick="moveExerciseDown(${idx})">▼</button><button class="remove-btn" style="background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.3); border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer;" onclick="removeExerciseFromBuilder(${idx})">✖</button></div></div>`; } }); badge.innerHTML = `${totalSets} Séries <span onclick="clearBuilder()" title="Esvaziar" style="cursor:pointer; margin-left:8px; font-size:15px;">🗑️</span>`; badge.style.color = totalSets > 24 ? 'var(--danger)' : 'var(--accent)'; actionBtns.style.display = 'flex'; }
 function applyBuiltWorkout() { if (builderState.routine.length === 0) return; workoutData.CUSTOM = JSON.parse(JSON.stringify(builderState.routine)); navigateTo('view-treino'); document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block'; document.getElementById('active-workout-tabs').style.display = 'none'; currentDay = 'CUSTOM'; renderWorkout(); }
-function saveCurrentRoutine() { if (builderState.routine.length === 0) return; const routineName = prompt("Nome da rotina:"); if (!routineName) return; savedRoutines.push({ name: routineName, routine: JSON.parse(JSON.stringify(builderState.routine)) }); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); showPulseToast('✅ Guardada!'); builderState.routine = []; updateBuilderUI(); navigateTo('view-treino'); }
+function saveCurrentRoutine() { if (builderState.routine.length === 0) return; document.getElementById('routine-name-input').value = ""; document.getElementById('save-routine-modal').style.display = 'flex'; }
+function confirmSaveRoutine() { const routineName = document.getElementById('routine-name-input').value.trim(); if (!routineName) { showPulseToast("⚠️ Dá um nome ao treino!", true); return; } savedRoutines.push({ name: routineName, routine: JSON.parse(JSON.stringify(builderState.routine)) }); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); showPulseToast('✅ Guardada!'); builderState.routine = []; updateBuilderUI(); document.getElementById('save-routine-modal').style.display = 'none'; navigateTo('view-treino'); }
 
 // --- MAPA DE CALOR E GRÁFICOS AVANÇADOS ---
 function updateHeatmap() {
