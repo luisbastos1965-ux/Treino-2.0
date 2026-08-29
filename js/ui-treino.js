@@ -23,11 +23,8 @@ function addFinisherToWorkout() {
     let muscle = firstEx ? getMuscleForExercise(firstEx.name) : null;
     let pool = muscle ? exerciseLibrary.filter(x => x.muscle === muscle) : exerciseLibrary;
     if(!pool.length) pool = exerciseLibrary;
-    
     let html = '';
-    pool.forEach(ex => {
-        html += `<div class="dir-item" onclick="injectFinisher('${ex.name}')" style="cursor:pointer; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;"><span>${ex.name}</span><span class="badge tier-${ex.tier.toLowerCase()}" style="float:right;">${ex.tier}</span></div>`;
-    });
+    pool.forEach(ex => { html += `<div class="dir-item" onclick="injectFinisher('${ex.name}')" style="cursor:pointer; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;"><span>${ex.name}</span><span class="badge tier-${ex.tier.toLowerCase()}" style="float:right;">${ex.tier}</span></div>`; });
     document.getElementById('swap-modal-content').innerHTML = html;
     document.getElementById('swap-modal').querySelector('h3').innerHTML = '🔥 Escolher Finisher';
     document.getElementById('swap-modal').style.display = 'flex';
