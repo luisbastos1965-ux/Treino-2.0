@@ -224,7 +224,15 @@ function checkAchievements() {
     }
 }
 
-function generatePunishmentLogic(cals) { if (cals < 100) return null; return { cals: cals, date: new Date().toLocaleDateString('pt-PT'), burpees: Math.floor(cals / 15), squats: Math.floor(cals / 8), pushups: Math.floor(cals / 12) }; }
+function generatePunishmentLogic(cals) { 
+    if (cals < 100) return null; 
+    return { 
+        cals: cals, 
+        date: new Date().toLocaleDateString('pt-PT'), 
+        cardio: Math.ceil(cals / 10), // Aprox. 10 kcal queimadas por min de HIIT
+        reps: Math.ceil(cals / 3)     // Aprox. 3 kcal por repetição de isolamento extra
+    }; 
+}
 
 function exportToCSV() { 
     if(history.length === 0) { 
