@@ -327,18 +327,18 @@ function renderAdvancedCharts() {
 
     if (bodyStatsHistory.length > 0) {
         let dates = bodyStatsHistory.map(s => s.date.slice(0, 5)); let wData = bodyStatsHistory.map(s => s.weight); let rfmData = bodyStatsHistory.map(s => s.rfm);
-        if (bodyStatsInstance) bodyStatsInstance.destroy(); bodyStatsInstance = new Chart(document.getElementById('bodyStatsChart').getContext('2d'), { type: 'line', data: { labels: dates, datasets: [{ label: 'Peso (kg)', data: wData, borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 }, { label: 'RFM (%)', data: rfmData, borderColor: '#f59e0b', yAxisID: 'y1', tension: 0.3 }] }, options: { scales: { y: { type: 'linear', display: true, position: 'left', grid: { color: '#334155' } }, y1: { type: 'linear', display: true, position: 'right', grid: { display: false } } } } });
+        if (bodyStatsInstance) bodyStatsInstance.destroy(); bodyStatsInstance = new Chart(document.getElementById('bodyStatsChart').getContext('2d'), { type: 'line', data: { labels: dates, datasets: [{ label: 'Peso (kg)', data: wData, borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 }, { label: 'RFM (%)', data: rfmData, borderColor: '#f59e0b', yAxisID: 'y1', tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } }, scales: { y: { type: 'linear', display: true, position: 'left', grid: { color: '#334155' } }, y1: { type: 'linear', display: true, position: 'right', grid: { display: false } } } } });
     }
     let mHistory = JSON.parse(localStorage.getItem('gym_profile_history')) || [];
     if (mHistory.length > 0) {
         let mDates = mHistory.map(h => h.date.slice(0,5)); let mArm = mHistory.map(h => h.arm); let mChest = mHistory.map(h => h.chest); let mWaist = mHistory.map(h => h.waist); let mLeg = mHistory.map(h => h.leg);
-        if (measChartInstance) measChartInstance.destroy(); measChartInstance = new Chart(document.getElementById('measChart').getContext('2d'), { type: 'line', data: { labels: mDates, datasets: [{ label: 'Braço', data: mArm, borderColor: '#a855f7', tension: 0.3 }, { label: 'Peito', data: mChest, borderColor: '#38bdf8', tension: 0.3 }, { label: 'Cintura', data: mWaist, borderColor: '#f59e0b', tension: 0.3 }, { label: 'Perna', data: mLeg, borderColor: '#22c55e', tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white' } } }, scales: { y: { grid: { color: '#334155' } } } } });
+        if (measChartInstance) measChartInstance.destroy(); measChartInstance = new Chart(document.getElementById('measChart').getContext('2d'), { type: 'line', data: { labels: mDates, datasets: [{ label: 'Braço', data: mArm, borderColor: '#a855f7', tension: 0.3 }, { label: 'Peito', data: mChest, borderColor: '#38bdf8', tension: 0.3 }, { label: 'Cintura', data: mWaist, borderColor: '#f59e0b', tension: 0.3 }, { label: 'Perna', data: mLeg, borderColor: '#22c55e', tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } }, scales: { y: { grid: { color: '#334155' } } } } });
     }
 }
 function renderChart() {
     const exercise = document.getElementById('exercise-select').value; if (!exercise) return; const labels = []; const data = []; const reps = [];
     history.forEach(log => { if (log.exercises && log.exercises[exercise]) { labels.push(log.date); let workSets = log.exercises[exercise].filter(s => s.type !== 'W'); if(workSets.length===0) workSets = log.exercises[exercise]; data.push(workSets[0].weight || workSets[0].w); reps.push(workSets[0].reps || workSets[0].r); } });
-    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] } });
+    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } } } });
     const maxWeight = Math.max(...data, 0); const maxReps = Math.max(...reps, 0); let totalVolume = 0; history.forEach(log => { if (log.exercises && log.exercises[exercise]) { log.exercises[exercise].forEach(set => { if(set.type !== 'W') totalVolume += (set.weight || set.w) * (set.reps || set.r); }); } });
     update1RMPrediction(exercise, maxWeight, maxReps, totalVolume);
 }
@@ -533,7 +533,7 @@ function updateProfileData() {
     let existingStat = bodyStatsHistory.find(s => s.date === todayStr); if(existingStat) { existingStat.weight = userProfile.weight; existingStat.rfm = finalRfm; } else { bodyStatsHistory.push({ date: todayStr, weight: userProfile.weight, rfm: finalRfm }); } localStorage.setItem('gym_body_stats', JSON.stringify(bodyStatsHistory));
     let existingMeas = mHistory.find(s => s.date === todayStr); if(existingMeas) { existingMeas.arm = userProfile.measurements.arm; existingMeas.chest = userProfile.measurements.chest; existingMeas.waist = userProfile.measurements.waist; existingMeas.leg = userProfile.measurements.leg; } else { mHistory.push({ date: todayStr, arm: userProfile.measurements.arm, chest: userProfile.measurements.chest, waist: userProfile.measurements.waist, leg: userProfile.measurements.leg }); } localStorage.setItem('gym_profile_history', JSON.stringify(mHistory));
 
-    renderDieta(); calculateBodyFat();
+    if(typeof renderDieta === 'function') renderDieta(); if(typeof calculateBodyFat === 'function') calculateBodyFat();
 }
 
 function renderAchievements() {
