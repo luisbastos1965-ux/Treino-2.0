@@ -121,15 +121,70 @@
 
     <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
-        <div class="goal-container text-center"><h3>🧪 Laboratório de Treino</h3></div>
-        <div class="exercise-card">
-            <div class="form-group" style="margin-bottom: 20px;"><label>Fadiga</label><div style="display: flex; gap: 5px; margin-top: 8px;"><button id="btn-fatigue-energized" class="fatigue-btn active" onclick="setFatigue('energized')">🔋 100%</button><button id="btn-fatigue-normal" class="fatigue-btn" onclick="setFatigue('normal')">⚡ Normal</button><button id="btn-fatigue-tired" class="fatigue-btn" onclick="setFatigue('tired')">🪫 Cansado</button></div></div>
-            <div class="form-group" style="margin-bottom: 20px;"><label>Método</label><div style="display: flex; gap: 5px; margin-top: 8px;"><button id="btn-mode-auto" class="mode-btn active" onclick="setBuilderMode('auto')">🤖 Auto</button><button id="btn-mode-manual" class="mode-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button><button id="btn-mode-directory" class="mode-btn" onclick="setBuilderMode('directory')">📖 Diretório</button></div></div>
-            <div id="auto-focus-panel" class="form-group"><label>Alvo Muscular</label><select id="auto-focus-select" style="margin-top: 8px; width: 100%; padding: 12px; border-radius: 10px; background: var(--bg-color); color: white; border: none; font-weight: bold;"><option value="FULL">Corpo Inteiro</option><option value="PUSH">Push</option><option value="PULL">Pull</option><option value="LEGS">Legs</option><option value="Peito">Peito (Isolado)</option><option value="Costas">Costas (Isolado)</option><option value="Ombros">Ombros (Isolado)</option><option value="Braços">Braços (Isolado)</option><option value="Core">Core</option></select><button class="btn-primary" style="width: 100%; margin-top: 15px; background: var(--accent); color: black;" onclick="generateWorkout()">✨ Gerar Treino</button></div>
-            <div id="manual-library-panel" style="display: none;"><div style="display: flex; gap: 8px; margin: 15px 0;"><select id="filter-muscle" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none;" onchange="renderLibrary()"><option value="ALL">Músculos</option><option value="Peito">Peito</option><option value="Costas">Costas</option><option value="Pernas">Pernas</option><option value="Ombros">Ombros</option><option value="Braços">Braços</option><option value="Core">Core</option></select><select id="filter-tier" style="flex:1; padding: 10px; border-radius: 8px; background: var(--bg-color); color: white; border: none;" onchange="renderLibrary()"><option value="ALL">Grau</option><option value="S">S-Tier</option><option value="A">A-Tier</option><option value="B">B-Tier</option></select></div><div id="library-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div></div>
-            <div id="directory-panel" style="display: none; margin-top: 15px;"><div id="directory-list" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column;"></div></div>
+        
+        <!-- TABS DE NAVEGAÇÃO DO CONSTRUTOR -->
+        <div class="tabs" style="display: flex; margin-bottom: 20px; gap: 5px;">
+            <button id="btn-mode-auto" class="tab-btn mode-btn active" onclick="setBuilderMode('auto')">🤖 IA Coach</button>
+            <button id="btn-mode-manual" class="tab-btn mode-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
+            <button id="btn-mode-directory" class="tab-btn mode-btn" onclick="setBuilderMode('directory')">📖 Lista</button>
         </div>
-        <div class="goal-container" style="margin-bottom: 20px;"><div style="display: flex; justify-content: space-between; align-items: center;"><h3>📝 Esboço</h3><span id="workout-volume-badge" style="background: #334155; padding: 5px 10px; border-radius: 8px; font-size: 11px; color: var(--accent);">0 Séries</span></div><div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div><div id="builder-action-buttons" style="display: none; gap: 10px; margin-top: 20px;"><button class="btn-secondary" style="flex: 1;" onclick="saveCurrentRoutine()">💾 Guardar</button><button class="btn-success" style="flex: 2; padding: 15px; border-radius: 12px; border: none; background: var(--success); color: white; font-weight: bold; cursor: pointer;" onclick="applyBuiltWorkout()">▶️ Iniciar</button></div></div>
+
+        <!-- PAINEL AUTO -->
+        <div id="auto-focus-panel" class="goal-container">
+            <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:10px; display:block;">Nível de Fadiga Hoje</label>
+            <div style="display: flex; gap: 5px; margin-bottom: 25px;">
+                <button id="btn-fatigue-energized" class="fatigue-btn active" onclick="setFatigue('energized')" style="flex:1;">🔋 100%</button>
+                <button id="btn-fatigue-normal" class="fatigue-btn" onclick="setFatigue('normal')" style="flex:1;">⚡ Normal</button>
+                <button id="btn-fatigue-tired" class="fatigue-btn" onclick="setFatigue('tired')" style="flex:1;">🪫 Cansado</button>
+            </div>
+            
+            <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:10px; display:block;">Foco Muscular</label>
+            <select id="auto-focus-select" style="width: 100%; padding: 14px; border-radius: 12px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; margin-bottom: 20px; outline:none;">
+                <option value="FULL">Corpo Inteiro</option>
+                <option value="PUSH">Push (Peito, Ombro, Tríceps)</option>
+                <option value="PULL">Pull (Costas, Bíceps)</option>
+                <option value="LEGS">Legs (Pernas)</option>
+                <option value="Peito">Isolado: Peito</option>
+                <option value="Costas">Isolado: Costas</option>
+                <option value="Ombros">Isolado: Ombros</option>
+                <option value="Braços">Isolado: Braços</option>
+                <option value="Core">Isolado: Core</option>
+            </select>
+            
+            <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px;" onclick="generateWorkout()">✨ GERAR ROTINA INTELIGENTE</button>
+        </div>
+
+        <!-- PAINEL MANUAL -->
+        <div id="manual-library-panel" class="goal-container" style="display: none;">
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <select id="filter-muscle" style="flex:1; padding: 12px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-weight:bold; outline:none;" onchange="renderLibrary()">
+                    <option value="ALL">Todos</option><option value="Peito">Peito</option><option value="Costas">Costas</option><option value="Pernas">Pernas</option><option value="Ombros">Ombros</option><option value="Braços">Braços</option><option value="Core">Core</option>
+                </select>
+                <select id="filter-tier" style="flex:1; padding: 12px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-weight:bold; outline:none;" onchange="renderLibrary()">
+                    <option value="ALL">Grau</option><option value="S">S-Tier</option><option value="A">A-Tier</option><option value="B">B-Tier</option>
+                </select>
+            </div>
+            <div id="library-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <!-- PAINEL DIRETÓRIO -->
+        <div id="directory-panel" class="goal-container" style="display: none;">
+            <div id="directory-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column;"></div>
+        </div>
+
+        <!-- ESBOÇO / ROTINA ATUAL -->
+        <div class="goal-container" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <h3 style="color: white; font-size: 18px;">📋 O Teu Treino</h3>
+                <span id="workout-volume-badge" style="background: #1e293b; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight:bold; color: var(--accent);">0 Séries</span>
+            </div>
+            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
+            
+            <div id="builder-action-buttons" style="display: none; gap: 10px; margin-top: 20px;">
+                <button class="beast-action-btn" style="flex: 1; background: #334155; color: white; padding: 14px; font-size:14px;" onclick="saveCurrentRoutine()">💾 Salvar</button>
+                <button class="beast-action-btn" style="flex: 2; background: var(--success); color: white; padding: 14px; font-size:14px;" onclick="applyBuiltWorkout()">▶️ Treinar</button>
+            </div>
+        </div>
     </div>
 
     <!-- ABA 3: EVOLUÇÃO (Menu Otimizado em Tabs) -->
