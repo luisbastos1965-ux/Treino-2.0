@@ -91,7 +91,7 @@
         <div id="menu-rack" class="rack-container">
             <button class="rack-btn" onclick="navigateTo('view-treino')"><div class="db-end left"></div><div class="db-bar">TREINAR</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-construtor')"><div class="db-end left"></div><div class="db-bar">CONSTRUTOR</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-evolucao')"><div class="db-end left"></div><div class="db-bar">PROGRESSO</div><div class="db-end right"></div></button>
+            <button class="rack-btn" onclick="navigateTo('view-evolucao')"><div class="db-end left"></div><div class="db-bar">EVOLUÇÃO</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-dieta')"><div class="db-end left"></div><div class="db-bar">NUTRIÇÃO</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-calendario')"><div class="db-end left"></div><div class="db-bar">HISTÓRICO</div><div class="db-end right"></div></button>
             <button class="rack-btn" onclick="navigateTo('view-perfil')"><div class="db-end left"></div><div class="db-bar">PERFIL</div><div class="db-end right"></div></button>
@@ -159,9 +159,12 @@
             <div class="goal-container text-center" style="margin-top: 20px;">
                 <h3>⚖️ Evolução Corporal</h3>
                 <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">RFM = Massa Gorda Relativa Estimada</p>
-                <canvas id="bodyStatsChart"></canvas>
+                <div style="position: relative; width: 100%;"><canvas id="bodyStatsChart"></canvas></div>
             </div>
-            <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
+            <div class="goal-container text-center" style="margin-top: 20px;">
+                <h3>📏 Evolução de Medidas</h3>
+                <div style="position: relative; width: 100%;"><canvas id="measChart"></canvas></div>
+            </div>
         </div>
 
         <!-- ABA: FORÇA & RPG -->
@@ -200,8 +203,14 @@
 
         <!-- ABA: VOLUME & STATS -->
         <div id="evo-volume" class="evo-panel" style="display: none;">
-            <div class="goal-container text-center"><h3>🕸️ Simetria Muscular</h3><canvas id="radarChart"></canvas></div>
-            <div class="goal-container text-center" style="margin-top: 20px;"><h3>🏗️ Carga Total Movida (Mês)</h3><canvas id="tonnageChart"></canvas></div>
+            <div class="goal-container text-center">
+                <h3>🕸️ Simetria Muscular</h3>
+                <div style="position: relative; width: 100%;"><canvas id="radarChart"></canvas></div>
+            </div>
+            <div class="goal-container text-center" style="margin-top: 20px;">
+                <h3>🏗️ Carga Total Movida (Mês)</h3>
+                <div style="position: relative; width: 100%;"><canvas id="tonnageChart"></canvas></div>
+            </div>
             <div id="global-stats" class="goal-container" style="margin-top: 20px;"><h3>📊 Estatísticas Globais</h3></div>
         </div>
     </div>
