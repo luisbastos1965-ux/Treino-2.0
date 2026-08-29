@@ -159,12 +159,16 @@ function renderWorkout() {
 function saveCurrentWorkout() {
     if(currentDay === 'MOBILITY') { showPulseToast('🧘‍♂️ Rotina concluída!'); return; }
     
-    // AQUI A PENITÊNCIA É LIMPA AUTOMATICAMENTE AO GRAVAR O TREINO
+    // AQUI PERGUNTA SE CUMPRIU A PENITÊNCIA ANTES DE A LIMPAR
     if (activePunishment) { 
-        activePunishment = null; 
-        localStorage.removeItem('gym_punishment'); 
-        renderPunishmentStatus(); 
-        showPulseToast('🔥 Treino Gravado e Penitência Limpa! O Foco Voltou!');
+        if(confirm('Cumpriste o teu castigo/Finisher no final do treino?\n\n' + activePunishment.task)) {
+            activePunishment = null; 
+            localStorage.removeItem('gym_punishment'); 
+            renderPunishmentStatus(); 
+            showPulseToast('🔥 Treino Gravado e Penitência Limpa! O Foco Voltou!');
+        } else {
+            showPulseToast('⚠️ Treino gravado. A penitência transitou para o próximo treino!');
+        }
     } else {
         showPulseToast('✅ Treino guardado com sucesso!');
     }
@@ -725,12 +729,14 @@ function calculateSinFromMacros() {
 }
 
 function triggerPunishment() { 
-    const cals = parseInt(document.getElementById('sin-cals').value); 
-    if (!cals || cals < 100) { 
-        showPulseToast('Mínimo 100kcal!', true); 
-        return; 
-    } 
-    activePunishment = generatePunishmentLogic(cals); 
+    const newCals = parseInt(document.getElementById('sin-cals').value); 
+    if (!newCals || newCals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } 
+    
+    // LÓGICA CUMULATIVA DE PECADOS
+    let existingCals = activePunishment ? activePunishment.cals : 0;
+    let totalCals = existingCals + newCals;
+    
+    activePunishment = generatePunishmentLogic(totalCals); 
     localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); 
     closePunishmentModal(); 
     renderPunishmentStatus(); 
@@ -739,7 +745,7 @@ function triggerPunishment() {
     let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; 
     if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; 
     let qty = document.getElementById('sin-qty').value;
-    dailyIntake.foods.push({ name: `⚠️ ${presetName} (${qty}x)`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0, car: parseInt(document.getElementById('sin-car').value) || 0 }); 
+    dailyIntake.foods.push({ name: `⚠️ ${presetName} (${qty}x)`, cals: newCals, pro: parseInt(document.getElementById('sin-pro').value) || 0, car: parseInt(document.getElementById('sin-car').value) || 0 }); 
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
     renderDieta(); 
 }
