@@ -6,6 +6,7 @@ let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance;
 
 window.onload = () => { 
     checkSundayDebrief(); 
+    checkPunishmentExpiration(); // Verifica logo se há castigos caducados
 
     // CRASH RECOVERY BOOT
     if(activeSessionBackup) {
@@ -125,7 +126,7 @@ function switchWorkout(event, day) { currentDay = day; document.querySelectorAll
 function toggleDeloadMode() { isDeloadMode = !isDeloadMode; const btn = document.getElementById('btn-deload-toggle'); if(isDeloadMode) { btn.innerHTML = '🧘 Deload ON (Cargas 70%)'; btn.style.background = 'var(--success)'; showPulseToast("Modo Deload Ativado: Cargas a 70%."); } else { btn.innerHTML = '📉 Modo Deload'; btn.style.background = '#1e293b'; showPulseToast("Modo Deload Desativado."); } renderWorkout(); }
 function toggleSetType(btn) { let type = btn.getAttribute('data-type'); if (type === 'work') { btn.setAttribute('data-type', 'warmup'); btn.innerHTML = '🔥'; btn.className = 'set-type-btn warmup'; } else { btn.setAttribute('data-type', 'work'); btn.innerHTML = '💪'; btn.className = 'set-type-btn work'; } }
 
-// LÓGICA DO SWAP MODAL
+// LÓGICA DO SWAP MODAL E INJEÇÃO DE FINISHER
 function openSwapModal(exName, idx) { 
     currentSwapIndex = idx; 
     document.getElementById('swap-modal').querySelector('h3').innerHTML = '🔄 Substituir Exercício';
@@ -142,7 +143,6 @@ function swapExercise(newName) { if(currentSwapIndex !== -1) { let setsToKeep = 
 function toggleSetDone(btn, exName) { btn.parentElement.classList.toggle('done'); if(btn.parentElement.classList.contains('done')) { let restSecs = getSmartRestTime(exName); startCustomRestTimer(restSecs); } }
 function startCustomRestTimer(seconds) { document.getElementById('rest-timer-overlay').style.display = 'flex'; let targetTime = Date.now() + (seconds * 1000); document.getElementById('rest-time-display').innerText = seconds + 's'; if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { let timeLeft = Math.ceil((targetTime - Date.now()) / 1000); if(timeLeft < 0) timeLeft = 0; document.getElementById('rest-time-display').innerText = timeLeft + 's'; if (timeLeft <= 0) { clearInterval(timerInterval); sendLocalPush("⏱️ Descanso Terminado!", "Bora ao aço!"); if("vibrate" in navigator) navigator.vibrate([200, 100, 200]); document.getElementById('rest-timer-overlay').style.display='none'; } }, 1000); }
 
-// LÓGICA DE ADICIONAR O FINISHER AO TREINO
 function addFinisherToWorkout() {
     let firstEx = workoutData[currentDay] && workoutData[currentDay].length > 0 ? workoutData[currentDay][0] : null;
     let muscle = firstEx ? getMuscleForExercise(firstEx.name) : null;
@@ -166,15 +166,19 @@ function injectFinisher(exName) {
 }
 
 function renderWorkout() {
+    checkPunishmentExpiration(); // Garante que atualizamos o estado
     const container = document.getElementById('workout-container'); if(!container) return; container.innerHTML = ''; 
     
-    // BANNER DA TAXA DO PECADO ACUMULATIVA (Mostra no topo do treino ativo)
+    // BANNER DA TAXA DO PECADO (Mostra apenas a PRIMEIRA tarefa da Fila)
     if (activePunishment && activePunishment.tasks && activePunishment.tasks.length > 0 && currentDay !== 'MOBILITY') {
-        let tasksHtml = activePunishment.tasks.map(t => `<li style="margin-bottom:6px;">${t}</li>`).join('');
-        container.innerHTML += `<div style="background:var(--danger); color:white; padding:15px; border-radius:12px; margin-bottom:20px; text-align:left; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(239,68,68,0.5);">
-            <h4 style="margin-bottom: 10px; text-align:center; font-size:15px;">🔥 ATENÇÃO: PENITÊNCIA ACUMULADA</h4>
-            <ul style="font-size: 13px; margin-left: 20px; margin-bottom: 15px; font-weight:bold;">${tasksHtml}</ul>
-            <button class="beast-action-btn" onclick="addFinisherToWorkout()" style="width:100%; background:white; color:var(--danger); padding:10px; font-weight:bold; font-size:12px;">✚ Injetar Finisher (Exercício Extra)</button>
+        let firstTask = activePunishment.tasks[0];
+        let remaining = activePunishment.tasks.length - 1;
+        let extraText = remaining > 0 ? `<br><span style="font-size:11px; color:#f8fafc; opacity:0.8;">(+ ${remaining} castigos acumulados para os próximos dias)</span>` : '';
+        
+        container.innerHTML += `<div style="background:var(--danger); color:white; padding:15px; border-radius:12px; margin-bottom:20px; text-align:center; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(239,68,68,0.5);">
+            <h4 style="margin-bottom: 10px; font-size:15px;">🔥 PENITÊNCIA ATIVA (1/${activePunishment.tasks.length})</h4>
+            <p style="font-size: 13px; margin-bottom: 15px; font-weight:bold;">${firstTask}${extraText}</p>
+            <button class="beast-action-btn" onclick="addFinisherToWorkout()" style="width:100%; background:white; color:var(--danger); padding:10px; font-weight:bold; font-size:12px;">✚ Injetar Finisher no Treino</button>
         </div>`;
     }
 
@@ -196,16 +200,24 @@ function renderWorkout() {
 function saveCurrentWorkout() {
     if(currentDay === 'MOBILITY') { showPulseToast('🧘‍♂️ Rotina concluída!'); return; }
     
-    // AQUI PERGUNTA SE CUMPRIU A PENITÊNCIA ANTES DE A LIMPAR
+    // AQUI ABATE O CASTIGO UM A UM
     if (activePunishment && activePunishment.tasks && activePunishment.tasks.length > 0) { 
-        let msg = activePunishment.tasks.join('\n- ');
-        if(confirm('Cumpriste os teus castigos no final do treino?\n\n- ' + msg)) {
-            activePunishment = null; 
-            localStorage.removeItem('gym_punishment'); 
-            renderPunishmentStatus(); 
-            showPulseToast('🔥 Treino Gravado e Penitência Limpa! O Foco Voltou!');
+        let currentTask = activePunishment.tasks[0];
+        if(confirm('Cumpriste o castigo no final do teu treino hoje?\n\n- ' + currentTask)) {
+            activePunishment.tasks.shift(); // Remove só a primeira tarefa
+            
+            if (activePunishment.tasks.length === 0) {
+                activePunishment = null; 
+                localStorage.removeItem('gym_punishment'); 
+                showPulseToast('🔥 Dívida totalmente paga! Estás limpo.');
+            } else {
+                activePunishment.lastUpdated = Date.now(); // Renova o prazo para os restantes
+                localStorage.setItem('gym_punishment', JSON.stringify(activePunishment));
+                showPulseToast(`🔥 Um castigo abatido! Restam ${activePunishment.tasks.length} na fila.`);
+            }
+            renderPunishmentStatus();
         } else {
-            showPulseToast('⚠️ Treino gravado. Os castigos transitam para o próximo treino!');
+            showPulseToast('⚠️ Treino gravado. O teu castigo transitou para o próximo treino!');
         }
     } else {
         showPulseToast('✅ Treino guardado com sucesso!');
@@ -518,19 +530,23 @@ function renderDieta() {
     let tdee = parseInt(calsElement.innerText) || 0; 
     let weight = userProfile.weight; let goal = userProfile.goal; if (tdee === 0) return;
     
+    // Calcula os Macros Alvo
     let proteinTarget = Math.round(weight * 2.2); 
     let fatTarget = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0)); 
     let carbsTarget = Math.max(0, Math.round((tdee - (proteinTarget * 4 + fatTarget * 9)) / 4));
     
+    // Mostra os Alvos no Dashboard
     document.getElementById('dash-cals-target').innerText = tdee;
     document.getElementById('dash-pro-target').innerText = proteinTarget;
     document.getElementById('dash-car-target').innerText = carbsTarget;
 
+    // Hidratação
     let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; 
     document.getElementById('water-text').innerText = `${waterIntake.ml} / ${waterTarget} ml`; 
     let waterPercent = Math.min((waterIntake.ml / waterTarget) * 100, 100); 
     document.getElementById('water-fill').style.width = waterPercent + '%';
     
+    // Conta e Renderiza a Comida Ingerida hoje
     const foodList = document.getElementById('daily-food-list');
     let totalCals = 0, totalPro = 0, totalCar = 0;
     
@@ -546,6 +562,7 @@ function renderDieta() {
         if (dailyIntake.foods.length === 0) foodList.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:12px;">Ainda não comeste nada hoje.</p>';
     }
 
+    // Atualiza Progresso Visível no Dashboard
     document.getElementById('dash-cals-done').innerText = totalCals;
     document.getElementById('dash-pro-done').innerText = totalPro;
     document.getElementById('dash-car-done').innerText = totalCar;
@@ -554,6 +571,7 @@ function renderDieta() {
     document.getElementById('dash-pro-bar').style.width = Math.min((totalPro / proteinTarget) * 100, 100) + '%';
     document.getElementById('dash-car-bar').style.width = Math.min((totalCar / carbsTarget) * 100, 100) + '%';
     
+    // Fica a vermelho se passares das Kcal
     document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white';
     document.getElementById('dash-cals-bar').style.background = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
 
@@ -614,7 +632,9 @@ function addDailyFood() {
     let pro = parseInt(document.getElementById('food-pro').value) || 0;
     let car = parseInt(document.getElementById('food-car').value) || 0;
 
-    if (cals === 0 && (pro > 0 || car > 0)) { cals = (pro * 4) + (car * 4); }
+    if (cals === 0 && (pro > 0 || car > 0)) {
+        cals = (pro * 4) + (car * 4);
+    }
 
     if(!name || cals === 0) { 
         if (typeof showPulseToast === 'function') showPulseToast('Insere o Nome e Kcal/Macros!', true); 
@@ -654,7 +674,7 @@ function startFastingTimer() {
 
 function calculateBodyFat() { const waist = parseFloat(document.getElementById('meas-waist').value); const height = userProfile.height; const gender = userProfile.gender; const bfDisplay = document.getElementById('calc-bf'); if (waist > 0 && height > 0) { let rfm = calculateBodyFatFormula(waist, height, gender); bfDisplay.innerText = rfm.toFixed(1) + '%'; if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8'; else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') bfDisplay.style.color = 'var(--success)'; else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') bfDisplay.style.color = '#f59e0b'; else bfDisplay.style.color = 'var(--danger)'; } else { bfDisplay.innerText = '--%'; bfDisplay.style.color = 'var(--accent)'; } }
 
-// --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO ---
+// --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO (C/ Instruções) ---
 function openRecipesModal() { 
     const recipes = {
         "🌅 Pequeno-Almoço": [
@@ -715,8 +735,27 @@ function openRecipesModal() {
 } 
 function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
 
-// --- TAXA DO PECADO (CUMULATIVA & GERADOR DE CASTIGOS LÓGICO) ---
+
+// --- TAXA DO PECADO (CUMULATIVA & PRESCRIÇÃO 5 DIAS) ---
 let baseSinCals = 0, baseSinPro = 0, baseSinCar = 0;
+
+function checkPunishmentExpiration() {
+    let ap = JSON.parse(localStorage.getItem('gym_punishment'));
+    if (ap && ap.lastUpdated) {
+        let daysPassed = (Date.now() - ap.lastUpdated) / (1000 * 60 * 60 * 24);
+        if (daysPassed >= 5) {
+            activePunishment = null;
+            localStorage.removeItem('gym_punishment');
+            showPulseToast('⏳ Os deuses da hipertrofia perdoaram a tua dívida (5 dias). Estás limpo!');
+        } else {
+            activePunishment = ap;
+        }
+    } else if (ap && !ap.lastUpdated) {
+        ap.lastUpdated = Date.now();
+        localStorage.setItem('gym_punishment', JSON.stringify(ap));
+        activePunishment = ap;
+    }
+}
 
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } 
 function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
@@ -770,7 +809,7 @@ function generatePunishmentTask(cals) {
         `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Tempo limite) + 20 Abdominais`,
         `💪 +1 Série Extra (até à falha muscular absoluta) no último exercício do treino`,
         `🥵 +${extraReps} Repetições forçadas a adicionar no final de TODAS as séries`,
-        `🔥 Adicionar Dropset na última série de todos os exercícios do treino de hoje`
+        `🔥 Adicionar Dropset na última série de TODOS os exercícios de hoje`
     ];
     return punishments[Math.floor(Math.random() * punishments.length)];
 }
@@ -781,21 +820,20 @@ function triggerPunishment() {
     
     let task = generatePunishmentTask(newCals);
     
-    // Acumula calorias e castigos se já houver um pendente
     if (!activePunishment) {
-        activePunishment = { cals: 0, tasks: [] };
+        activePunishment = { cals: 0, tasks: [], lastUpdated: Date.now() };
     } else if (!activePunishment.tasks) {
-        // Para não quebrar caso exista um registo da versão antiga
         activePunishment.tasks = [activePunishment.task || "Punição Antiga"];
     }
     
     activePunishment.cals += newCals;
     activePunishment.tasks.push(task);
+    activePunishment.lastUpdated = Date.now(); // Renova o prazo de prescrição
 
     localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); 
     closePunishmentModal(); 
     renderPunishmentStatus(); 
-    showPulseToast('🔥 Castigo Acumulado!', true); 
+    showPulseToast('🔥 Castigo Acumulado com Sucesso!', true); 
     
     let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; 
     if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; 
@@ -806,17 +844,22 @@ function triggerPunishment() {
 }
 
 function renderPunishmentStatus() { 
+    checkPunishmentExpiration(); // Garante que limpamos dívidas caducadas ao desenhar
     const container = document.getElementById('punishment-status'); 
     if (!container) return; 
+
     if (!activePunishment || !activePunishment.tasks || activePunishment.tasks.length === 0) { 
         container.innerHTML = ``; 
     } else { 
-        let tasksHtml = activePunishment.tasks.map(t => `<li style="margin-bottom:6px;">${t}</li>`).join('');
+        let firstTask = activePunishment.tasks[0];
+        let remaining = activePunishment.tasks.length - 1;
+        let extraText = remaining > 0 ? `<br><br><span style="font-size:11px; color:var(--muted);">⚠️ Ficam a faltar mais ${remaining} castigo(s) na fila para os próximos treinos.</span>` : '';
+        
         container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;">
-            <div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} Kcal extras)</div>
-            <div style="font-size:13px; color:white; line-height:1.4; margin-bottom:15px;">No teu <b>Próximo Treino</b>, tens de incluir obrigatoriamente as seguintes tarefas acumuladas:<br><br><ul style="margin-left: 15px;">${tasksHtml}</ul></div>
-            <p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, a app vai perguntar-te se cumpriste o castigo para o poder limpar.</p>
-            <button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="openConfessModal()">🩸 Ou confessar e limpar agora (Fraqueza)</button>
+            <div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (Fila: ${activePunishment.tasks.length})</div>
+            <div style="font-size:13px; color:white; line-height:1.4; margin-bottom:15px;">No teu <b>Próximo Treino</b>, tens de abater a primeira tarefa da dívida:<br><br>👉 <b>${firstTask}</b> ${extraText}</div>
+            <p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, a app vai perguntar se cumpriste este castigo para o poder abater. Prescreve em 5 dias se não pecares mais.</p>
+            <button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="openConfessModal()">🩸 Ou confessar e limpar TUDO agora (Fraqueza)</button>
         </div>`; 
     } 
 }
@@ -834,7 +877,7 @@ function confirmConfess() {
     localStorage.removeItem('gym_punishment'); 
     closeConfessModal();
     renderPunishmentStatus(); 
-    showPulseToast('⛓️ Estás perdoado. Mais foco na próxima.');
+    showPulseToast('⛓️ Estás perdoado. Mais foco na próxima vez.');
 }
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
