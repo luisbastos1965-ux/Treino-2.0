@@ -420,14 +420,20 @@ function renderAchievements() {
 
 const commonFoodsDB = [
     {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0},
-    {name: "Peito de Frango (100g)", cals: 165, pro: 31, car: 0},
+    {name: "Peito de Frango Cru (100g)", cals: 110, pro: 23, car: 0},
+    {name: "Peito de Frango Grelhado (100g)", cals: 165, pro: 31, car: 0},
+    {name: "Bife de Vaca Magro (100g)", cals: 150, pro: 26, car: 0},
+    {name: "Salmão Grelhado (100g)", cals: 205, pro: 22, car: 0},
     {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28},
     {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25},
+    {name: "Batata Doce (100g cozida)", cals: 86, pro: 1, car: 20},
     {name: "Aveia (50g)", cals: 190, pro: 7, car: 33},
-    {name: "Whey Protein (1 scoop)", cals: 120, pro: 24, car: 3},
-    {name: "Banana (1 uni)", cals: 105, pro: 1, car: 27},
+    {name: "Whey Protein (1 scoop 30g)", cals: 120, pro: 24, car: 3},
+    {name: "Banana (1 média)", cals: 105, pro: 1, car: 27},
+    {name: "Maçã (1 média)", cals: 95, pro: 0, car: 25},
     {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3},
-    {name: "Atum em água (1 lata)", cals: 110, pro: 25, car: 0},
+    {name: "Azeite (1 colher de sopa)", cals: 119, pro: 0, car: 0},
+    {name: "Atum em água (1 lata seca)", cals: 110, pro: 25, car: 0},
     {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13},
     {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
 ];
@@ -494,14 +500,7 @@ function renderDieta() {
     document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white';
     document.getElementById('dash-cals-bar').style.background = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
 
-    // Alimentos Frequentes (Atalhos rápidos)
-    const freqContainer = document.getElementById('frequent-foods'); 
-    if(freqContainer) { 
-        freqContainer.innerHTML = ''; 
-        frequentFoods.forEach(f => { 
-            freqContainer.innerHTML += `<span class="freq-food-chip" onclick="quickAddFood('${f.name}', ${f.cals}, ${f.pro}, ${f.car||0})">✚ ${f.name}</span>`; 
-        }); 
-    }
+    renderPunishmentStatus();
 }
 
 function addWater(ml) { 
@@ -570,12 +569,6 @@ function addDailyFood() {
     dailyIntake.foods.push({ name, cals, pro, car }); 
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
     
-    if(!frequentFoods.find(f => f.name === name)) { 
-        frequentFoods.push({ name, cals, pro, car }); 
-        if(frequentFoods.length > 6) frequentFoods.shift(); 
-        localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); 
-    }
-    
     document.getElementById('food-name').value = ''; 
     document.getElementById('food-cals').value = ''; 
     document.getElementById('food-pro').value = ''; 
@@ -600,7 +593,7 @@ function startFastingTimer() {
 
 function calculateBodyFat() { const waist = parseFloat(document.getElementById('meas-waist').value); const height = userProfile.height; const gender = userProfile.gender; const bfDisplay = document.getElementById('calc-bf'); if (waist > 0 && height > 0) { let rfm = calculateBodyFatFormula(waist, height, gender); bfDisplay.innerText = rfm.toFixed(1) + '%'; if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8'; else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') bfDisplay.style.color = 'var(--success)'; else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') bfDisplay.style.color = '#f59e0b'; else bfDisplay.style.color = 'var(--danger)'; } else { bfDisplay.innerText = '--%'; bfDisplay.style.color = 'var(--accent)'; } }
 
-// --- RECEITAS PARA HIPERTROFIA ---
+// --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO ---
 function openRecipesModal() { 
     const recipes = {
         "🌅 Pequeno-Almoço": [
@@ -633,15 +626,20 @@ function openRecipesModal() {
     Object.keys(recipes).forEach(category => {
         html += `<h3 style="color:var(--accent); margin-top:15px; margin-bottom:10px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`;
         recipes[category].forEach(r => {
-            html += `<div style="background:#1e293b; padding:15px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent); text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                    <h4 style="color:white; margin:0;">${r.name}</h4>
-                    <span style="font-size:11px; color:var(--muted);">⏱️ ${r.prep}</span>
+            // Transformei cada receita numa caixa que abre e fecha (Acordeão)
+            html += `<details class="custom-details" style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent);">
+                <summary style="font-size: 14px; font-weight: bold; color: white; cursor: pointer; outline: none; list-style: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <span>${r.name}</span>
+                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">⏱️ ${r.prep} <span style="margin-left:5px; font-size:10px;">▼</span></span>
+                    </div>
+                </summary>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #334155;">
+                    <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:8px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
+                    <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
+                    <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car}); closeRecipesModal();" style="margin-top:10px; width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
                 </div>
-                <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:8px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
-                <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
-                <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car})" style="margin-top:10px; width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
-            </div>`;
+            </details>`;
         });
     });
 
@@ -654,7 +652,15 @@ function openPunishmentModal() { document.getElementById('punishment-modal').sty
 function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; } }
 function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
 function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 Tens uma penitência para pagar!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
-function renderPunishmentStatus() { const container = document.getElementById('punishment-status'); if (!container) return; if (!activePunishment) { container.innerHTML = `<p style="color:var(--muted); font-size:13px;">Estás limpo. Mantém a dieta.</p>`; container.style.borderLeft = "4px solid var(--success)"; } else { container.innerHTML = `<div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:15px;">Para voltares a gravar treinos, tens de pagar:<br>• <b>${activePunishment.burpees}</b> Burpees<br>• <b>${activePunishment.squats}</b> Agachamentos c/ Salto<br>• <b>${activePunishment.pushups}</b> Flexões</div><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:var(--danger);" onclick="completePunishment()">🩸 PENITÊNCIA CUMPRIDA</button>`; container.style.borderLeft = "4px solid var(--danger)"; } }
+function renderPunishmentStatus() { 
+    const container = document.getElementById('punishment-status'); 
+    if (!container) return; 
+    if (!activePunishment) { 
+        container.innerHTML = ``; // Fica invisível se não houver castigo
+    } else { 
+        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:15px;">Para voltares a gravar treinos limpo, tens de pagar:<br>• <b>${activePunishment.burpees}</b> Burpees<br>• <b>${activePunishment.squats}</b> Agachamentos c/ Salto<br>• <b>${activePunishment.pushups}</b> Flexões</div><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:var(--danger);" onclick="completePunishment()">🩸 PENITÊNCIA CUMPRIDA</button></div>`; 
+    } 
+}
 function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado. Volta ao foco!'); } }
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
