@@ -131,8 +131,18 @@ function toggleSetDone(btn, exName) { btn.parentElement.classList.toggle('done')
 function startCustomRestTimer(seconds) { document.getElementById('rest-timer-overlay').style.display = 'flex'; let targetTime = Date.now() + (seconds * 1000); document.getElementById('rest-time-display').innerText = seconds + 's'; if(timerInterval) clearInterval(timerInterval); timerInterval = setInterval(() => { let timeLeft = Math.ceil((targetTime - Date.now()) / 1000); if(timeLeft < 0) timeLeft = 0; document.getElementById('rest-time-display').innerText = timeLeft + 's'; if (timeLeft <= 0) { clearInterval(timerInterval); sendLocalPush("⏱️ Descanso Terminado!", "Bora ao aço!"); if("vibrate" in navigator) navigator.vibrate([200, 100, 200]); document.getElementById('rest-timer-overlay').style.display='none'; } }, 1000); }
 
 function renderWorkout() {
-    const container = document.getElementById('workout-container'); if(!container) return; container.innerHTML = ''; const exercises = workoutData[currentDay];
-    if (!exercises || exercises.length === 0) { container.innerHTML = '<p style="text-align:center; color:var(--muted); margin-top:20px;">Nenhum treino planeado.</p>'; return; }
+    const container = document.getElementById('workout-container'); if(!container) return; container.innerHTML = ''; 
+    
+    // BANNER DA TAXA DO PECADO (Mostra no topo do treino ativo)
+    if (activePunishment && currentDay !== 'MOBILITY') {
+        container.innerHTML += `<div style="background:var(--danger); color:white; padding:15px; border-radius:12px; margin-bottom:20px; text-align:center; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(239,68,68,0.5);">
+            <h4 style="margin-bottom: 5px;">🔥 ATENÇÃO: PENITÊNCIA PENDENTE</h4>
+            <p style="font-size: 13px;">No final deste treino, não te esqueças do Finisher de <b>${activePunishment.cardio} min de Cardio</b> ou <b>${activePunishment.reps} Reps extra</b>!</p>
+        </div>`;
+    }
+
+    const exercises = workoutData[currentDay];
+    if (!exercises || exercises.length === 0) { container.innerHTML += '<p style="text-align:center; color:var(--muted); margin-top:20px;">Nenhum treino planeado.</p>'; return; }
     if (currentDay === 'MOBILITY') { exercises.forEach(ex => { container.innerHTML += `<div class="exercise-card" style="border-left: 4px solid var(--accent);"><div class="exercise-name">${ex.name}</div><div style="font-size: 13px; color: var(--muted); margin-bottom: 10px;">Execução: ${ex.sets} séries de ${ex.reps}</div><button class="beast-action-btn superset" style="width:100%; padding:10px;" onclick="this.innerText='✔ Concluído'; this.style.background='var(--success)'">Marcar Feito</button></div>`; }); return; }
 
     exercises.forEach((ex, exIdx) => {
@@ -147,7 +157,17 @@ function renderWorkout() {
 }
 function saveCurrentWorkout() {
     if(currentDay === 'MOBILITY') { showPulseToast('🧘‍♂️ Rotina concluída!'); return; }
-    if (activePunishment) { showPulseToast('⛔ TENS UMA TAXA DO PECADO PENDENTE!', true); return; }
+    
+    // AQUI A PENITÊNCIA É LIMPA AUTOMATICAMENTE AO GRAVAR O TREINO!
+    if (activePunishment) { 
+        activePunishment = null; 
+        localStorage.removeItem('gym_punishment'); 
+        renderPunishmentStatus(); 
+        showPulseToast('🔥 Treino Gravado e Penitência Limpa! O Foco Voltou!');
+    } else {
+        showPulseToast('✅ Treino guardado com sucesso!');
+    }
+
     const exercises = workoutData[currentDay]; let workoutRecord = { date: new Date().toLocaleDateString('pt-PT'), day: currentDay, exercises: {} };
     exercises.forEach((ex, exIdx) => {
         let setsDetails = []; let notes = document.getElementById(`notes-${currentDay}-${exIdx}`).value || "";
@@ -157,7 +177,7 @@ function saveCurrentWorkout() {
         }
         if (setsDetails.length > 0) workoutRecord.exercises[ex.name] = setsDetails;
     });
-    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); showPulseToast('✅ Treino guardado com sucesso!');
+    history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); 
     localStorage.removeItem('gym_active_session'); // Limpa o anti-crash
     updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); renderDisciplineWall(); backToWorkoutSlots();
 }
@@ -569,6 +589,12 @@ function addDailyFood() {
     dailyIntake.foods.push({ name, cals, pro, car }); 
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
     
+    if(!frequentFoods.find(f => f.name === name)) { 
+        frequentFoods.push({ name, cals, pro, car }); 
+        if(frequentFoods.length > 6) frequentFoods.shift(); 
+        localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); 
+    }
+    
     document.getElementById('food-name').value = ''; 
     document.getElementById('food-cals').value = ''; 
     document.getElementById('food-pro').value = ''; 
@@ -593,40 +619,39 @@ function startFastingTimer() {
 
 function calculateBodyFat() { const waist = parseFloat(document.getElementById('meas-waist').value); const height = userProfile.height; const gender = userProfile.gender; const bfDisplay = document.getElementById('calc-bf'); if (waist > 0 && height > 0) { let rfm = calculateBodyFatFormula(waist, height, gender); bfDisplay.innerText = rfm.toFixed(1) + '%'; if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8'; else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') bfDisplay.style.color = 'var(--success)'; else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') bfDisplay.style.color = '#f59e0b'; else bfDisplay.style.color = 'var(--danger)'; } else { bfDisplay.innerText = '--%'; bfDisplay.style.color = 'var(--accent)'; } }
 
-// --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO ---
+// --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO (C/ Instruções) ---
 function openRecipesModal() { 
     const recipes = {
         "🌅 Pequeno-Almoço": [
-            { name: "Papas de Aveia Proteicas", prep: "5 min", cals: 380, pro: 35, car: 45, desc: "60g de aveia, 1 scoop de Whey, 200ml água/leite. Leva ao micro-ondas por 2 min." },
-            { name: "Panquecas Mutantes", prep: "10 min", cals: 420, pro: 30, car: 45, desc: "2 ovos, 1 banana esmagada, 40g de aveia, canela. Frigideira anti-aderente." },
-            { name: "Ovos Mexidos c/ Pão", prep: "5 min", cals: 350, pro: 20, car: 26, desc: "3 ovos inteiros mexidos + 2 fatias de pão integral escuro." },
-            { name: "Iogurte Grego Titã", prep: "2 min", cals: 300, pro: 25, car: 30, desc: "200g Iogurte Grego Ligeiro, 1 banana picada, fio de mel." }
+            { name: "Papas de Aveia Proteicas", prep: "5 min", cals: 380, pro: 35, car: 45, desc: "60g de aveia, 1 scoop de Whey, 200ml água/leite.", instructions: "1. Numa taça grande, mistura os 60g de aveia com 1 scoop de Whey.\n2. Adiciona os 200ml de água ou leite e mexe bem.\n3. Leva ao micro-ondas durante 2 minutos.\n4. Retira, mexe novamente para ganhar textura e adiciona canela a gosto." },
+            { name: "Panquecas Mutantes", prep: "10 min", cals: 420, pro: 30, car: 45, desc: "2 ovos, 1 banana, 40g de aveia.", instructions: "1. Esmaga a banana até virar puré.\n2. Adiciona os 2 ovos e os 40g de aveia e mistura tudo.\n3. Aquece uma frigideira anti-aderente em lume médio.\n4. Deita pequenas porções da massa e vira quando começarem a formar bolhas." },
+            { name: "Ovos Mexidos c/ Pão", prep: "5 min", cals: 350, pro: 20, car: 26, desc: "3 ovos inteiros + 2 fatias de pão integral escuro.", instructions: "1. Parte os 3 ovos para um prato e bate-os levemente.\n2. Aquece uma frigideira com um fio de azeite e deita os ovos.\n3. Mexe devagar em lume brando até atingirem a consistência desejada.\n4. Serve acompanhado das 2 fatias de pão escuro torrado." },
+            { name: "Iogurte Grego Titã", prep: "2 min", cals: 300, pro: 25, car: 30, desc: "200g Iogurte Grego Ligeiro, 1 banana picada, fio de mel.", instructions: "1. Coloca os 200g de Iogurte Grego Ligeiro numa taça.\n2. Pica a banana às rodelas e espalha por cima.\n3. Remata com um pequeno fio de mel (ou xarope 0Kcal) para adoçar." }
         ],
         "☀️ Almoço": [
-            { name: "Clássico Bodybuilder", prep: "15 min", cals: 550, pro: 50, car: 60, desc: "150g peito de frango grelhado, 80g de arroz basmati (cru), brócolos a gosto." },
-            { name: "Massa do Poder", prep: "15 min", cals: 620, pro: 45, car: 70, desc: "100g de massa (crua), 120g de carne de vaca picada magra, molho tomate natural." },
-            { name: "Atum com Batata Doce", prep: "20 min", cals: 450, pro: 35, car: 55, desc: "1 lata e meia de atum natural, 200g batata doce cozida/forno, fio de azeite." },
-            { name: "Salmão com Quinoa", prep: "20 min", cals: 600, pro: 35, car: 45, desc: "150g salmão (rico em omega-3), 60g quinoa, espargos." }
+            { name: "Clássico Bodybuilder", prep: "15 min", cals: 550, pro: 50, car: 60, desc: "150g peito de frango, 80g de arroz basmati, brócolos.", instructions: "1. Coze o arroz basmati e os brócolos em água a ferver.\n2. Tempera o frango com sal, alho em pó, pimenta e sumo de limão.\n3. Grelha o frango numa frigideira quente até ficar dourado.\n4. Junta tudo no prato e foca-te nos ganhos." },
+            { name: "Massa do Poder", prep: "15 min", cals: 620, pro: 45, car: 70, desc: "100g de massa, 120g carne picada magra, molho de tomate.", instructions: "1. Põe a massa a cozer com sal grosso durante 10 minutos.\n2. Numa frigideira, refoga cebola e deita a carne picada magra.\n3. Quando a carne estiver cozinhada, junta 3 colheres de molho de tomate natural.\n4. Mistura a carne com a massa." },
+            { name: "Atum com Batata Doce", prep: "20 min", cals: 450, pro: 35, car: 55, desc: "1.5 latas de atum, 200g batata doce, fio de azeite.", instructions: "1. Descasca a batata doce, corta em cubos e leva a cozer ou ao forno (com um fio de azeite e ervas).\n2. Escorre bem a água ou o óleo do atum.\n3. Quando a batata estiver pronta, serve juntamente com o atum desfeito." },
+            { name: "Salmão com Quinoa", prep: "20 min", cals: 600, pro: 35, car: 45, desc: "150g salmão, 60g quinoa, espargos.", instructions: "1. Lava bem a quinoa e coze-a numa panela pequena (15 mins).\n2. Tempera o salmão com sal, pimenta e limão e grelha ou assa no forno.\n3. Salteia os espargos na frigideira durante 5 minutos.\n4. Prato completo, repleto de Ómega-3." }
         ],
         "🥪 Lanche / Pós-Treino": [
-            { name: "Batido SOS", prep: "2 min", cals: 320, pro: 30, car: 40, desc: "250ml leite magro, 1 scoop Whey, 1 banana pequena. Liquidificador e bebe." },
-            { name: "Tostas de Amendoim", prep: "2 min", cals: 280, pro: 10, car: 35, desc: "4 tostas de arroz/milho, 2 colheres de Manteiga de Amendoim espalhada." },
-            { name: "Queijo Quark c/ Fruta", prep: "2 min", cals: 220, pro: 25, car: 20, desc: "250g Queijo Quark (baixo em gordura), 1 mão de frutos vermelhos congelados." },
-            { name: "Sandes de Peito de Peru", prep: "3 min", cals: 310, pro: 25, car: 35, desc: "2 fatias pão integral, 4 fatias peito de peru, queijo fresco para barrar." }
+            { name: "Batido SOS", prep: "2 min", cals: 320, pro: 30, car: 40, desc: "250ml leite magro, 1 scoop Whey, 1 banana, 20g aveia.", instructions: "1. Despeja os 250ml de leite no liquidificador.\n2. Adiciona a Whey, a banana partida e a aveia.\n3. Bate tudo durante 30 segundos na velocidade máxima.\n4. Adiciona 2 cubos de gelo se preferires bem fresco." },
+            { name: "Tostas de Amendoim", prep: "2 min", cals: 280, pro: 10, car: 35, desc: "4 tostas de arroz/milho, 2 colheres de Manteiga de Amendoim.", instructions: "1. Pega nas 4 tostas de milho ou arroz.\n2. Barra 1 colher de sobremesa rasa de manteiga de amendoim em cada uma.\n3. (Opcional: coloca meia rodela de banana no topo para extra energia pré-treino)." },
+            { name: "Queijo Quark c/ Fruta", prep: "2 min", cals: 220, pro: 25, car: 20, desc: "250g Queijo Quark (magro), frutos vermelhos congelados.", instructions: "1. Deita as 250g de queijo quark numa taça (bate um pouco com a colher para ficar cremoso).\n2. Adiciona uma mão cheia de frutos vermelhos congelados por cima.\n3. (Opcional: Podes juntar umas gotas de adoçante ou Flavour Drops)." },
+            { name: "Sandes de Peito de Peru", prep: "3 min", cals: 310, pro: 25, car: 35, desc: "2 fatias pão integral, 4 fatias peito de peru, queijo fresco.", instructions: "1. Barra o queijo fresco (ou creme de queijo light) nas fatias de pão integral.\n2. Coloca as fatias de peito de peru por cima.\n3. (Opcional: Junta umas folhas de alface para frescura). Fecha e devora." }
         ],
         "🌙 Jantar": [
-            { name: "Omelete Titã", prep: "8 min", cals: 320, pro: 35, car: 5, desc: "1 ovo inteiro + 150ml claras, espinafres frescos, 30g queijo magro. Fazer na frigideira." },
-            { name: "Bife Vaca Magro", prep: "12 min", cals: 450, pro: 40, car: 35, desc: "150g bife de vaca magro grelhado, 50g arroz (cru), salada mista." },
-            { name: "Pescada no Forno", prep: "25 min", cals: 380, pro: 30, car: 40, desc: "2 filetes pescada, 150g batata assada, curgete. Refeição leve e de digestão fácil." },
-            { name: "Salada Rica de Frango", prep: "10 min", cals: 350, pro: 35, car: 15, desc: "120g frango desfiado, alface, tomate, milho, azeite e vinagre balsâmico." }
+            { name: "Omelete Titã", prep: "8 min", cals: 320, pro: 35, car: 5, desc: "1 ovo + 150ml claras, espinafres, 30g queijo magro.", instructions: "1. Numa tigela, bate o ovo com os 150ml de claras líquidas e uma pitada de sal.\n2. Aquece uma frigideira anti-aderente, deita a mistura.\n3. Espalha os espinafres frescos e as 30g de queijo fatiado por cima da massa ainda crua.\n4. Quando as bordas começarem a cozinhar, dobra ao meio e deixa acabar de fazer." },
+            { name: "Bife Vaca Magro", prep: "12 min", cals: 450, pro: 40, car: 35, desc: "150g bife de vaca magro, 50g arroz, salada mista.", instructions: "1. Põe os 50g de arroz a cozer.\n2. Aquece bem a frigideira. Sela o bife de ambos os lados rapidamente para não secar (tempera só no fim).\n3. Prepara uma salada rápida (alface e tomate).\n4. Refeição rápida e densa em ferro e proteína." },
+            { name: "Pescada no Forno", prep: "25 min", cals: 380, pro: 30, car: 40, desc: "2 filetes pescada, 150g batata assada, curgete.", instructions: "1. Pré-aquece o forno a 200ºC.\n2. Num tabuleiro, coloca os filetes de pescada, a curgete às rodelas e a batata em cubos.\n3. Tempera com alho em pó, pimentão doce, limão e um fiozinho pequeno de azeite.\n4. Assa durante 20-25 minutos. Leve e fácil de digerir." },
+            { name: "Salada Rica de Frango", prep: "10 min", cals: 350, pro: 35, car: 15, desc: "120g frango desfiado, alface, tomate, milho.", instructions: "1. Desfia frango cozido ou grelhado que tenha sobrado do almoço.\n2. Numa taça larga, coloca muita alface, 1 tomate picado e 2 colheres de sopa de milho doce.\n3. Junta o frango desfiado.\n4. Tempera com sal, vinagre balsâmico e uma gota de azeite." }
         ]
     };
 
     let html = '';
     Object.keys(recipes).forEach(category => {
-        html += `<h3 style="color:var(--accent); margin-top:15px; margin-bottom:10px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`;
+        html += `<h3 style="color:var(--accent); margin-top:30px; margin-bottom:15px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`;
         recipes[category].forEach(r => {
-            // Transformei cada receita numa caixa que abre e fecha (Acordeão)
             html += `<details class="custom-details" style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent);">
                 <summary style="font-size: 14px; font-weight: bold; color: white; cursor: pointer; outline: none; list-style: none;">
                     <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -634,10 +659,17 @@ function openRecipesModal() {
                         <span style="font-size:11px; color:var(--muted); font-weight:normal;">⏱️ ${r.prep} <span style="margin-left:5px; font-size:10px;">▼</span></span>
                     </div>
                 </summary>
-                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #334155;">
-                    <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:8px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
-                    <p style="color:var(--muted); font-size:12px; line-height:1.4;">${r.desc}</p>
-                    <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car}); closeRecipesModal();" style="margin-top:10px; width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155;">
+                    <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:12px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
+                    <div style="margin-bottom: 12px;">
+                        <span style="font-size: 11px; color: var(--accent); font-weight: bold;">INGREDIENTES:</span>
+                        <p style="color:var(--muted); font-size:12px; line-height:1.4; margin-top:3px;">${r.desc}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size: 11px; color: var(--accent); font-weight: bold;">INSTRUÇÕES:</span>
+                        <p style="color:white; font-size:12px; line-height:1.6; margin-top:3px; white-space: pre-wrap;">${r.instructions}</p>
+                    </div>
+                    <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car}); closeRecipesModal();" style="width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
                 </div>
             </details>`;
         });
@@ -651,17 +683,18 @@ function closeRecipesModal() { document.getElementById('recipes-modal').style.di
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
 function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; } }
 function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
-function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 Tens uma penitência para pagar!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
+function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 A Penitência foi cobrada!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
+
 function renderPunishmentStatus() { 
     const container = document.getElementById('punishment-status'); 
     if (!container) return; 
     if (!activePunishment) { 
         container.innerHTML = ``; // Fica invisível se não houver castigo
     } else { 
-        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:15px;">Para voltares a gravar treinos limpo, tens de pagar:<br>• <b>${activePunishment.burpees}</b> Burpees<br>• <b>${activePunishment.squats}</b> Agachamentos c/ Salto<br>• <b>${activePunishment.pushups}</b> Flexões</div><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:var(--danger);" onclick="completePunishment()">🩸 PENITÊNCIA CUMPRIDA</button></div>`; 
+        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} Kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:10px;">A fatura será cobrada. No final do teu <b>Próximo Treino</b>, tens de incluir obrigatoriamente como "Finisher":<br><br>🏃‍♂️ <b>${activePunishment.cardio} min</b> de Cardio Intenso (HIIT / Passadeira)<br>ou<br>💪 <b>${activePunishment.reps} Reps</b> extra num exercício isolador.</div><p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, o castigo limpa automaticamente.</p><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="completePunishment()">🩸 Ou confessar e limpar agora (Fraqueza)</button></div>`; 
     } 
 }
-function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado. Volta ao foco!'); } }
+function completePunishment() { if(confirm('Tens a certeza que não queres queimar este erro no treino?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado.'); } }
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
 let currentBarWeight = 20; 
