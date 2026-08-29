@@ -227,15 +227,24 @@ function checkAchievements() {
 function generatePunishmentLogic(cals) { 
     if (cals < 100) return null; 
 
-    // Castigos realistas e focados (sem destruir a hipertrofia)
+    // CÁLCULO PROPORCIONAL COM LIMITES (Máx 15 mins, Máx 3 reps extra)
+    // 5 mins base + 1 min por cada 100 kcal (limitado a 15)
+    let cardioMins = Math.min(15, 5 + Math.floor(cals / 100)); 
+    
+    // 1 rep extra a cada 300 kcal (limitado a 3 reps)
+    let extraReps = Math.min(3, Math.ceil(cals / 300)); 
+    
+    // 2 séries de core base + 1 a cada 250 kcal (limitado a 5 séries)
+    let coreSets = Math.min(5, 2 + Math.floor(cals / 250)); 
+
     const punishments = [
-        "🏃‍♂️ 10 a 15 mins de Passadeira (Inclinação máxima, passo rápido)",
-        "🚴‍♂️ 10 a 15 mins de Bicicleta em HIIT (1 min a rasgar, 1 min suave)",
-        "💦 10 mins de Elítica no nível máximo de resistência",
-        "🧱 Finisher de Core: 3 Séries de Prancha (Max tempo) + 20 Abdominais",
-        "💪 +1 Série Extra (até à falha absoluta) no teu pior exercício de hoje",
-        "🥵 Tenta fazer +1 a +2 repetições em TODAS as séries do treino",
-        "🔥 +1 Exercício Isolador extra no final do treino (3 séries de 12 a 15 reps)"
+        `🏃‍♂️ ${cardioMins} mins de Passadeira (Inclinação máxima, passo rápido)`,
+        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (1 min a rasgar, 1 min suave)`,
+        `💦 ${cardioMins} mins de Elítica no nível máximo de resistência`,
+        `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Max tempo) + 20 Abdominais`,
+        `💪 +1 Série Extra (até à falha absoluta) no teu pior exercício de hoje`,
+        `🥵 Tenta fazer +${extraReps} repetições em TODAS as séries do treino de hoje`,
+        `🔥 +1 Exercício Isolador extra no final do treino (3 séries de 12 a 15 reps)`
     ];
 
     let randomTask = punishments[Math.floor(Math.random() * punishments.length)];
