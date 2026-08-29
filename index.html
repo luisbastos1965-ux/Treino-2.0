@@ -132,33 +132,70 @@
         <div class="goal-container" style="margin-bottom: 20px;"><div style="display: flex; justify-content: space-between; align-items: center;"><h3>📝 Esboço</h3><span id="workout-volume-badge" style="background: #334155; padding: 5px 10px; border-radius: 8px; font-size: 11px; color: var(--accent);">0 Séries</span></div><div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div><div id="builder-action-buttons" style="display: none; gap: 10px; margin-top: 20px;"><button class="btn-secondary" style="flex: 1;" onclick="saveCurrentRoutine()">💾 Guardar</button><button class="btn-success" style="flex: 2; padding: 15px; border-radius: 12px; border: none; background: var(--success); color: white; font-weight: bold; cursor: pointer;" onclick="applyBuiltWorkout()">▶️ Iniciar</button></div></div>
     </div>
 
-    <!-- ABA 3: EVOLUÇÃO -->
+    <!-- ABA 3: EVOLUÇÃO (Menu Otimizado em Tabs) -->
     <div id="view-evolucao" class="view-section">
-        <h2>📈 Progresso</h2>
-        <div class="goal-container text-center">
-            <h3>🔥 Mapa Muscular</h3>
-            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
-                <div style="position: relative;"><div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">FRENTE</div><svg viewBox="0 0 100 200" width="100" height="200"><circle cx="50" cy="18" r="12" fill="#334155" /><path id="hm-ombros-l" d="M 38 30 C 25 30, 18 40, 18 50 L 30 50 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-ombros-r" d="M 62 30 C 75 30, 82 40, 82 50 L 70 50 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-peito" d="M 30 45 Q 50 60 70 45 L 65 65 Q 50 70 35 65 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-core" d="M 35 67 L 65 67 L 58 100 L 42 100 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-biceps-l" d="M 18 52 L 30 52 L 25 80 L 12 80 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-biceps-r" d="M 70 52 L 82 52 L 88 80 L 75 80 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-quads-l" d="M 40 105 L 48 105 L 45 160 L 32 150 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-quads-r" d="M 52 105 L 60 105 L 68 150 L 55 160 Z" fill="#334155" style="transition: fill 0.5s;" /></svg></div>
-                <div style="position: relative;"><div style="font-size: 10px; color: var(--muted); margin-bottom: 5px;">COSTAS</div><svg viewBox="0 0 100 200" width="100" height="200"><circle cx="50" cy="18" r="12" fill="#334155" /><path id="hm-costas" d="M 25 45 Q 50 50 75 45 L 65 95 L 35 95 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-triceps-l" d="M 18 52 L 30 52 L 25 80 L 12 80 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-triceps-r" d="M 70 52 L 82 52 L 88 80 L 75 80 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-femorais-l" d="M 40 105 L 48 105 L 45 160 L 32 150 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-femorais-r" d="M 52 105 L 60 105 L 68 150 L 55 160 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-gemeos-l" d="M 32 155 L 44 162 L 40 195 L 34 195 Z" fill="#334155" style="transition: fill 0.5s;" /><path id="hm-gemeos-r" d="M 56 162 L 68 155 L 66 195 L 60 195 Z" fill="#334155" style="transition: fill 0.5s;" /></svg></div>
+        <h2 style="margin-bottom: 15px;">📈 Progresso</h2>
+        
+        <!-- TABS DE NAVEGAÇÃO -->
+        <div class="tabs" style="display: flex; margin-bottom: 20px; gap: 5px;">
+            <button class="tab-btn active" onclick="switchEvoTab(event, 'evo-corpo')">Físico</button>
+            <button class="tab-btn" onclick="switchEvoTab(event, 'evo-forca')">Força & RPG</button>
+            <button class="tab-btn" onclick="switchEvoTab(event, 'evo-volume')">Volume & Stats</button>
+        </div>
+
+        <!-- ABA: FÍSICO -->
+        <div id="evo-corpo" class="evo-panel" style="display: block;">
+            <div class="goal-container text-center">
+                <h3>🔥 Painel de Dano Muscular</h3>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Fadiga acumulada nos últimos 7 dias.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
+                    <div id="hm-peito" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                    <div id="hm-costas" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                    <div id="hm-pernas" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                    <div id="hm-ombros" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                    <div id="hm-bracos" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                    <div id="hm-core" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
+                </div>
+            </div>
+            <div class="goal-container text-center" style="margin-top: 20px;"><h3>⚖️ Evolução Corporal</h3><canvas id="bodyStatsChart"></canvas></div>
+            <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
+        </div>
+
+        <!-- ABA: FORÇA & RPG -->
+        <div id="evo-forca" class="evo-panel" style="display: none;">
+            <div class="goal-container text-center">
+                <h3>🏋️ Powerlifting Total (SBD)</h3>
+                <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
+                <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg</div>
+                <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso corporal</div>
+            </div>
+            
+            <div class="goal-container" style="margin-top: 20px;">
+                <h3 class="text-center" style="margin-bottom: 15px;">🎮 Níveis Musculares (RPG)</h3>
+                <div id="rpg-stats-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <select id="exercise-select" class="chart-select"></select>
+                <canvas id="progressChart"></canvas>
+            </div>
+            
+            <div id="pr-display" class="goal-container" style="margin-top: 20px;">
+                <h3>🏆 Recordes Pessoais (PR)</h3>
+                <div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;">
+                    <div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div>
+                    <div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div>
+                    <div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="goal-container text-center" style="margin-top: 20px;"><h3>🕸️ Simetria Muscular</h3><canvas id="radarChart"></canvas></div>
-        <div class="goal-container text-center" style="margin-top: 20px;"><h3>🏗️ Carga Total Movida (Mês)</h3><canvas id="tonnageChart"></canvas></div>
-        <div class="goal-container text-center" style="margin-top: 20px;"><h3>⚖️ Evolução Corporal</h3><canvas id="bodyStatsChart"></canvas></div>
-        <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
-        <div class="goal-container" style="margin-top: 20px;"><h3 class="text-center">🎮 Níveis Musculares</h3><div id="rpg-stats-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;"></div></div>
-        
-        <div class="goal-container text-center" style="margin-top: 20px;">
-            <h3>🏋️ Powerlifting Total (SBD)</h3>
-            <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
-            <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg</div>
-            <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso corporal</div>
+        <!-- ABA: VOLUME & STATS -->
+        <div id="evo-volume" class="evo-panel" style="display: none;">
+            <div class="goal-container text-center"><h3>🕸️ Simetria Muscular</h3><canvas id="radarChart"></canvas></div>
+            <div class="goal-container text-center" style="margin-top: 20px;"><h3>🏗️ Carga Total Movida (Mês)</h3><canvas id="tonnageChart"></canvas></div>
+            <div id="global-stats" class="goal-container" style="margin-top: 20px;"><h3>📊 Estatísticas Globais</h3></div>
         </div>
-
-        <div style="margin-top: 20px;"><select id="exercise-select" class="chart-select"></select><canvas id="progressChart"></canvas><p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p></div>
-        <div id="pr-display" class="goal-container" style="margin-top: 20px;"><h3>🏆 PRs</h3><div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;"><div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div><div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div><div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div></div></div>
-        <div id="global-stats" class="goal-container"><h3>📊 Estatísticas Globais</h3></div>
     </div>
 
     <!-- ABA 4: CALENDÁRIO & HISTÓRICO -->
