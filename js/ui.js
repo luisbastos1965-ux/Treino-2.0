@@ -426,9 +426,11 @@ function closeManualHistoryModal() {
 function deleteDayHistory(dateString) { if(confirm("APAGAR dados deste dia?")) { history = history.filter(h => h.date !== dateString); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); closeHistoryModal(); renderCalendar(); updateGlobalStats(); updateHeatmap(); renderDisciplineWall(); showPulseToast("🗑️ Registo apagado."); } }
 function closeHistoryModal() { document.getElementById('history-details-modal').style.display='none'; }
 
-// --- PERFIL, SBD TOTAL E MISSÕES ---
+// --- PERFIL, SBD TOTAL, HALL OF FAME E MISSÕES ---
 function renderSBD() {
     let bestSquat=0, bestBench=0, bestDead=0;
+    let maxLifts = {}; // Objeto para o Hall of Fame
+
     history.forEach(log => {
         if(log.exercises) {
             Object.entries(log.exercises).forEach(([ex, sets]) => {
@@ -436,6 +438,9 @@ function renderSBD() {
                 if(n.includes('supino plano') || n.includes('bench press')) { if(max > bestBench) bestBench = max; }
                 if(n.includes('agachamento livre') || n.includes('squat')) { if(max > bestSquat) bestSquat = max; }
                 if(n.includes('peso morto') || n.includes('deadlift') || n.includes('rdl')) { if(max > bestDead) bestDead = max; }
+                
+                // Grava o máximo de cada exercício para o Hall of Fame
+                if (!maxLifts[ex] || max > maxLifts[ex]) maxLifts[ex] = max;
             });
         }
     });
@@ -446,6 +451,34 @@ function renderSBD() {
         elSbd.innerText = sbdTotal + ' kg';
         let ratio = userProfile.weight > 0 ? (sbdTotal / userProfile.weight).toFixed(1) : 0;
         elRatio.innerText = `${ratio}x o teu peso corporal`;
+    }
+
+    // Renderizar Hall of Fame
+    const hofContainer = document.getElementById('hall-of-fame-list');
+    if (hofContainer) {
+        let sortedLifts = Object.entries(maxLifts)
+            .map(([name, weight]) => ({ name, weight }))
+            .filter(lift => lift.weight > 0) // Ignora exercícios só com peso corporal
+            .sort((a, b) => b.weight - a.weight)
+            .slice(0, 3); // Fica apenas com os 3 maiores
+
+        if (sortedLifts.length === 0) {
+            hofContainer.innerHTML = '<p style="font-size:12px; color:var(--muted);">Ainda não tens recordes registados.</p>';
+        } else {
+            const medals = ['🥇', '🥈', '🥉'];
+            const colors = ['#facc15', '#94a3b8', '#b45309']; // Ouro, Prata, Bronze
+            let html = '';
+            sortedLifts.forEach((lift, index) => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px 15px; border-radius: 12px; border-left: 3px solid ${colors[index]};">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">${medals[index]}</span>
+                        <span style="color: white; font-size: 14px; font-weight: bold;">${lift.name}</span>
+                    </div>
+                    <div style="color: ${colors[index]}; font-weight: 900; font-size: 16px;">${lift.weight} kg</div>
+                </div>`;
+            });
+            hofContainer.innerHTML = html;
+        }
     }
 }
 
