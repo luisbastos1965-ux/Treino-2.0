@@ -481,7 +481,46 @@ function renderDieta() {
     }
 }
 
-function addWater(ml) { waterIntake.ml += ml; localStorage.setItem('gym_water', JSON.stringify(waterIntake)); renderDieta(); }
+function addWater(ml) { 
+    waterIntake.ml += ml; 
+    localStorage.setItem('gym_water', JSON.stringify(waterIntake)); 
+    renderDieta(); 
+}
+
+function openWaterModal(type) {
+    if (type === 'garrafas') {
+        document.getElementById('water-garrafas-modal').style.display = 'flex';
+    } else {
+        document.getElementById('glass-count').innerText = '1'; // Reseta o contador
+        document.getElementById('water-copos-modal').style.display = 'flex';
+    }
+}
+
+function closeWaterModal(type) {
+    if (type === 'garrafas') document.getElementById('water-garrafas-modal').style.display = 'none';
+    else document.getElementById('water-copos-modal').style.display = 'none';
+}
+
+function addWaterGarrafa(ml) {
+    addWater(ml);
+    closeWaterModal('garrafas');
+    showPulseToast(`💧 +${ml}ml registados!`);
+}
+
+function adjustGlasses(direction) {
+    let el = document.getElementById('glass-count');
+    let val = parseInt(el.innerText) + direction;
+    if (val < 1) val = 1;
+    el.innerText = val;
+}
+
+function confirmGlasses() {
+    let count = parseInt(document.getElementById('glass-count').innerText);
+    let ml = count * 250; // Cada copo = 250ml
+    addWater(ml);
+    closeWaterModal('copos');
+    showPulseToast(`💧 ${count} Copo(s) registado(s)! (+${ml}ml)`);
+}
 
 function quickAddFood(name, cals, pro, car = 0, fat = 0) { 
     dailyIntake.foods.push({ name, cals, pro, car, fat }); 
@@ -533,8 +572,8 @@ function toggleFasting() { fastingState.active = !fastingState.active; if (fasti
 function startFastingTimer() {
     if(fastingInterval) clearInterval(fastingInterval);
     const ring = document.getElementById('fasting-ring'); const text = document.getElementById('fasting-time'); const btn = document.getElementById('fasting-btn');
-    if(!fastingState.active) { ring.classList.remove('active'); text.innerText = "00:00:00"; btn.innerText = "▶ Iniciar Jejum"; btn.style.background = "var(--success)"; return; }
-    ring.classList.add('active'); btn.innerText = "⏹ Quebrar Jejum"; btn.style.background = "var(--danger)";
+    if(!fastingState.active) { ring.classList.remove('active'); text.innerText = "00:00:00"; btn.innerText = "Iniciar"; btn.style.background = "var(--success)"; return; }
+    ring.classList.add('active'); btn.innerText = "Terminar"; btn.style.background = "var(--danger)";
     fastingInterval = setInterval(() => {
         let diff = new Date().getTime() - fastingState.start; let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); let mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); let secs = Math.floor((diff % (1000 * 60)) / 1000);
         text.innerText = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
