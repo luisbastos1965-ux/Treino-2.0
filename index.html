@@ -273,50 +273,99 @@
         </div>
     </div>
 
-    <!-- ABA 6: DIETA -->
+<!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
+        
+        <!-- 1. DASHBOARD NUTRICIONAL VIVO -->
         <div class="goal-container">
-            <h3 class="text-center">🍽️ Macros Diários</h3>
-            <div style="display: flex; justify-content: space-between; margin-top: 20px; text-align: center;"><div class="macro-box"><div style="color: var(--accent); font-weight: bold; font-size: 22px;" id="macro-pro"></div><div style="font-size: 11px; color: var(--muted);">Proteína</div></div><div class="macro-box"><div style="color: var(--success); font-weight: bold; font-size: 22px;" id="macro-car"></div><div style="font-size: 11px; color: var(--muted);">Hidratos</div></div><div class="macro-box"><div style="color: #f59e0b; font-weight: bold; font-size: 22px;" id="macro-fat"></div><div style="font-size: 11px; color: var(--muted);">Gorduras</div></div></div>
+            <h3 class="text-center">📊 Dashboard Nutricional</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                <!-- Calorias -->
+                <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent);">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🔥 Calorias</div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-cals-done" style="color: white;">0</span> <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-cals-target">0</span></span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-cals-bar" style="height:100%; width:0%; background:var(--accent); border-radius:3px; transition: 0.4s;"></div></div>
+                </div>
+                <!-- Proteína -->
+                <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--success);">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🥩 Proteína</div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-pro-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-pro-target">0</span>g</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-pro-bar" style="height:100%; width:0%; background:var(--success); border-radius:3px; transition: 0.4s;"></div></div>
+                </div>
+                <!-- Hidratos -->
+                <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid #3b82f6;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🍚 Hidratos</div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-car-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-car-target">0</span>g</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-car-bar" style="height:100%; width:0%; background:#3b82f6; border-radius:3px; transition: 0.4s;"></div></div>
+                </div>
+                <!-- Gorduras -->
+                <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🥑 Gorduras</div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-fat-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-fat-target">0</span>g</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-fat-bar" style="height:100%; width:0%; background:#f59e0b; border-radius:3px; transition: 0.4s;"></div></div>
+                </div>
+            </div>
         </div>
 
-        <div class="goal-container text-center" style="margin-top: 20px;">
-            <h3>⏳ Jejum Intermitente</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-bottom:15px;">Janela de queima de gordura.</p>
-            <div id="fasting-ring" class="fasting-ring"><span id="fasting-time">00:00:00</span></div>
-            <button id="fasting-btn" onclick="toggleFasting()" style="width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; background:var(--success); color:white; cursor:pointer;">▶ Iniciar Jejum</button>
+        <!-- 2. JEJUM & HIDRATAÇÃO -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div class="goal-container text-center" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <h3>⏳ Jejum</h3>
+                <div id="fasting-ring" class="fasting-ring" style="margin: 15px auto;"><span id="fasting-time">00:00:00</span></div>
+                <button id="fasting-btn" onclick="toggleFasting()" style="width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; background:var(--success); color:white; cursor:pointer;">▶ Iniciar</button>
+            </div>
+            
+            <div class="goal-container text-center" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <h3>💧 Água</h3>
+                <div style="font-size: 18px; font-weight: bold; color: var(--accent); margin: 15px 0;" id="water-text">0 / 3000 ml</div>
+                <div class="progress-bar" style="height:8px; margin-bottom:15px;"><div id="water-fill" style="height:100%; width:0%; background:var(--accent); transition:0.3s;"></div></div>
+                <div style="display:flex; flex-direction: column; gap:5px;">
+                    <button class="water-btn" style="padding: 8px;" onclick="addWater(250)">+ 250ml</button>
+                    <button class="water-btn" style="padding: 8px;" onclick="addWater(500)">+ 500ml</button>
+                </div>
+            </div>
         </div>
 
-        <div class="goal-container text-center" style="margin-top: 20px;">
-            <h3>💧 Hidratação</h3>
-            <div style="font-size: 24px; font-weight: bold; color: var(--accent); margin: 10px 0;" id="water-text">0 / 3000 ml</div>
-            <div class="progress-bar" style="height:12px; margin-bottom:15px;"><div id="water-fill" style="height:100%; width:0%; background:var(--accent); transition:0.3s;"></div></div>
-            <div style="display:flex; gap:10px;"><button class="water-btn" onclick="addWater(250)">+ 250ml</button><button class="water-btn" onclick="addWater(500)">+ 500ml</button></div>
-        </div>
-
+        <!-- 3. LISTA DE COMPRAS (MEAL PREP) -->
         <div class="goal-container" style="margin-top: 20px;">
-            <h3 class="text-center">🛒 Lista de Compras</h3>
-            <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px; text-align:center;">Meal Prep Titã.</p>
-            <div style="display:flex; gap:5px; margin-bottom:15px;">
-                <input type="text" id="grocery-input" placeholder="Ex: Peito de Frango, Ovos..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
+            <h3 class="text-center">🛒 Meal Prep (Lista)</h3>
+            <div style="display:flex; gap:5px; margin-top: 15px; margin-bottom:15px;">
+                <input type="text" id="grocery-input" placeholder="Ex: Peito de Frango..." style="flex:1; padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
                 <button onclick="addGrocery()" style="background:var(--success); color:white; padding:0 15px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button>
             </div>
             <div id="grocery-list"></div>
         </div>
 
+        <!-- 4. REGISTO ALIMENTAR (AGORA COM CARBS E FAT) -->
         <div class="goal-container" style="margin-top: 20px;">
-            <h3>📝 Registo Alimentar Diário</h3>
-            <div id="daily-progress-bars" style="margin-top:15px; margin-bottom:15px;"></div>
-            <div style="background:#0f172a; padding:15px; border-radius:12px; margin-bottom:15px;">
-                <input type="text" id="food-name" placeholder="Nome (Ex: Frango)" style="width:100%; margin-bottom:8px; padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;"><input type="number" id="food-cals" placeholder="Kcal" style="padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;"><input type="number" id="food-pro" placeholder="Pro(g)" style="padding:10px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:white;"><button onclick="addDailyFood()" style="background:var(--success); color:white; padding:10px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button></div>
-                <div id="frequent-foods" class="freq-foods-container"></div>
+            <h3>📝 Registo Alimentar</h3>
+            <div style="background:#0f172a; padding:15px; border-radius:12px; margin-top:15px; margin-bottom:15px; border: 1px dashed #334155;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+                    <input type="text" id="food-name" placeholder="Refeição..." style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="number" id="food-cals" placeholder="🔥 Kcal" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:8px;">
+                    <input type="number" id="food-pro" placeholder="🥩 Pro" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="number" id="food-car" placeholder="🍚 Car" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="number" id="food-fat" placeholder="🥑 Gor" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <button onclick="addDailyFood()" style="background:var(--success); color:white; padding:0 15px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button>
+                </div>
+                <div id="frequent-foods" class="freq-foods-container" style="margin-top: 12px;"></div>
             </div>
             <div id="daily-food-list" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <button class="recipe-btn" onclick="openRecipesModal()">📖 Abrir Livro de Receitas Titã</button>
-        <button class="punishment-btn" onclick="openPunishmentModal()" style="margin-top:20px;">⚠️ Infrinji a Dieta (Taxa do Pecado)</button>
+        <!-- 5. CARTÕES DE ATALHO EXTRAS -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div onclick="openRecipesModal()" style="background: #1e293b; border: 1px solid var(--accent); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 5px;">📖</div>
+                <div style="color: white; font-size: 13px; font-weight: bold;">Livro Titã</div>
+            </div>
+            <div onclick="openPunishmentModal()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 5px;">⚠️</div>
+                <div style="color: var(--danger); font-size: 13px; font-weight: bold;">O Pecado</div>
+            </div>
+        </div>
     </div>
 
     <!-- MODAIS GLOBAIS -->
