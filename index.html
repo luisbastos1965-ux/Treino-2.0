@@ -410,23 +410,68 @@
 
     <div id="workout-info-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10007;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid var(--accent);"><button onclick="closeWorkoutInfo()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 id="info-modal-title" style="color: white; margin-bottom: 20px;">Título</h3><div id="info-modal-content" style="color: var(--muted); font-size: 14px; line-height: 1.6; max-height: 50vh; overflow-y: auto;"></div><button class="btn-primary" style="width: 100%; margin-top: 25px; padding: 12px; background: #334155; color: white;" onclick="closeWorkoutInfo()">Voltar</button></div></div>
     
-    <div id="recipes-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10005;"><div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative;"><button onclick="closeRecipesModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h2 style="color: white; margin-bottom: 20px;">🥘 Receitas para Hipertrofia</h2><div id="recipes-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div></div></div>
+    <!-- MODAL RECEITAS PARA HIPERTROFIA (Com scroll isolado) -->
+    <div id="recipes-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative; overscroll-behavior: contain;">
+            <button onclick="closeRecipesModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h2 style="color: white; margin-bottom: 15px;">🥘 Receitas de Hipertrofia</h2>
+            <div id="recipes-list" style="overflow-y: auto; padding-right: 5px; flex: 1; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;"></div>
+        </div>
+    </div>
     
-    <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); justify-content: center; align-items: center; padding: 20px; z-index: 10005;"><div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4);"><button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 style="color: #ef4444; margin-bottom: 5px; font-size:24px;">⛔ A Taxa do Pecado</h3><select id="sin-preset" onchange="fillSinPreset()" style="width:100%; margin-top:15px; margin-bottom:15px; padding:12px; border-radius:8px; border:none; background:#0f172a; color:white; font-size:14px;">
-        <option value="">Seleciona o Pecado...</option>
-        <option value="600" data-p="25" data-c="50">🍕 Fatias de Pizza (2)</option>
-        <option value="800" data-p="35" data-c="60">🍔 Hamburger c/ Queijo</option>
-        <option value="350" data-p="4" data-c="40">🍟 Batatas Fritas (Dose)</option>
-        <option value="1200" data-p="60" data-c="100">🥪 Francesinha (1 Inteira)</option>
-        <option value="400" data-p="5" data-c="60">🍩 Donut Recheado</option>
-        <option value="500" data-p="10" data-c="70">🍦 Gelado Grande</option>
-        <option value="450" data-p="5" data-c="55">🍰 Fatia de Bolo</option>
-        <option value="400" data-p="12" data-c="35">🥐 Croissant Misto</option>
-        <option value="270" data-p="3" data-c="30">🍫 Chocolate (Barra 50g)</option>
-        <option value="120" data-p="1" data-c="10">🍺 Cerveja / Fino (25cl)</option>
-        <option value="140" data-p="0" data-c="35">🥤 Refrigerante Cola (33cl)</option>
-        <option value="250" data-p="0" data-c="30">🍹 Bebida Branca c/ Sumo (Copo)</option>
-    </select><div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:10px;"><div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()" style="width:100%;"></div><div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()" style="width:100%;"></div></div><div class="input-group" style="justify-content:center; margin-bottom:20px; margin-top:15px;"><input type="number" id="sin-cals" placeholder="Kcal Totais" style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a;"></div><button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button></div></div>
+    <!-- MODAL TAXA DO PECADO (Com seletor de Quantidade / Porção) -->
+    <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
+        <div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4); overscroll-behavior: contain;">
+            <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: #ef4444; margin-bottom: 5px; font-size:24px;">⛔ A Taxa do Pecado</h3>
+            
+            <select id="sin-preset" onchange="fillSinPreset()" style="width:100%; margin-top:15px; margin-bottom:12px; padding:12px; border-radius:8px; border:none; background:#0f172a; color:white; font-size:14px;">
+                <option value="">Seleciona o Pecado...</option>
+                <option value="600" data-p="25" data-c="50">🍕 Fatias de Pizza (2 fatias)</option>
+                <option value="800" data-p="35" data-c="60">🍔 Hamburger c/ Queijo</option>
+                <option value="350" data-p="4" data-c="40">🍟 Batatas Fritas (Dose)</option>
+                <option value="1200" data-p="60" data-c="100">🥪 Francesinha (1 Inteira)</option>
+                <option value="400" data-p="5" data-c="60">🍩 Donut Recheado</option>
+                <option value="500" data-p="10" data-c="70">🍦 Gelado Grande</option>
+                <option value="450" data-p="5" data-c="55">🍰 Fatia de Bolo</option>
+                <option value="400" data-p="12" data-c="35">🥐 Croissant Misto</option>
+                <option value="270" data-p="3" data-c="30">🍫 Chocolate (Barra 50g)</option>
+                <option value="120" data-p="1" data-c="10">🍺 Cerveja / Fino (25cl)</option>
+                <option value="140" data-p="0" data-c="35">🥤 Refrigerante Cola (33cl)</option>
+                <option value="250" data-p="0" data-c="30">🍹 Bebida Branca c/ Sumo (Copo)</option>
+            </select>
+
+            <!-- Seletor de Quantidade/Porção -->
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; background:#0f172a; padding:8px 12px; border-radius:8px;">
+                <span style="font-size:12px; color:var(--muted); font-weight:bold;">Quantidade:</span>
+                <button onclick="adjustSinQty(-0.5)" style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">-</button>
+                <input type="number" id="sin-qty" value="1" step="0.5" min="0.5" max="10" oninput="updateSinValuesFromQty()" style="width:45px; text-align:center; background:transparent; border:none; color:var(--accent); font-weight:bold; font-size:16px;">
+                <button onclick="adjustSinQty(0.5)" style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">+</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:10px;">
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()" style="width:100%;"></div>
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()" style="width:100%;"></div>
+            </div>
+            
+            <div class="input-group" style="justify-content:center; margin-bottom:20px; margin-top:10px;">
+                <input type="number" id="sin-cals" placeholder="Kcal Totais" style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a; text-align:center;">
+            </div>
+            <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR CONFISSÃO (Personalizado) -->
+    <div id="confess-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+            <h3 style="color: var(--danger); margin-bottom: 10px;">🩸 Confessar Pecado?</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Tens a certeza que queres limpar a penitência sem suar o Finisher no próximo treino?</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmConfess()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Limpar</button>
+                <button class="beast-action-btn" onclick="closeConfessModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Voltar ao Aço</button>
+            </div>
+        </div>
+    </div>
     
     <div id="plate-math-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10002;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;"><button onclick="closePlateMath()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 style="color: white;">Calculadora de Discos</h3><p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span id="plate-target-weight"></span> KG</p><div style="display: flex; align-items: center; justify-content: center; height: 120px; margin-bottom: 20px;"><div style="width: 20px; height: 15px; background: #94a3b8; border-radius: 2px;"></div><div id="visual-plates" style="display: flex; align-items: center; gap: 2px;"></div><div style="width: 60px; height: 15px; background: #64748b; margin-left: 2px; position: relative;"><div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #cbd5e1;">BARRA</div></div></div><div id="plate-math-result" style="background: #0f172a; padding: 15px; border-radius: 12px; text-align: left; max-height: 180px; overflow-y: auto;"></div></div></div>
     
