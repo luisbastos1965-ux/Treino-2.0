@@ -41,6 +41,14 @@ function navigateTo(id) {
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
 
+// SISTEMA DE TABS DO PROGRESSO
+function switchEvoTab(event, tabId) {
+    document.querySelectorAll('#view-evolucao .tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.querySelectorAll('#view-evolucao .evo-panel').forEach(panel => panel.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+}
+
 // SISTEMA DE TOASTS (Notificações Modernas)
 function showPulseToast(message, isError = false) {
     let toast = document.getElementById('pulse-toast');
@@ -255,16 +263,58 @@ function saveCurrentRoutine() { if (builderState.routine.length === 0) return; c
 
 // --- MAPA DE CALOR E GRÁFICOS AVANÇADOS ---
 function updateHeatmap() {
-    const now = new Date(); const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(now.getDate() - 7); let volume = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
-    history.forEach(log => { const parts = log.date.split('/'); if(parts.length === 3) { const logDate = new Date(parts[2], parts[1]-1, parts[0]); if (logDate >= sevenDaysAgo && logDate <= now && log.exercises) Object.entries(log.exercises).forEach(([exName, sets]) => { let muscle = getMuscleForExercise(exName); if (volume[muscle] !== undefined) volume[muscle] += sets.length; }); } });
+    const now = new Date(); const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(now.getDate() - 7); 
+    let volume = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
+    
+    history.forEach(log => { 
+        const parts = log.date.split('/'); 
+        if(parts.length === 3) { 
+            const logDate = new Date(parts[2], parts[1]-1, parts[0]); 
+            if (logDate >= sevenDaysAgo && logDate <= now && log.exercises) {
+                Object.entries(log.exercises).forEach(([exName, sets]) => { 
+                    let muscle = getMuscleForExercise(exName); 
+                    if (volume[muscle] !== undefined) volume[muscle] += sets.length; 
+                }); 
+            }
+        } 
+    });
+    
     const getColor = (sets) => { if (sets === 0) return '#334155'; if (sets <= 6) return '#eab308'; if (sets <= 12) return '#f97316'; return '#ef4444'; };
-    const c = { peito: getColor(volume['Peito']), costas: getColor(volume['Costas']), pernas: getColor(volume['Pernas']), ombros: getColor(volume['Ombros']), bracos: getColor(volume['Braços']), core: getColor(volume['Core']) };
-    const els = { peito: document.getElementById('hm-peito'), ombrosL: document.getElementById('hm-ombros-l'), ombrosR: document.getElementById('hm-ombros-r'), bicepsL: document.getElementById('hm-biceps-l'), bicepsR: document.getElementById('hm-biceps-r'), quadsL: document.getElementById('hm-quads-l'), quadsR: document.getElementById('hm-quads-r'), core: document.getElementById('hm-core'), costas: document.getElementById('hm-costas'), tricepsL: document.getElementById('hm-triceps-l'), tricepsR: document.getElementById('hm-triceps-r'), femL: document.getElementById('hm-femorais-l'), femR: document.getElementById('hm-femorais-r'), gemL: document.getElementById('hm-gemeos-l'), gemR: document.getElementById('hm-gemeos-r') };
-    if(els.peito) {
-        els.peito.setAttribute('fill', c.peito); els.ombrosL.setAttribute('fill', c.ombros); els.ombrosR.setAttribute('fill', c.ombros); els.bicepsL.setAttribute('fill', c.bracos); els.bicepsR.setAttribute('fill', c.bracos); els.quadsL.setAttribute('fill', c.pernas); els.quadsR.setAttribute('fill', c.pernas); els.core.setAttribute('fill', c.core); els.costas.setAttribute('fill', c.costas); els.tricepsL.setAttribute('fill', c.bracos); els.tricepsR.setAttribute('fill', c.bracos); els.femL.setAttribute('fill', c.pernas); els.femR.setAttribute('fill', c.pernas); els.gemL.setAttribute('fill', c.pernas); els.gemR.setAttribute('fill', c.pernas); 
-        els.ombrosL.classList.toggle('muscle-pain-active', painTracker.includes('Ombros')); els.ombrosR.classList.toggle('muscle-pain-active', painTracker.includes('Ombros')); els.costas.classList.toggle('muscle-pain-active', painTracker.includes('Lombar')); els.quadsL.classList.toggle('muscle-pain-active', painTracker.includes('Joelhos')); els.quadsR.classList.toggle('muscle-pain-active', painTracker.includes('Joelhos')); els.bicepsL.classList.toggle('muscle-pain-active', painTracker.includes('Cotovelos')); els.bicepsR.classList.toggle('muscle-pain-active', painTracker.includes('Cotovelos'));
-    }
+    const getLabel = (sets) => { if (sets === 0) return 'Recuperado'; if (sets <= 6) return 'Ativado'; if (sets <= 12) return 'Fadigado'; return 'Destruído'; };
+
+    const muscles = [
+        { name: 'Peito', id: 'peito', pain: [] },
+        { name: 'Costas', id: 'costas', pain: ['Lombar'] },
+        { name: 'Pernas', id: 'pernas', pain: ['Joelhos'] },
+        { name: 'Ombros', id: 'ombros', pain: ['Ombros'] },
+        { name: 'Braços', id: 'bracos', pain: ['Cotovelos'] },
+        { name: 'Core', id: 'core', pain: [] }
+    ];
+
+    muscles.forEach(m => {
+        let el = document.getElementById(`hm-${m.id}`);
+        if(el) {
+            let color = getColor(volume[m.name]);
+            let label = getLabel(volume[m.name]);
+            let isPain = m.pain.some(p => painTracker.includes(p));
+
+            let painHtml = isPain ? `<span style="font-size:10px; background:var(--danger); padding:2px 5px; border-radius:4px; color:white;">⚠️ DOR</span>` : '';
+            
+            el.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:bold; color:white; font-size:14px;">${m.name}</span>
+                    ${painHtml}
+                </div>
+                <div style="font-size:11px; color:${color}; margin-top:8px; font-weight:bold;">${label} (${volume[m.name]} S)</div>
+                <div class="progress-bar" style="height:6px; margin-top:8px; background:rgba(255,255,255,0.05); border-radius:3px;">
+                    <div style="height:100%; width:${Math.min((volume[m.name]/15)*100, 100)}%; background:${color}; border-radius:3px; transition:0.4s;"></div>
+                </div>
+            `;
+            el.style.borderLeft = `4px solid ${isPain ? 'var(--danger)' : color}`;
+        }
+    });
 }
+
 function setupChartSelect() { const select = document.getElementById('exercise-select'); if (!select) return; select.innerHTML = '<option value="">Escolhe um exercício...</option>'; const uniqueExercises = new Set(); history.forEach(log => { if(log.exercises) Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); }); uniqueExercises.forEach(ex => { select.innerHTML += `<option value="${ex}">${ex}</option>`; }); }
 function renderAdvancedCharts() {
     let radarVol = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
