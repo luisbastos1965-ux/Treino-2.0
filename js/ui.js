@@ -155,6 +155,7 @@ function renderWorkout() {
         html += `<input type="text" id="notes-${currentDay}-${exIdx}" class="exercise-notes" placeholder="Notas e Setup (ex: Polia no 3)..."></div>`; container.innerHTML += html;
     });
 }
+
 function saveCurrentWorkout() {
     if(currentDay === 'MOBILITY') { showPulseToast('🧘‍♂️ Rotina concluída!'); return; }
     
@@ -587,7 +588,7 @@ function addDailyFood() {
     }
     
     dailyIntake.foods.push({ name, cals, pro, car }); 
-    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
     
     if(!frequentFoods.find(f => f.name === name)) { 
         frequentFoods.push({ name, cals, pro, car }); 
@@ -680,10 +681,68 @@ function openRecipesModal() {
 } 
 function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
 
-function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
-function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; } }
-function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
-function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 A Penitência foi cobrada!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
+// --- TAXA DO PECADO (Com Quantidade & Confissão sem Pop-up Básico) ---
+let baseSinCals = 0, baseSinPro = 0, baseSinCar = 0;
+
+function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } 
+function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
+
+function fillSinPreset() { 
+    let sel = document.getElementById('sin-preset'); 
+    let opt = sel.options[sel.selectedIndex]; 
+    if(opt.value) { 
+        baseSinCals = parseInt(opt.value) || 0;
+        baseSinPro = parseInt(opt.getAttribute('data-p')) || 0;
+        baseSinCar = parseInt(opt.getAttribute('data-c')) || 0;
+        document.getElementById('sin-qty').value = "1";
+        updateSinValuesFromQty();
+    } 
+}
+
+function adjustSinQty(delta) {
+    let input = document.getElementById('sin-qty');
+    let current = parseFloat(input.value) || 1;
+    let next = Math.max(0.5, current + delta);
+    input.value = next;
+    updateSinValuesFromQty();
+}
+
+function updateSinValuesFromQty() {
+    let qty = parseFloat(document.getElementById('sin-qty').value) || 1;
+    document.getElementById('sin-cals').value = Math.round(baseSinCals * qty);
+    document.getElementById('sin-pro').value = Math.round(baseSinPro * qty);
+    document.getElementById('sin-car').value = Math.round(baseSinCar * qty);
+}
+
+function calculateSinFromMacros() { 
+    let p = parseInt(document.getElementById('sin-pro').value) || 0; 
+    let c = parseInt(document.getElementById('sin-car').value) || 0; 
+    let cals = (p * 4) + (c * 4); 
+    if (cals > 0) { 
+        document.getElementById('sin-cals').value = cals; 
+        document.getElementById('sin-preset').value = ""; 
+    } 
+}
+
+function triggerPunishment() { 
+    const cals = parseInt(document.getElementById('sin-cals').value); 
+    if (!cals || cals < 100) { 
+        showPulseToast('Mínimo 100kcal!', true); 
+        return; 
+    } 
+    activePunishment = generatePunishmentLogic(cals); 
+    localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); 
+    closePunishmentModal(); 
+    renderPunishmentStatus(); 
+    showPulseToast('🔥 A Penitência foi cobrada!', true); 
+    
+    let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; 
+    if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; 
+    let qty = document.getElementById('sin-qty').value;
+    dailyIntake.foods.push({ name: `⚠️ ${presetName} (${qty}x)`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0, car: parseInt(document.getElementById('sin-car').value) || 0 }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
+    renderDieta(); 
+}
 
 function renderPunishmentStatus() { 
     const container = document.getElementById('punishment-status'); 
@@ -691,10 +750,25 @@ function renderPunishmentStatus() {
     if (!activePunishment) { 
         container.innerHTML = ``; // Fica invisível se não houver castigo
     } else { 
-        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} Kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:10px;">A fatura será cobrada. No final do teu <b>Próximo Treino</b>, tens de incluir obrigatoriamente como "Finisher":<br><br>${activePunishment.task}</div><p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, o castigo limpa automaticamente.</p><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="completePunishment()">🩸 Ou confessar e limpar agora (Fraqueza)</button></div>`; 
+        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} Kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:10px;">A fatura será cobrada. No teu <b>Próximo Treino</b>, tens de incluir obrigatoriamente:<br><br>${activePunishment.task}</div><p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, o castigo limpa automaticamente.</p><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="openConfessModal()">🩸 Ou confessar e limpar agora (Fraqueza)</button></div>`; 
     } 
 }
-function completePunishment() { if(confirm('Tens a certeza que não queres queimar este erro no treino?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado.'); } }
+
+function openConfessModal() {
+    document.getElementById('confess-modal').style.display = 'flex';
+}
+
+function closeConfessModal() {
+    document.getElementById('confess-modal').style.display = 'none';
+}
+
+function confirmConfess() {
+    activePunishment = null; 
+    localStorage.removeItem('gym_punishment'); 
+    closeConfessModal();
+    renderPunishmentStatus(); 
+    showPulseToast('⛓️ Estás perdoado.');
+}
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
 let currentBarWeight = 20; 
