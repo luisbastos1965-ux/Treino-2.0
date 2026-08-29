@@ -6,7 +6,7 @@ let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance;
 
 window.onload = () => { 
     checkSundayDebrief(); 
-    
+
     // CRASH RECOVERY BOOT
     if(activeSessionBackup) {
         setTimeout(() => {
@@ -86,7 +86,7 @@ function checkSundayDebrief() {
             document.getElementById('sunday-debrief-modal').style.display = 'flex';
             lastDebriefDate = todayStr;
             localStorage.setItem('gym_last_debrief', lastDebriefDate);
-            
+
             setTimeout(() => {
                 sendLocalPush("🛡️ Guardião de Dados", "É Domingo! Exporta o Backup na aba ID Cartão para não perderes o legado.");
                 showPulseToast("🛡️ Guardião de Dados: Faz o Backup no Perfil!");
@@ -418,31 +418,107 @@ function renderAchievements() {
 
 // --- NUTRIÇÃO E LISTA DE COMPRAS ---
 function renderDieta() {
-    const calsElement = document.getElementById('calc-cals'); if(!calsElement) return; let tdee = parseInt(calsElement.innerText) || 0; let weight = userProfile.weight; let goal = userProfile.goal; if (tdee === 0) return;
-    let proteinTarget = Math.round(weight * 2.2); let fatTarget = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0)); let carbsTarget = Math.max(0, Math.round((tdee - (proteinTarget * 4 + fatTarget * 9)) / 4));
-    document.getElementById('macro-pro').innerText = proteinTarget + 'g'; document.getElementById('macro-car').innerText = carbsTarget + 'g'; document.getElementById('macro-fat').innerText = fatTarget + 'g';
-    let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; document.getElementById('water-text').innerText = `${waterIntake.ml} / ${waterTarget} ml`; let waterPercent = Math.min((waterIntake.ml / waterTarget) * 100, 100); document.getElementById('water-fill').style.width = waterPercent + '%';
+    const calsElement = document.getElementById('calc-cals'); if(!calsElement) return; 
+    let tdee = parseInt(calsElement.innerText) || 0; 
+    let weight = userProfile.weight; let goal = userProfile.goal; if (tdee === 0) return;
     
-    const freqContainer = document.getElementById('frequent-foods'); if(freqContainer) { freqContainer.innerHTML = ''; frequentFoods.forEach(f => { freqContainer.innerHTML += `<span class="freq-food-chip" onclick="quickAddFood('${f.name}', ${f.cals}, ${f.pro})">✚ ${f.name}</span>`; }); }
+    // Calcula os Macros Alvo
+    let proteinTarget = Math.round(weight * 2.2); 
+    let fatTarget = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0)); 
+    let carbsTarget = Math.max(0, Math.round((tdee - (proteinTarget * 4 + fatTarget * 9)) / 4));
+    
+    // Mostra os Alvos no Dashboard
+    document.getElementById('dash-cals-target').innerText = tdee;
+    document.getElementById('dash-pro-target').innerText = proteinTarget;
+    document.getElementById('dash-car-target').innerText = carbsTarget;
+    document.getElementById('dash-fat-target').innerText = fatTarget;
 
-    const foodList = document.getElementById('daily-food-list'); const barsContainer = document.getElementById('daily-progress-bars');
-    if(foodList && barsContainer) {
-        foodList.innerHTML = ''; let totalCals = 0; let totalPro = 0;
-        dailyIntake.foods.forEach((food, index) => { totalCals += food.cals; totalPro += food.pro; foodList.innerHTML += `<div style="background:#1e293b; padding:10px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); margin-bottom:5px;"><div><div style="font-weight:bold; font-size:14px; color:white;">${food.name}</div><div style="font-size:12px; color:var(--success);">${food.cals} Kcal | ${food.pro}g Pro</div></div><button onclick="deleteDailyFood(${index})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:18px;">✖</button></div>`; });
+    // Hidratação
+    let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; 
+    document.getElementById('water-text').innerText = `${waterIntake.ml} / ${waterTarget} ml`; 
+    let waterPercent = Math.min((waterIntake.ml / waterTarget) * 100, 100); 
+    document.getElementById('water-fill').style.width = waterPercent + '%';
+    
+    // Conta e Renderiza a Comida Ingerida hoje
+    const foodList = document.getElementById('daily-food-list');
+    let totalCals = 0, totalPro = 0, totalCar = 0, totalFat = 0;
+    
+    if(foodList) {
+        foodList.innerHTML = '';
+        dailyIntake.foods.forEach((food, index) => { 
+            totalCals += food.cals || 0; 
+            totalPro += food.pro || 0; 
+            totalCar += food.car || 0;
+            totalFat += food.fat || 0;
+
+            foodList.innerHTML += `<div style="background:#1e293b; padding:12px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); margin-bottom:8px;"><div><div style="font-weight:bold; font-size:14px; color:white; margin-bottom:4px;">${food.name}</div><div style="font-size:11px; color:var(--muted);"><span style="color:var(--accent); font-weight:bold;">${food.cals} Kcal</span> | <span style="color:var(--success);">${food.pro}g Pro</span> | <span style="color:#3b82f6;">${food.car||0}g Car</span> | <span style="color:#f59e0b;">${food.fat||0}g Gor</span></div></div><button onclick="deleteDailyFood(${index})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:18px;">✖</button></div>`; 
+        });
         if (dailyIntake.foods.length === 0) foodList.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:12px;">Ainda não comeste nada hoje.</p>';
-        let calsPercent = Math.min((totalCals / tdee) * 100, 100); let proPercent = Math.min((totalPro / proteinTarget) * 100, 100); let calsColor = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
-        barsContainer.innerHTML = `<div style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;"><span>🔥 Calorias</span><span style="color:${calsColor}; font-weight:bold;">${totalCals} / ${tdee} Kcal</span></div><div class="progress-bar" style="height:8px; background:#1e293b;"><div style="height:100%; width:${calsPercent}%; background:${calsColor};"></div></div></div><div><div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;"><span>🥩 Proteína</span><span style="color:var(--success); font-weight:bold;">${totalPro} / ${proteinTarget} g</span></div><div class="progress-bar" style="height:8px; background:#1e293b;"><div style="height:100%; width:${proPercent}%; background:var(--success);"></div></div></div>`;
+    }
+
+    // Atualiza Progresso Visível no Dashboard
+    document.getElementById('dash-cals-done').innerText = totalCals;
+    document.getElementById('dash-pro-done').innerText = totalPro;
+    document.getElementById('dash-car-done').innerText = totalCar;
+    document.getElementById('dash-fat-done').innerText = totalFat;
+
+    document.getElementById('dash-cals-bar').style.width = Math.min((totalCals / tdee) * 100, 100) + '%';
+    document.getElementById('dash-pro-bar').style.width = Math.min((totalPro / proteinTarget) * 100, 100) + '%';
+    document.getElementById('dash-car-bar').style.width = Math.min((totalCar / carbsTarget) * 100, 100) + '%';
+    document.getElementById('dash-fat-bar').style.width = Math.min((totalFat / fatTarget) * 100, 100) + '%';
+    
+    // Fica a vermelho se passares das Kcal
+    document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white';
+    document.getElementById('dash-cals-bar').style.background = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
+
+    // Alimentos Frequentes (Atalhos rápidos)
+    const freqContainer = document.getElementById('frequent-foods'); 
+    if(freqContainer) { 
+        freqContainer.innerHTML = ''; 
+        frequentFoods.forEach(f => { 
+            freqContainer.innerHTML += `<span class="freq-food-chip" onclick="quickAddFood('${f.name}', ${f.cals}, ${f.pro}, ${f.car||0}, ${f.fat||0})">✚ ${f.name}</span>`; 
+        }); 
     }
 }
+
 function addWater(ml) { waterIntake.ml += ml; localStorage.setItem('gym_water', JSON.stringify(waterIntake)); renderDieta(); }
-function quickAddFood(name, cals, pro) { dailyIntake.foods.push({ name, cals, pro }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
-function addDailyFood() {
-    const name = document.getElementById('food-name').value; const cals = parseInt(document.getElementById('food-cals').value) || 0; const pro = parseInt(document.getElementById('food-pro').value) || 0;
-    if(!name || cals === 0) { showPulseToast('Insere o nome e as calorias!', true); return; }
-    dailyIntake.foods.push({ name, cals, pro }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
-    if(!frequentFoods.find(f => f.name === name)) { frequentFoods.push({ name, cals, pro }); if(frequentFoods.length > 5) frequentFoods.shift(); localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); }
-    document.getElementById('food-name').value = ''; document.getElementById('food-cals').value = ''; document.getElementById('food-pro').value = ''; renderDieta();
+
+function quickAddFood(name, cals, pro, car = 0, fat = 0) { 
+    dailyIntake.foods.push({ name, cals, pro, car, fat }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
+    renderDieta(); 
+    if (typeof showPulseToast === 'function') showPulseToast(`✅ ${name} registado!`);
 }
+
+function addDailyFood() {
+    const name = document.getElementById('food-name').value; 
+    const cals = parseInt(document.getElementById('food-cals').value) || 0; 
+    const pro = parseInt(document.getElementById('food-pro').value) || 0;
+    const car = parseInt(document.getElementById('food-car').value) || 0;
+    const fat = parseInt(document.getElementById('food-fat').value) || 0;
+
+    if(!name || cals === 0) { 
+        if (typeof showPulseToast === 'function') showPulseToast('Insere o Nome e Kcal!', true); 
+        return; 
+    }
+    
+    dailyIntake.foods.push({ name, cals, pro, car, fat }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
+    
+    if(!frequentFoods.find(f => f.name === name)) { 
+        frequentFoods.push({ name, cals, pro, car, fat }); 
+        if(frequentFoods.length > 6) frequentFoods.shift(); 
+        localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); 
+    }
+    
+    document.getElementById('food-name').value = ''; 
+    document.getElementById('food-cals').value = ''; 
+    document.getElementById('food-pro').value = ''; 
+    document.getElementById('food-car').value = ''; 
+    document.getElementById('food-fat').value = ''; 
+    renderDieta();
+}
+
 function deleteDailyFood(index) { dailyIntake.foods.splice(index, 1); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
 
 function renderGroceryList() {
