@@ -35,7 +35,7 @@ function navigateTo(id) {
     if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); renderSBD(); }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); renderMissionProfile(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
-    if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); startFastingTimer(); renderGroceryList(); }
+    if (id === 'view-dieta') { renderDieta(); renderPunishmentStatus(); startFastingTimer(); }
     if (id === 'view-construtor') { updateBuilderUI(); }
     if (id === 'view-treino') { renderWorkoutSlots(); backToWorkoutSlots(); }
 }
@@ -431,7 +431,6 @@ function renderDieta() {
     document.getElementById('dash-cals-target').innerText = tdee;
     document.getElementById('dash-pro-target').innerText = proteinTarget;
     document.getElementById('dash-car-target').innerText = carbsTarget;
-    document.getElementById('dash-fat-target').innerText = fatTarget;
 
     // Hidratação
     let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; 
@@ -441,7 +440,7 @@ function renderDieta() {
     
     // Conta e Renderiza a Comida Ingerida hoje
     const foodList = document.getElementById('daily-food-list');
-    let totalCals = 0, totalPro = 0, totalCar = 0, totalFat = 0;
+    let totalCals = 0, totalPro = 0, totalCar = 0;
     
     if(foodList) {
         foodList.innerHTML = '';
@@ -449,9 +448,8 @@ function renderDieta() {
             totalCals += food.cals || 0; 
             totalPro += food.pro || 0; 
             totalCar += food.car || 0;
-            totalFat += food.fat || 0;
 
-            foodList.innerHTML += `<div style="background:#1e293b; padding:12px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); margin-bottom:8px;"><div><div style="font-weight:bold; font-size:14px; color:white; margin-bottom:4px;">${food.name}</div><div style="font-size:11px; color:var(--muted);"><span style="color:var(--accent); font-weight:bold;">${food.cals} Kcal</span> | <span style="color:var(--success);">${food.pro}g Pro</span> | <span style="color:#3b82f6;">${food.car||0}g Car</span> | <span style="color:#f59e0b;">${food.fat||0}g Gor</span></div></div><button onclick="deleteDailyFood(${index})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:18px;">✖</button></div>`; 
+            foodList.innerHTML += `<div style="background:#1e293b; padding:12px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); margin-bottom:8px;"><div><div style="font-weight:bold; font-size:14px; color:white; margin-bottom:4px;">${food.name}</div><div style="font-size:11px; color:var(--muted);"><span style="color:var(--accent); font-weight:bold;">${food.cals} Kcal</span> | <span style="color:var(--success);">${food.pro}g Pro</span> | <span style="color:#3b82f6;">${food.car||0}g Car</span></div></div><button onclick="deleteDailyFood(${index})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:18px;">✖</button></div>`; 
         });
         if (dailyIntake.foods.length === 0) foodList.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:12px;">Ainda não comeste nada hoje.</p>';
     }
@@ -460,12 +458,10 @@ function renderDieta() {
     document.getElementById('dash-cals-done').innerText = totalCals;
     document.getElementById('dash-pro-done').innerText = totalPro;
     document.getElementById('dash-car-done').innerText = totalCar;
-    document.getElementById('dash-fat-done').innerText = totalFat;
 
     document.getElementById('dash-cals-bar').style.width = Math.min((totalCals / tdee) * 100, 100) + '%';
     document.getElementById('dash-pro-bar').style.width = Math.min((totalPro / proteinTarget) * 100, 100) + '%';
     document.getElementById('dash-car-bar').style.width = Math.min((totalCar / carbsTarget) * 100, 100) + '%';
-    document.getElementById('dash-fat-bar').style.width = Math.min((totalFat / fatTarget) * 100, 100) + '%';
     
     // Fica a vermelho se passares das Kcal
     document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white';
@@ -476,7 +472,7 @@ function renderDieta() {
     if(freqContainer) { 
         freqContainer.innerHTML = ''; 
         frequentFoods.forEach(f => { 
-            freqContainer.innerHTML += `<span class="freq-food-chip" onclick="quickAddFood('${f.name}', ${f.cals}, ${f.pro}, ${f.car||0}, ${f.fat||0})">✚ ${f.name}</span>`; 
+            freqContainer.innerHTML += `<span class="freq-food-chip" onclick="quickAddFood('${f.name}', ${f.cals}, ${f.pro}, ${f.car||0})">✚ ${f.name}</span>`; 
         }); 
     }
 }
@@ -522,8 +518,8 @@ function confirmGlasses() {
     showPulseToast(`💧 ${count} Copo(s) registado(s)! (+${ml}ml)`);
 }
 
-function quickAddFood(name, cals, pro, car = 0, fat = 0) { 
-    dailyIntake.foods.push({ name, cals, pro, car, fat }); 
+function quickAddFood(name, cals, pro, car = 0) { 
+    dailyIntake.foods.push({ name, cals, pro, car }); 
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
     renderDieta(); 
     if (typeof showPulseToast === 'function') showPulseToast(`✅ ${name} registado!`);
@@ -531,21 +527,25 @@ function quickAddFood(name, cals, pro, car = 0, fat = 0) {
 
 function addDailyFood() {
     const name = document.getElementById('food-name').value; 
-    const cals = parseInt(document.getElementById('food-cals').value) || 0; 
-    const pro = parseInt(document.getElementById('food-pro').value) || 0;
-    const car = parseInt(document.getElementById('food-car').value) || 0;
-    const fat = parseInt(document.getElementById('food-fat').value) || 0;
+    let cals = parseInt(document.getElementById('food-cals').value) || 0; 
+    let pro = parseInt(document.getElementById('food-pro').value) || 0;
+    let car = parseInt(document.getElementById('food-car').value) || 0;
+
+    // Auto-cálculo de Kcal caso o utilizador não saiba as calorias, mas preencha os macros
+    if (cals === 0 && (pro > 0 || car > 0)) {
+        cals = (pro * 4) + (car * 4);
+    }
 
     if(!name || cals === 0) { 
-        if (typeof showPulseToast === 'function') showPulseToast('Insere o Nome e Kcal!', true); 
+        if (typeof showPulseToast === 'function') showPulseToast('Insere o Nome e Kcal/Macros!', true); 
         return; 
     }
     
-    dailyIntake.foods.push({ name, cals, pro, car, fat }); 
+    dailyIntake.foods.push({ name, cals, pro, car }); 
     localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
     
     if(!frequentFoods.find(f => f.name === name)) { 
-        frequentFoods.push({ name, cals, pro, car, fat }); 
+        frequentFoods.push({ name, cals, pro, car }); 
         if(frequentFoods.length > 6) frequentFoods.shift(); 
         localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); 
     }
@@ -554,19 +554,10 @@ function addDailyFood() {
     document.getElementById('food-cals').value = ''; 
     document.getElementById('food-pro').value = ''; 
     document.getElementById('food-car').value = ''; 
-    document.getElementById('food-fat').value = ''; 
     renderDieta();
 }
 
 function deleteDailyFood(index) { dailyIntake.foods.splice(index, 1); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
-
-function renderGroceryList() {
-    const gl = document.getElementById('grocery-list'); if(!gl) return; gl.innerHTML = '';
-    groceryList.forEach((item, idx) => { gl.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; background:#1e293b; margin-bottom:5px; border-radius:8px;"><span style="color:white; font-size:14px;">🛒 ${item}</span><button onclick="removeGrocery(${idx})" style="background:none; border:none; color:var(--danger); cursor:pointer;">✖</button></div>`; });
-    if(groceryList.length === 0) gl.innerHTML = `<p style="color:var(--muted); font-size:12px; text-align:center;">Lista vazia. Adiciona alimentos para o Meal Prep.</p>`;
-}
-function addGrocery() { let input = document.getElementById('grocery-input'); if(input.value.trim() === '') return; groceryList.push(input.value.trim()); localStorage.setItem('gym_groceries', JSON.stringify(groceryList)); input.value = ''; renderGroceryList(); }
-function removeGrocery(idx) { groceryList.splice(idx, 1); localStorage.setItem('gym_groceries', JSON.stringify(groceryList)); renderGroceryList(); }
 
 function toggleFasting() { fastingState.active = !fastingState.active; if (fastingState.active) { fastingState.start = new Date().getTime(); } else { fastingState.start = null; clearInterval(fastingInterval); } localStorage.setItem('gym_fasting', JSON.stringify(fastingState)); startFastingTimer(); }
 function startFastingTimer() {
@@ -584,8 +575,8 @@ function calculateBodyFat() { const waist = parseFloat(document.getElementById('
 
 function openRecipesModal() { document.getElementById('recipes-modal').style.display = 'flex'; } function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
-function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; document.getElementById('sin-fat').value = opt.getAttribute('data-f') || 0; } }
-function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let f = parseInt(document.getElementById('sin-fat').value) || 0; let cals = (p * 4) + (c * 4) + (f * 9); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
+function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { document.getElementById('sin-cals').value = opt.value; document.getElementById('sin-pro').value = opt.getAttribute('data-p') || 0; document.getElementById('sin-car').value = opt.getAttribute('data-c') || 0; } }
+function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
 function triggerPunishment() { const cals = parseInt(document.getElementById('sin-cals').value); if (!cals || cals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } activePunishment = generatePunishmentLogic(cals); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 Tens uma penitência para pagar!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Fast Food...") presetName = "Pecado / Cheat Meal"; dailyIntake.foods.push({ name: `⚠️ ${presetName}`, cals: cals, pro: parseInt(document.getElementById('sin-pro').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
 function renderPunishmentStatus() { const container = document.getElementById('punishment-status'); if (!container) return; if (!activePunishment) { container.innerHTML = `<p style="color:var(--muted); font-size:13px;">Estás limpo. Mantém a dieta.</p>`; container.style.borderLeft = "4px solid var(--success)"; } else { container.innerHTML = `<div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (${activePunishment.cals} kcal extras)</div><div style="font-size:13px; color:white; line-height:1.6; margin-bottom:15px;">Para voltares a gravar treinos, tens de pagar:<br>• <b>${activePunishment.burpees}</b> Burpees<br>• <b>${activePunishment.squats}</b> Agachamentos c/ Salto<br>• <b>${activePunishment.pushups}</b> Flexões</div><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:var(--danger);" onclick="completePunishment()">🩸 PENITÊNCIA CUMPRIDA</button>`; container.style.borderLeft = "4px solid var(--danger)"; } }
 function completePunishment() { if(confirm('Tens a certeza que suaste isso tudo?')) { activePunishment = null; localStorage.removeItem('gym_punishment'); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado. Volta ao foco!'); } }
