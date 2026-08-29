@@ -332,14 +332,20 @@
                 <select id="db-food-select" onchange="fillCommonFood()" style="width:100%; padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; margin-bottom:15px;">
                     <option value="">Ingredientes Comuns...</option>
                     <option value="Ovo Cozido (1 uni)">Ovo Cozido (1 uni)</option>
-                    <option value="Peito de Frango (100g)">Peito de Frango (100g)</option>
-                    <option value="Arroz Branco cozido (100g)">Arroz Branco cozido (100g)</option>
-                    <option value="Massa cozida (100g)">Massa cozida (100g)</option>
+                    <option value="Peito de Frango Cru (100g)">Peito de Frango Cru (100g)</option>
+                    <option value="Peito de Frango Grelhado (100g)">Peito de Frango Grelhado (100g)</option>
+                    <option value="Bife de Vaca Magro (100g)">Bife de Vaca Magro (100g)</option>
+                    <option value="Salmão Grelhado (100g)">Salmão Grelhado (100g)</option>
+                    <option value="Arroz Branco (100g cozido)">Arroz Branco (100g cozido)</option>
+                    <option value="Massa (100g cozida)">Massa (100g cozida)</option>
+                    <option value="Batata Doce (100g cozida)">Batata Doce (100g cozida)</option>
                     <option value="Aveia (50g)">Aveia (50g)</option>
-                    <option value="Whey Protein (1 scoop)">Whey Protein (1 scoop)</option>
-                    <option value="Banana (1 uni)">Banana (1 uni)</option>
-                    <option value="Manteiga de Amendoim (1 colher)">Manteiga de Amendoim (1 colher)</option>
-                    <option value="Atum em água (1 lata)">Atum em água (1 lata)</option>
+                    <option value="Whey Protein (1 scoop 30g)">Whey Protein (1 scoop 30g)</option>
+                    <option value="Banana (1 média)">Banana (1 média)</option>
+                    <option value="Maçã (1 média)">Maçã (1 média)</option>
+                    <option value="Manteiga de Amendoim (1 c.sopa)">Manteiga de Amendoim (1 c.sopa)</option>
+                    <option value="Azeite (1 colher de sopa)">Azeite (1 colher de sopa)</option>
+                    <option value="Atum em água (1 lata seca)">Atum em água (1 lata seca)</option>
                     <option value="Pão Integral (1 fatia)">Pão Integral (1 fatia)</option>
                     <option value="Leite Meio Gordo (250ml)">Leite Meio Gordo (250ml)</option>
                 </select>
@@ -357,6 +363,9 @@
             </div>
             <div id="daily-food-list" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
+
+        <!-- CAIXA DE PENITÊNCIA (Mostra o castigo se houver) -->
+        <div id="punishment-status" style="margin-top: 20px;"></div>
 
         <!-- 4. CARTÕES DE ATALHO EXTRAS -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
