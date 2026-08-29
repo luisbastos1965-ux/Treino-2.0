@@ -226,11 +226,24 @@ function checkAchievements() {
 
 function generatePunishmentLogic(cals) { 
     if (cals < 100) return null; 
+
+    // Castigos realistas e focados (sem destruir a hipertrofia)
+    const punishments = [
+        "🏃‍♂️ 10 a 15 mins de Passadeira (Inclinação máxima, passo rápido)",
+        "🚴‍♂️ 10 a 15 mins de Bicicleta em HIIT (1 min a rasgar, 1 min suave)",
+        "💦 10 mins de Elítica no nível máximo de resistência",
+        "🧱 Finisher de Core: 3 Séries de Prancha (Max tempo) + 20 Abdominais",
+        "💪 +1 Série Extra (até à falha absoluta) no teu pior exercício de hoje",
+        "🥵 Tenta fazer +1 a +2 repetições em TODAS as séries do treino",
+        "🔥 +1 Exercício Isolador extra no final do treino (3 séries de 12 a 15 reps)"
+    ];
+
+    let randomTask = punishments[Math.floor(Math.random() * punishments.length)];
+
     return { 
         cals: cals, 
         date: new Date().toLocaleDateString('pt-PT'), 
-        cardio: Math.ceil(cals / 10), // Aprox. 10 kcal queimadas por min de HIIT
-        reps: Math.ceil(cals / 3)     // Aprox. 3 kcal por repetição de isolamento extra
+        task: randomTask
     }; 
 }
 
