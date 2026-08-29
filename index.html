@@ -670,6 +670,53 @@
         </div>
     </div>
 
+<!-- MODAL GRAVAR ROTINA -->
+    <div id="save-routine-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--accent); box-shadow: 0 10px 40px rgba(56,189,248,0.2);">
+            <h3 style="color: var(--accent); margin-bottom: 10px;">💾 Guardar Treino</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Dá um nome à tua nova rotina épica.</p>
+            <input type="text" id="routine-name-input" placeholder="Ex: Peito e Tríceps Fritados..." style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmSaveRoutine()" style="background: var(--accent); color: black; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Guardar</button>
+                <button class="beast-action-btn" onclick="document.getElementById('save-routine-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ELIMINAR ROTINA -->
+    <div id="delete-routine-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+            <h3 style="color: var(--danger); margin-bottom: 10px;">🗑️ Eliminar Treino?</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Esta ação é permanente. Tens a certeza, Titã?</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmDeleteRoutine()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Eliminar</button>
+                <button class="beast-action-btn" onclick="document.getElementById('delete-routine-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CRIAR EXERCÍCIO -->
+    <div id="custom-exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--success); box-shadow: 0 10px 40px rgba(34,197,94,0.2);">
+            <h3 style="color: var(--success); margin-bottom: 10px;">✚ Novo Exercício</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Adiciona uma nova variação à tua biblioteca.</p>
+            <input type="text" id="custom-ex-name" placeholder="Nome do exercício..." style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
+            <select id="custom-ex-muscle" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; font-weight:bold; text-align:center; outline:none;">
+                <option value="" disabled selected>Seleciona o Músculo</option>
+                <option value="Peito">Peito</option>
+                <option value="Costas">Costas</option>
+                <option value="Pernas">Pernas</option>
+                <option value="Ombros">Ombros</option>
+                <option value="Braços">Braços</option>
+                <option value="Core">Core</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmCustomExercise()" style="background: var(--success); color: white; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Adicionar</button>
+                <button class="beast-action-btn" onclick="document.getElementById('custom-exercise-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- CARREGAMENTO DOS SCRIPTS -->
     <script src="js/db.js"></script>
     <script src="js/logic.js"></script>
