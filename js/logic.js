@@ -227,19 +227,19 @@ function checkAchievements() {
 function generatePunishmentLogic(cals) { 
     if (cals < 100) return null; 
 
-    // CÁLCULO PROPORCIONAL COM LIMITES (Máx 15 mins, Máx 3 reps extra)
-    let cardioMins = Math.min(15, 5 + Math.floor(cals / 100)); 
-    let extraReps = Math.min(3, Math.ceil(cals / 300)); 
-    let coreSets = Math.min(5, 2 + Math.floor(cals / 250)); 
+    // CÁLCULO PROPORCIONAL COM LIMITES (Máx 20 mins, Máx 5 reps extra)
+    let cardioMins = Math.min(20, 5 + Math.floor(cals / 100)); 
+    let extraReps = Math.min(5, Math.ceil(cals / 250)); 
+    let coreSets = Math.min(6, 2 + Math.floor(cals / 200)); 
 
     const punishments = [
         `🏃‍♂️ ${cardioMins} mins de Passadeira (Passo acelerado e inclinação máxima contínua)`,
-        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (Alterna: 1 min em sprint máximo com 1 min suave, repetindo ao longo dos ${cardioMins} mins)`,
+        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (Alterna: 1 min em sprint máximo com 1 min suave)`,
         `💦 ${cardioMins} mins de Elítica (Cadência alta com resistência pesada)`,
         `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Tempo limite) + 20 Abdominais`,
         `💪 +1 Série Extra (até à falha muscular absoluta) no último exercício do treino`,
-        `🥵 +${extraReps} Repetições adicionais forçadas em TODAS as séries do treino de hoje`,
-        `🔥 +1 Exercício Isolador no final do treino (3 séries de 12 a 15 reps)`
+        `🥵 +${extraReps} Repetições adicionais forçadas no final de TODAS as séries`,
+        `🔥 Adicionar Dropset na última série de TODOS os exercícios do treino de hoje` // Castigo pesado para muitas kcal acumuladas
     ];
 
     let randomTask = punishments[Math.floor(Math.random() * punishments.length)];
