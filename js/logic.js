@@ -228,23 +228,18 @@ function generatePunishmentLogic(cals) {
     if (cals < 100) return null; 
 
     // CÁLCULO PROPORCIONAL COM LIMITES (Máx 15 mins, Máx 3 reps extra)
-    // 5 mins base + 1 min por cada 100 kcal (limitado a 15)
     let cardioMins = Math.min(15, 5 + Math.floor(cals / 100)); 
-    
-    // 1 rep extra a cada 300 kcal (limitado a 3 reps)
     let extraReps = Math.min(3, Math.ceil(cals / 300)); 
-    
-    // 2 séries de core base + 1 a cada 250 kcal (limitado a 5 séries)
     let coreSets = Math.min(5, 2 + Math.floor(cals / 250)); 
 
     const punishments = [
-        `🏃‍♂️ ${cardioMins} mins de Passadeira (Inclinação máxima, passo rápido)`,
-        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (1 min a rasgar, 1 min suave)`,
-        `💦 ${cardioMins} mins de Elítica no nível máximo de resistência`,
-        `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Max tempo) + 20 Abdominais`,
-        `💪 +1 Série Extra (até à falha absoluta) no teu pior exercício de hoje`,
-        `🥵 Tenta fazer +${extraReps} repetições em TODAS as séries do treino de hoje`,
-        `🔥 +1 Exercício Isolador extra no final do treino (3 séries de 12 a 15 reps)`
+        `🏃‍♂️ ${cardioMins} mins de Passadeira (Passo acelerado e inclinação máxima contínua)`,
+        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (Alterna: 1 min em sprint máximo com 1 min suave, repetindo ao longo dos ${cardioMins} mins)`,
+        `💦 ${cardioMins} mins de Elítica (Cadência alta com resistência pesada)`,
+        `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Tempo limite) + 20 Abdominais`,
+        `💪 +1 Série Extra (até à falha muscular absoluta) no último exercício do treino`,
+        `🥵 +${extraReps} Repetições adicionais forçadas em TODAS as séries do treino de hoje`,
+        `🔥 +1 Exercício Isolador no final do treino (3 séries de 12 a 15 reps)`
     ];
 
     let randomTask = punishments[Math.floor(Math.random() * punishments.length)];
