@@ -2,7 +2,7 @@
 // UI.JS: NAVEGAÇÃO E LÓGICA DE INTERFACE
 // ==========================================
 
-let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance, chartInstance;
+let radarInstance, bodyStatsInstance, tonnageInstance, measChartInstance;
 
 window.onload = () => { 
     checkSundayDebrief(); 
@@ -29,19 +29,10 @@ window.onload = () => {
     }
 };
 
-function goHome() { 
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); 
-    document.getElementById('view-home').classList.add('active'); 
-    document.getElementById('fab-home').classList.remove('visible'); 
-    window.scrollTo(0, 0); // Reset do scroll
-    checkSundayDebrief(); 
-}
+function goHome() { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-home').classList.add('active'); document.getElementById('fab-home').classList.remove('visible'); checkSundayDebrief(); }
 
 function navigateTo(id) {
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); 
-    document.getElementById(id).classList.add('active'); 
-    document.getElementById('fab-home').classList.add('visible');
-    window.scrollTo(0, 0); // Reset do scroll ao mudar de página
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('fab-home').classList.add('visible');
     if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); renderSBD(); }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); renderMissionProfile(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
@@ -325,11 +316,10 @@ function updateHeatmap() {
 }
 
 function setupChartSelect() { const select = document.getElementById('exercise-select'); if (!select) return; select.innerHTML = '<option value="">Escolhe um exercício...</option>'; const uniqueExercises = new Set(); history.forEach(log => { if(log.exercises) Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); }); uniqueExercises.forEach(ex => { select.innerHTML += `<option value="${ex}">${ex}</option>`; }); }
-
 function renderAdvancedCharts() {
     let radarVol = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
     history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([ex, sets]) => { let m = getMuscleForExercise(ex); sets.forEach(s => { if(s.type !== 'W') { if(radarVol[m] !== undefined) radarVol[m] += (s.weight||s.w||0) * (s.reps||s.r||0); else if(m==='Bíceps'||m==='Tríceps') radarVol['Braços'] += (s.weight||s.w||0) * (s.reps||s.r||0); }}); }); });
-    if (radarInstance) radarInstance.destroy(); radarInstance = new Chart(document.getElementById('radarChart').getContext('2d'), { type: 'radar', data: { labels: Object.keys(radarVol), datasets: [{ label: 'Volume (kg)', data: Object.values(radarVol), backgroundColor: 'rgba(56, 189, 248, 0.4)', borderColor: '#38bdf8', pointBackgroundColor: '#fff' }] }, options: { scales: { r: { min: 0, angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
+    if (radarInstance) radarInstance.destroy(); radarInstance = new Chart(document.getElementById('radarChart').getContext('2d'), { type: 'radar', data: { labels: Object.keys(radarVol), datasets: [{ label: 'Volume (kg)', data: Object.values(radarVol), backgroundColor: 'rgba(56, 189, 248, 0.4)', borderColor: '#38bdf8', pointBackgroundColor: '#fff' }] }, options: { scales: { r: { angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
 
     let tonHistory = {}; history.forEach(log => { let parts = log.date.split('/'); if(parts.length!==3) return; let monthYear = `${parts[1]}/${parts[2]}`; if(!tonHistory[monthYear]) tonHistory[monthYear] = 0; if(log.exercises) Object.values(log.exercises).forEach(sets => sets.forEach(s => { if(s.type !== 'W') tonHistory[monthYear] += (s.weight||s.w||0) * (s.reps||s.r||0); })); });
     let tonKeys = Object.keys(tonHistory).slice(-6); let tonData = tonKeys.map(k => tonHistory[k]);
@@ -337,23 +327,21 @@ function renderAdvancedCharts() {
 
     if (bodyStatsHistory.length > 0) {
         let dates = bodyStatsHistory.map(s => s.date.slice(0, 5)); let wData = bodyStatsHistory.map(s => s.weight); let rfmData = bodyStatsHistory.map(s => s.rfm);
-        if (bodyStatsInstance) bodyStatsInstance.destroy(); bodyStatsInstance = new Chart(document.getElementById('bodyStatsChart').getContext('2d'), { type: 'line', data: { labels: dates, datasets: [{ label: 'Peso (kg)', data: wData, borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 }, { label: 'RFM (%)', data: rfmData, borderColor: '#f59e0b', yAxisID: 'y1', tension: 0.3 }] }, options: { plugins: { legend: { display: true, position: 'bottom', labels: { color: 'white', usePointStyle: true, boxWidth: 8, padding: 20 } } }, scales: { y: { type: 'linear', display: true, position: 'left', grid: { color: '#334155' } }, y1: { type: 'linear', display: true, position: 'right', grid: { display: false } } } } });
+        if (bodyStatsInstance) bodyStatsInstance.destroy(); bodyStatsInstance = new Chart(document.getElementById('bodyStatsChart').getContext('2d'), { type: 'line', data: { labels: dates, datasets: [{ label: 'Peso (kg)', data: wData, borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 }, { label: 'RFM (%)', data: rfmData, borderColor: '#f59e0b', yAxisID: 'y1', tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } }, scales: { y: { type: 'linear', display: true, position: 'left', grid: { color: '#334155' } }, y1: { type: 'linear', display: true, position: 'right', grid: { display: false } } } } });
     }
     let mHistory = JSON.parse(localStorage.getItem('gym_profile_history')) || [];
     if (mHistory.length > 0) {
         let mDates = mHistory.map(h => h.date.slice(0,5)); let mArm = mHistory.map(h => h.arm); let mChest = mHistory.map(h => h.chest); let mWaist = mHistory.map(h => h.waist); let mLeg = mHistory.map(h => h.leg);
-        if (measChartInstance) measChartInstance.destroy(); measChartInstance = new Chart(document.getElementById('measChart').getContext('2d'), { type: 'line', data: { labels: mDates, datasets: [{ label: 'Braço', data: mArm, borderColor: '#a855f7', tension: 0.3 }, { label: 'Peito', data: mChest, borderColor: '#38bdf8', tension: 0.3 }, { label: 'Cintura', data: mWaist, borderColor: '#f59e0b', tension: 0.3 }, { label: 'Perna', data: mLeg, borderColor: '#22c55e', tension: 0.3 }] }, options: { plugins: { legend: { display: true, position: 'bottom', labels: { color: 'white', usePointStyle: true, boxWidth: 8, padding: 20 } } }, scales: { y: { grid: { color: '#334155' } } } } });
+        if (measChartInstance) measChartInstance.destroy(); measChartInstance = new Chart(document.getElementById('measChart').getContext('2d'), { type: 'line', data: { labels: mDates, datasets: [{ label: 'Braço', data: mArm, borderColor: '#a855f7', tension: 0.3 }, { label: 'Peito', data: mChest, borderColor: '#38bdf8', tension: 0.3 }, { label: 'Cintura', data: mWaist, borderColor: '#f59e0b', tension: 0.3 }, { label: 'Perna', data: mLeg, borderColor: '#22c55e', tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } }, scales: { y: { grid: { color: '#334155' } } } } });
     }
 }
-
 function renderChart() {
     const exercise = document.getElementById('exercise-select').value; if (!exercise) return; const labels = []; const data = []; const reps = [];
     history.forEach(log => { if (log.exercises && log.exercises[exercise]) { labels.push(log.date); let workSets = log.exercises[exercise].filter(s => s.type !== 'W'); if(workSets.length===0) workSets = log.exercises[exercise]; data.push(workSets[0].weight || workSets[0].w); reps.push(workSets[0].reps || workSets[0].r); } });
-    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: true, position: 'bottom', labels: { color: 'white', usePointStyle: true, boxWidth: 8, padding: 20 } } }, scales: { y: { grid: { color: '#334155' } } } } });
+    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: true, labels: { color: 'white', usePointStyle: true, boxWidth: 8 } } } } });
     const maxWeight = Math.max(...data, 0); const maxReps = Math.max(...reps, 0); let totalVolume = 0; history.forEach(log => { if (log.exercises && log.exercises[exercise]) { log.exercises[exercise].forEach(set => { if(set.type !== 'W') totalVolume += (set.weight || set.w) * (set.reps || set.r); }); } });
     update1RMPrediction(exercise, maxWeight, maxReps, totalVolume);
 }
-
 function update1RMPrediction(exerciseName, maxWeight, maxReps, totalVolume) {
     const container = document.getElementById('onerm-container'); if (!exerciseName || !container) return; let best1RM = calculate1RM(maxWeight, maxReps);
     if (best1RM > 0) { 
@@ -363,24 +351,20 @@ function update1RMPrediction(exerciseName, maxWeight, maxReps, totalVolume) {
     } else container.style.display = 'none';
     document.getElementById('pr-display').innerHTML = `<p style="margin-top:10px;"><strong>Maior carga:</strong> ${maxWeight} kg</p><p><strong>Maior reps:</strong> ${maxReps}</p><p><strong>Volume total:</strong> ${Math.round(totalVolume)} kg</p>`;
 }
-
 function updateGlobalStats() {
     let totalWorkouts = history.length; let totalSets = 0, totalVolume = 0; let exercisesDone = {};
     history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([exercise, sets]) => { if (!exercisesDone[exercise]) exercisesDone[exercise] = 0; exercisesDone[exercise]++; sets.forEach(set => { if(set.type !== 'W') { totalSets++; totalVolume += (set.weight||set.w||0) * (set.reps||set.r||0); }}); }); });
     let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum';
     document.getElementById('global-stats').innerHTML = `<h3>📊 Estatísticas Globais</h3><br><p><strong>Treinos:</strong> ${totalWorkouts}</p><p><strong>Séries de Trabalho:</strong> ${totalSets}</p><p><strong>Tonagem Total:</strong> ${Math.round(totalVolume)} kg</p><p><strong>Favorito:</strong> ${fav}</p>`; calculateRPGStats();
 }
-
 function calculateRPGStats() {
     const muscleXP = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
     history.forEach(session => { if(session.exercises) Object.entries(session.exercises).forEach(([exName, setsDetails]) => { let volume = 0; setsDetails.forEach(set => { if(set.type !== 'W') { let w = parseFloat(set.weight || set.w); let r = parseInt(set.reps || set.r); if(w > 0 && r > 0) volume += (w * r); }}); let muscle = getMuscleForExercise(exName) || categorizeMuscleByNameRPG(exName); if (muscleXP[muscle] !== undefined) muscleXP[muscle] += volume; else if (muscleXP['Braços'] !== undefined && (muscle === 'Bíceps' || muscle === 'Tríceps')) muscleXP['Braços'] += volume; }); }); renderRPGStats(muscleXP);
 }
-
 function renderRPGStats(muscleXP) {
     const container = document.getElementById('rpg-stats-container'); if(!container) return; container.innerHTML = ''; const colors = { 'Peito': '#38bdf8', 'Costas': '#22c55e', 'Pernas': '#f59e0b', 'Ombros': '#ef4444', 'Braços': '#a855f7', 'Core': '#f43f5e' };
     for (let muscle in muscleXP) { let stats = getLevelAndProgress(muscleXP[muscle]); let color = colors[muscle] || '#94a3b8'; container.innerHTML += `<div style="background: rgba(255,255,255,0.02); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);"><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="font-weight: bold; color: white; font-size: 14px;">${muscle}</span><span style="color: ${color}; font-weight: bold; font-size: 14px;">Lvl ${stats.level}</span></div><div class="progress-bar" style="height: 8px; background: #1e293b; margin-bottom: 5px; border-radius: 4px; overflow: hidden;"><div style="height: 100%; width: ${stats.progress}%; background: ${color};"></div></div></div>`; }
 }
-
 function renderDisciplineWall() {
     const wall = document.getElementById('discipline-wall'); if(!wall) return; wall.innerHTML = ''; let workoutMap = {};
     history.forEach(log => { let vol = 0; if(log.exercises) Object.values(log.exercises).forEach(sets => sets.forEach(s => { if(s.type !== 'W') vol += (s.weight||s.w||0) * (s.reps||s.r||0); })); workoutMap[log.date] = (workoutMap[log.date] || 0) + vol; });
@@ -558,51 +542,187 @@ function renderAchievements() {
 }
 
 // --- NUTRIÇÃO E LISTA DE COMPRAS ---
+
 const commonFoodsDB = [
-    {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0}, {name: "Peito de Frango Cru (100g)", cals: 110, pro: 23, car: 0}, {name: "Peito de Frango Grelhado (100g)", cals: 165, pro: 31, car: 0},
-    {name: "Bife de Vaca Magro (100g)", cals: 150, pro: 26, car: 0}, {name: "Salmão Grelhado (100g)", cals: 205, pro: 22, car: 0}, {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28},
-    {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25}, {name: "Batata Doce (100g cozida)", cals: 86, pro: 1, car: 20}, {name: "Aveia (50g)", cals: 190, pro: 7, car: 33},
-    {name: "Whey Protein (1 scoop 30g)", cals: 120, pro: 24, car: 3}, {name: "Banana (1 média)", cals: 105, pro: 1, car: 27}, {name: "Maçã (1 média)", cals: 95, pro: 0, car: 25},
-    {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3}, {name: "Azeite (1 colher de sopa)", cals: 119, pro: 0, car: 0}, {name: "Atum em água (1 lata seca)", cals: 110, pro: 25, car: 0},
-    {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13}, {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
+    {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0},
+    {name: "Peito de Frango Cru (100g)", cals: 110, pro: 23, car: 0},
+    {name: "Peito de Frango Grelhado (100g)", cals: 165, pro: 31, car: 0},
+    {name: "Bife de Vaca Magro (100g)", cals: 150, pro: 26, car: 0},
+    {name: "Salmão Grelhado (100g)", cals: 205, pro: 22, car: 0},
+    {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28},
+    {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25},
+    {name: "Batata Doce (100g cozida)", cals: 86, pro: 1, car: 20},
+    {name: "Aveia (50g)", cals: 190, pro: 7, car: 33},
+    {name: "Whey Protein (1 scoop 30g)", cals: 120, pro: 24, car: 3},
+    {name: "Banana (1 média)", cals: 105, pro: 1, car: 27},
+    {name: "Maçã (1 média)", cals: 95, pro: 0, car: 25},
+    {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3},
+    {name: "Azeite (1 colher de sopa)", cals: 119, pro: 0, car: 0},
+    {name: "Atum em água (1 lata seca)", cals: 110, pro: 25, car: 0},
+    {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13},
+    {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
 ];
 
-function fillCommonFood() { let sel = document.getElementById('db-food-select').value; if(!sel) return; let food = commonFoodsDB.find(f => f.name === sel); if(food) { document.getElementById('food-name').value = food.name; document.getElementById('food-cals').value = food.cals; document.getElementById('food-pro').value = food.pro; document.getElementById('food-car').value = food.car; } }
+function fillCommonFood() {
+    let sel = document.getElementById('db-food-select').value;
+    if(!sel) return;
+    let food = commonFoodsDB.find(f => f.name === sel);
+    if(food) {
+        document.getElementById('food-name').value = food.name;
+        document.getElementById('food-cals').value = food.cals;
+        document.getElementById('food-pro').value = food.pro;
+        document.getElementById('food-car').value = food.car;
+    }
+}
 
 function renderDieta() {
-    const calsElement = document.getElementById('calc-cals'); if(!calsElement) return; let tdee = parseInt(calsElement.innerText) || 0; let weight = userProfile.weight; let goal = userProfile.goal; if (tdee === 0) return;
-    let proteinTarget = Math.round(weight * 2.2); let fatTarget = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0)); let carbsTarget = Math.max(0, Math.round((tdee - (proteinTarget * 4 + fatTarget * 9)) / 4));
-    document.getElementById('dash-cals-target').innerText = tdee; document.getElementById('dash-pro-target').innerText = proteinTarget; document.getElementById('dash-car-target').innerText = carbsTarget;
-    let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; document.getElementById('water-text').innerText = `${waterIntake.ml} / ${waterTarget} ml`; document.getElementById('water-fill').style.width = Math.min((waterIntake.ml / waterTarget) * 100, 100) + '%';
+    const calsElement = document.getElementById('calc-cals'); if(!calsElement) return; 
+    let tdee = parseInt(calsElement.innerText) || 0; 
+    let weight = userProfile.weight; let goal = userProfile.goal; if (tdee === 0) return;
     
-    const foodList = document.getElementById('daily-food-list'); let totalCals = 0, totalPro = 0, totalCar = 0;
+    // Calcula os Macros Alvo
+    let proteinTarget = Math.round(weight * 2.2); 
+    let fatTarget = Math.round(weight * (goal === 'cut' ? 0.8 : 1.0)); 
+    let carbsTarget = Math.max(0, Math.round((tdee - (proteinTarget * 4 + fatTarget * 9)) / 4));
+    
+    // Mostra os Alvos no Dashboard
+    document.getElementById('dash-cals-target').innerText = tdee;
+    document.getElementById('dash-pro-target').innerText = proteinTarget;
+    document.getElementById('dash-car-target').innerText = carbsTarget;
+
+    // Hidratação
+    let waterTarget = Math.round(weight * 35); if(userProfile.activity >= 1.55) waterTarget += 500; 
+    document.getElementById('water-text').innerText = `${waterIntake.ml} / ${waterTarget} ml`; 
+    let waterPercent = Math.min((waterIntake.ml / waterTarget) * 100, 100); 
+    document.getElementById('water-fill').style.width = waterPercent + '%';
+    
+    // Conta e Renderiza a Comida Ingerida hoje
+    const foodList = document.getElementById('daily-food-list');
+    let totalCals = 0, totalPro = 0, totalCar = 0;
+    
     if(foodList) {
         foodList.innerHTML = '';
         dailyIntake.foods.forEach((food, index) => { 
-            totalCals += food.cals || 0; totalPro += food.pro || 0; totalCar += food.car || 0;
+            totalCals += food.cals || 0; 
+            totalPro += food.pro || 0; 
+            totalCar += food.car || 0;
+
             foodList.innerHTML += `<div style="background:#1e293b; padding:12px 15px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); margin-bottom:8px;"><div><div style="font-weight:bold; font-size:14px; color:white; margin-bottom:4px;">${food.name}</div><div style="font-size:11px; color:var(--muted);"><span style="color:var(--accent); font-weight:bold;">${food.cals} Kcal</span> | <span style="color:var(--success);">${food.pro}g Pro</span> | <span style="color:#3b82f6;">${food.car||0}g Car</span></div></div><button onclick="deleteDailyFood(${index})" style="background:transparent; border:none; color:var(--danger); cursor:pointer; font-size:18px;">✖</button></div>`; 
         });
         if (dailyIntake.foods.length === 0) foodList.innerHTML = '<p style="text-align:center; color:var(--muted); font-size:12px;">Ainda não comeste nada hoje.</p>';
     }
-    document.getElementById('dash-cals-done').innerText = totalCals; document.getElementById('dash-pro-done').innerText = totalPro; document.getElementById('dash-car-done').innerText = totalCar;
-    document.getElementById('dash-cals-bar').style.width = Math.min((totalCals / tdee) * 100, 100) + '%'; document.getElementById('dash-pro-bar').style.width = Math.min((totalPro / proteinTarget) * 100, 100) + '%'; document.getElementById('dash-car-bar').style.width = Math.min((totalCar / carbsTarget) * 100, 100) + '%';
-    document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white'; document.getElementById('dash-cals-bar').style.background = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
+
+    // Atualiza Progresso Visível no Dashboard
+    document.getElementById('dash-cals-done').innerText = totalCals;
+    document.getElementById('dash-pro-done').innerText = totalPro;
+    document.getElementById('dash-car-done').innerText = totalCar;
+
+    document.getElementById('dash-cals-bar').style.width = Math.min((totalCals / tdee) * 100, 100) + '%';
+    document.getElementById('dash-pro-bar').style.width = Math.min((totalPro / proteinTarget) * 100, 100) + '%';
+    document.getElementById('dash-car-bar').style.width = Math.min((totalCar / carbsTarget) * 100, 100) + '%';
+    
+    // Fica a vermelho se passares das Kcal
+    document.getElementById('dash-cals-done').style.color = totalCals > tdee ? 'var(--danger)' : 'white';
+    document.getElementById('dash-cals-bar').style.background = totalCals > tdee ? 'var(--danger)' : 'var(--accent)';
+
     renderPunishmentStatus();
 }
 
-function addWater(ml) { waterIntake.ml += ml; localStorage.setItem('gym_water', JSON.stringify(waterIntake)); renderDieta(); }
-function openWaterModal(type) { if (type === 'garrafas') { document.getElementById('water-garrafas-modal').style.display = 'flex'; } else { document.getElementById('glass-count').innerText = '1'; document.getElementById('water-copos-modal').style.display = 'flex'; } }
-function closeWaterModal(type) { if (type === 'garrafas') document.getElementById('water-garrafas-modal').style.display = 'none'; else document.getElementById('water-copos-modal').style.display = 'none'; }
-function addWaterGarrafa(ml) { addWater(ml); closeWaterModal('garrafas'); showPulseToast(`💧 +${ml}ml registados!`); }
-function adjustGlasses(direction) { let el = document.getElementById('glass-count'); let val = parseInt(el.innerText) + direction; if (val < 1) val = 1; el.innerText = val; }
-function confirmGlasses() { let count = parseInt(document.getElementById('glass-count').innerText); let ml = count * 250; addWater(ml); closeWaterModal('copos'); showPulseToast(`💧 ${count} Copo(s) registado(s)! (+${ml}ml)`); }
+function addWater(ml) { 
+    waterIntake.ml += ml; 
+    localStorage.setItem('gym_water', JSON.stringify(waterIntake)); 
+    renderDieta(); 
+}
 
-function quickAddFood(name, cals, pro, car = 0) { dailyIntake.foods.push({ name, cals, pro, car }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); showPulseToast(`✅ ${name} registado!`); }
-function addDailyFood() { const name = document.getElementById('food-name').value; let cals = parseInt(document.getElementById('food-cals').value) || 0; let pro = parseInt(document.getElementById('food-pro').value) || 0; let car = parseInt(document.getElementById('food-car').value) || 0; if (cals === 0 && (pro > 0 || car > 0)) { cals = (pro * 4) + (car * 4); } if(!name || cals === 0) { showPulseToast('Insere o Nome e Kcal/Macros!', true); return; } dailyIntake.foods.push({ name, cals, pro, car }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); if(!frequentFoods.find(f => f.name === name)) { frequentFoods.push({ name, cals, pro, car }); if(frequentFoods.length > 6) frequentFoods.shift(); localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); } document.getElementById('food-name').value = ''; document.getElementById('food-cals').value = ''; document.getElementById('food-pro').value = ''; document.getElementById('food-car').value = ''; document.getElementById('db-food-select').value = ''; renderDieta(); }
+function openWaterModal(type) {
+    if (type === 'garrafas') {
+        document.getElementById('water-garrafas-modal').style.display = 'flex';
+    } else {
+        document.getElementById('glass-count').innerText = '1'; 
+        document.getElementById('water-copos-modal').style.display = 'flex';
+    }
+}
+
+function closeWaterModal(type) {
+    if (type === 'garrafas') document.getElementById('water-garrafas-modal').style.display = 'none';
+    else document.getElementById('water-copos-modal').style.display = 'none';
+}
+
+function addWaterGarrafa(ml) {
+    addWater(ml);
+    closeWaterModal('garrafas');
+    showPulseToast(`💧 +${ml}ml registados!`);
+}
+
+function adjustGlasses(direction) {
+    let el = document.getElementById('glass-count');
+    let val = parseInt(el.innerText) + direction;
+    if (val < 1) val = 1;
+    el.innerText = val;
+}
+
+function confirmGlasses() {
+    let count = parseInt(document.getElementById('glass-count').innerText);
+    let ml = count * 250; 
+    addWater(ml);
+    closeWaterModal('copos');
+    showPulseToast(`💧 ${count} Copo(s) registado(s)! (+${ml}ml)`);
+}
+
+function quickAddFood(name, cals, pro, car = 0) { 
+    dailyIntake.foods.push({ name, cals, pro, car }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
+    renderDieta(); 
+    if (typeof showPulseToast === 'function') showPulseToast(`✅ ${name} registado!`);
+}
+
+function addDailyFood() {
+    const name = document.getElementById('food-name').value; 
+    let cals = parseInt(document.getElementById('food-cals').value) || 0; 
+    let pro = parseInt(document.getElementById('food-pro').value) || 0;
+    let car = parseInt(document.getElementById('food-car').value) || 0;
+
+    if (cals === 0 && (pro > 0 || car > 0)) {
+        cals = (pro * 4) + (car * 4);
+    }
+
+    if(!name || cals === 0) { 
+        if (typeof showPulseToast === 'function') showPulseToast('Insere o Nome e Kcal/Macros!', true); 
+        return; 
+    }
+    
+    dailyIntake.foods.push({ name, cals, pro, car }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake));
+    
+    if(!frequentFoods.find(f => f.name === name)) { 
+        frequentFoods.push({ name, cals, pro, car }); 
+        if(frequentFoods.length > 6) frequentFoods.shift(); 
+        localStorage.setItem('gym_freq_foods', JSON.stringify(frequentFoods)); 
+    }
+    
+    document.getElementById('food-name').value = ''; 
+    document.getElementById('food-cals').value = ''; 
+    document.getElementById('food-pro').value = ''; 
+    document.getElementById('food-car').value = ''; 
+    document.getElementById('db-food-select').value = '';
+    renderDieta();
+}
+
 function deleteDailyFood(index) { dailyIntake.foods.splice(index, 1); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
 
 function toggleFasting() { fastingState.active = !fastingState.active; if (fastingState.active) { fastingState.start = new Date().getTime(); } else { fastingState.start = null; clearInterval(fastingInterval); } localStorage.setItem('gym_fasting', JSON.stringify(fastingState)); startFastingTimer(); }
-function startFastingTimer() { if(fastingInterval) clearInterval(fastingInterval); const ring = document.getElementById('fasting-ring'); const text = document.getElementById('fasting-time'); const btn = document.getElementById('fasting-btn'); if(!fastingState.active) { ring.classList.remove('active'); text.innerText = "00:00:00"; btn.innerText = "Iniciar"; btn.style.background = "var(--success)"; return; } ring.classList.add('active'); btn.innerText = "Terminar"; btn.style.background = "var(--danger)"; fastingInterval = setInterval(() => { let diff = new Date().getTime() - fastingState.start; let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); let mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); let secs = Math.floor((diff % (1000 * 60)) / 1000); text.innerText = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`; }, 1000); }
+function startFastingTimer() {
+    if(fastingInterval) clearInterval(fastingInterval);
+    const ring = document.getElementById('fasting-ring'); const text = document.getElementById('fasting-time'); const btn = document.getElementById('fasting-btn');
+    if(!fastingState.active) { ring.classList.remove('active'); text.innerText = "00:00:00"; btn.innerText = "Iniciar"; btn.style.background = "var(--success)"; return; }
+    ring.classList.add('active'); btn.innerText = "Terminar"; btn.style.background = "var(--danger)";
+    fastingInterval = setInterval(() => {
+        let diff = new Date().getTime() - fastingState.start; let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); let mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); let secs = Math.floor((diff % (1000 * 60)) / 1000);
+        text.innerText = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }, 1000);
+}
+
+function calculateBodyFat() { const waist = parseFloat(document.getElementById('meas-waist').value); const height = userProfile.height; const gender = userProfile.gender; const bfDisplay = document.getElementById('calc-bf'); if (waist > 0 && height > 0) { let rfm = calculateBodyFatFormula(waist, height, gender); bfDisplay.innerText = rfm.toFixed(1) + '%'; if (rfm < 12 && gender === 'male' || rfm < 20 && gender === 'female') bfDisplay.style.color = '#38bdf8'; else if (rfm < 20 && gender === 'male' || rfm < 28 && gender === 'female') bfDisplay.style.color = 'var(--success)'; else if (rfm < 25 && gender === 'male' || rfm < 33 && gender === 'female') bfDisplay.style.color = '#f59e0b'; else bfDisplay.style.color = 'var(--danger)'; } else { bfDisplay.innerText = '--%'; bfDisplay.style.color = 'var(--accent)'; } }
 
 // --- RECEITAS PARA HIPERTROFIA EM ACORDEÃO (C/ Instruções) ---
 function openRecipesModal() { 
@@ -610,11 +730,13 @@ function openRecipesModal() {
         "🌅 Pequeno-Almoço": [
             { name: "Papas de Aveia Proteicas", prep: "5 min", cals: 380, pro: 35, car: 45, desc: "60g de aveia, 1 scoop de Whey, 200ml água/leite.", instructions: "1. Numa taça grande, mistura os 60g de aveia com 1 scoop de Whey.\n2. Adiciona os 200ml de água ou leite e mexe bem.\n3. Leva ao micro-ondas durante 2 minutos.\n4. Retira, mexe novamente para ganhar textura e adiciona canela a gosto." },
             { name: "Panquecas Mutantes", prep: "10 min", cals: 420, pro: 30, car: 45, desc: "2 ovos, 1 banana, 40g de aveia.", instructions: "1. Esmaga a banana até virar puré.\n2. Adiciona os 2 ovos e os 40g de aveia e mistura tudo.\n3. Aquece uma frigideira anti-aderente em lume médio.\n4. Deita pequenas porções da massa e vira quando começarem a formar bolhas." },
-            { name: "Ovos Mexidos c/ Pão", prep: "5 min", cals: 350, pro: 20, car: 26, desc: "3 ovos inteiros + 2 fatias de pão integral escuro.", instructions: "1. Parte os 3 ovos para um prato e bate-os levemente.\n2. Aquece uma frigideira com um fio de azeite e deita os ovos.\n3. Mexe devagar em lume brando até atingirem a consistência desejada.\n4. Serve acompanhado das 2 fatias de pão escuro torrado." }
+            { name: "Ovos Mexidos c/ Pão", prep: "5 min", cals: 350, pro: 20, car: 26, desc: "3 ovos inteiros + 2 fatias de pão integral escuro.", instructions: "1. Parte os 3 ovos para um prato e bate-os levemente.\n2. Aquece uma frigideira com um fio de azeite e deita os ovos.\n3. Mexe devagar em lume brando até atingirem a consistência desejada.\n4. Serve acompanhado das 2 fatias de pão escuro torrado." },
+            { name: "Iogurte Grego Titã", prep: "2 min", cals: 300, pro: 25, car: 30, desc: "200g Iogurte Grego Ligeiro, 1 banana picada, fio de mel.", instructions: "1. Coloca os 200g de Iogurte Grego Ligeiro numa taça.\n2. Pica a banana às rodelas e espalha por cima.\n3. Remata com um pequeno fio de mel (ou xarope 0Kcal) para adoçar." }
         ],
         "☀️ Almoço": [
             { name: "Clássico Bodybuilder", prep: "15 min", cals: 550, pro: 50, car: 60, desc: "150g peito de frango, 80g de arroz basmati, brócolos.", instructions: "1. Coze o arroz basmati e os brócolos em água a ferver.\n2. Tempera o frango com sal, alho em pó, pimenta e sumo de limão.\n3. Grelha o frango numa frigideira quente até ficar dourado.\n4. Junta tudo no prato e foca-te nos ganhos." },
             { name: "Massa do Poder", prep: "15 min", cals: 620, pro: 45, car: 70, desc: "100g de massa, 120g carne picada magra, molho de tomate.", instructions: "1. Põe a massa a cozer com sal grosso durante 10 minutos.\n2. Numa frigideira, refoga cebola e deita a carne picada magra.\n3. Quando a carne estiver cozinhada, junta 3 colheres de molho de tomate natural.\n4. Mistura a carne com a massa." },
+            { name: "Atum com Batata Doce", prep: "20 min", cals: 450, pro: 35, car: 55, desc: "1.5 latas de atum, 200g batata doce, fio de azeite.", instructions: "1. Descasca a batata doce, corta em cubos e leva a cozer ou ao forno (com um fio de azeite e ervas).\n2. Escorre bem a água ou o óleo do atum.\n3. Quando a batata estiver pronta, serve juntamente com o atum desfeito." },
             { name: "Salmão com Quinoa", prep: "20 min", cals: 600, pro: 35, car: 45, desc: "150g salmão, 60g quinoa, espargos.", instructions: "1. Lava bem a quinoa e coze-a numa panela pequena (15 mins).\n2. Tempera o salmão com sal, pimenta e limão e grelha ou assa no forno.\n3. Salteia os espargos na frigideira durante 5 minutos.\n4. Prato completo, repleto de Ómega-3." }
         ],
         "🥪 Lanche / Pós-Treino": [
@@ -626,27 +748,187 @@ function openRecipesModal() {
         "🌙 Jantar": [
             { name: "Omelete Titã", prep: "8 min", cals: 320, pro: 35, car: 5, desc: "1 ovo + 150ml claras, espinafres, 30g queijo magro.", instructions: "1. Numa tigela, bate o ovo com os 150ml de claras líquidas e uma pitada de sal.\n2. Aquece uma frigideira anti-aderente, deita a mistura.\n3. Espalha os espinafres frescos e as 30g de queijo fatiado por cima da massa ainda crua.\n4. Quando as bordas começarem a cozinhar, dobra ao meio e deixa acabar de fazer." },
             { name: "Bife Vaca Magro", prep: "12 min", cals: 450, pro: 40, car: 35, desc: "150g bife de vaca magro, 50g arroz, salada mista.", instructions: "1. Põe os 50g de arroz a cozer.\n2. Aquece bem a frigideira. Sela o bife de ambos os lados rapidamente para não secar (tempera só no fim).\n3. Prepara uma salada rápida (alface e tomate).\n4. Refeição rápida e densa em ferro e proteína." },
-            { name: "Pescada no Forno", prep: "25 min", cals: 380, pro: 30, car: 40, desc: "2 filetes pescada, 150g batata assada, curgete.", instructions: "1. Pré-aquece o forno a 200ºC.\n2. Num tabuleiro, coloca os filetes de pescada, a curgete às rodelas e a batata em cubos.\n3. Tempera com alho em pó, pimentão doce, limão e um fiozinho pequeno de azeite.\n4. Assa durante 20-25 minutos. Leve e fácil de digerir." }
+            { name: "Pescada no Forno", prep: "25 min", cals: 380, pro: 30, car: 40, desc: "2 filetes pescada, 150g batata assada, curgete.", instructions: "1. Pré-aquece o forno a 200ºC.\n2. Num tabuleiro, coloca os filetes de pescada, a curgete às rodelas e a batata em cubos.\n3. Tempera com alho em pó, pimentão doce, limão e um fiozinho pequeno de azeite.\n4. Assa durante 20-25 minutos. Leve e fácil de digerir." },
+            { name: "Salada Rica de Frango", prep: "10 min", cals: 350, pro: 35, car: 15, desc: "120g frango desfiado, alface, tomate, milho.", instructions: "1. Desfia frango cozido ou grelhado que tenha sobrado do almoço.\n2. Numa taça larga, coloca muita alface, 1 tomate picado e 2 colheres de sopa de milho doce.\n3. Junta o frango desfiado.\n4. Tempera com sal, vinagre balsâmico e uma gota de azeite." }
         ]
     };
-    let html = ''; Object.keys(recipes).forEach(category => { html += `<h3 style="color:var(--accent); margin-top:30px; margin-bottom:15px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`; recipes[category].forEach(r => { html += `<details class="custom-details" style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent);"><summary style="font-size: 14px; font-weight: bold; color: white; cursor: pointer; outline: none; list-style: none;"><div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><span>${r.name}</span><span style="font-size:11px; color:var(--muted); font-weight:normal;">⏱️ ${r.prep} <span style="margin-left:5px; font-size:10px;">▼</span></span></div></summary><div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155;"><div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:12px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div><div style="margin-bottom: 12px;"><span style="font-size: 11px; color: var(--accent); font-weight: bold;">INGREDIENTES:</span><p style="color:var(--muted); font-size:12px; line-height:1.4; margin-top:3px;">${r.desc}</p></div><div style="margin-bottom: 15px;"><span style="font-size: 11px; color: var(--accent); font-weight: bold;">INSTRUÇÕES:</span><p style="color:white; font-size:12px; line-height:1.6; margin-top:3px; white-space: pre-wrap;">${r.instructions}</p></div><button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car}); closeRecipesModal();" style="width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button></div></details>`; }); });
-    document.getElementById('recipes-list').innerHTML = html; document.getElementById('recipes-modal').style.display = 'flex'; 
+
+    let html = '';
+    Object.keys(recipes).forEach(category => {
+        html += `<h3 style="color:var(--accent); margin-top:30px; margin-bottom:15px; font-size:16px; border-bottom:1px solid #334155; padding-bottom:5px;">${category}</h3>`;
+        recipes[category].forEach(r => {
+            html += `<details class="custom-details" style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:10px; border-left:4px solid var(--accent);">
+                <summary style="font-size: 14px; font-weight: bold; color: white; cursor: pointer; outline: none; list-style: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <span>${r.name}</span>
+                        <span style="font-size:11px; color:var(--muted); font-weight:normal;">⏱️ ${r.prep} <span style="margin-left:5px; font-size:10px;">▼</span></span>
+                    </div>
+                </summary>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155;">
+                    <div style="font-size:12px; color:var(--success); font-weight:bold; margin-bottom:12px;">🔥 ${r.cals} Kcal | 🥩 ${r.pro}g Pro | 🍚 ${r.car}g Car</div>
+                    <div style="margin-bottom: 12px;">
+                        <span style="font-size: 11px; color: var(--accent); font-weight: bold;">INGREDIENTES:</span>
+                        <p style="color:var(--muted); font-size:12px; line-height:1.4; margin-top:3px;">${r.desc}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size: 11px; color: var(--accent); font-weight: bold;">INSTRUÇÕES:</span>
+                        <p style="color:white; font-size:12px; line-height:1.6; margin-top:3px; white-space: pre-wrap;">${r.instructions}</p>
+                    </div>
+                    <button onclick="quickAddFood('${r.name}', ${r.cals}, ${r.pro}, ${r.car}); closeRecipesModal();" style="width:100%; background:rgba(56,189,248,0.1); border:1px solid var(--accent); color:white; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">✚ Adicionar ao Diário</button>
+                </div>
+            </details>`;
+        });
+    });
+
+    document.getElementById('recipes-list').innerHTML = html;
+    document.getElementById('recipes-modal').style.display = 'flex'; 
 } 
 function closeRecipesModal() { document.getElementById('recipes-modal').style.display = 'none'; }
 
+
 // --- TAXA DO PECADO (CUMULATIVA & PRESCRIÇÃO 5 DIAS) ---
 let baseSinCals = 0, baseSinPro = 0, baseSinCar = 0;
-function checkPunishmentExpiration() { let ap = JSON.parse(localStorage.getItem('gym_punishment')); if (ap && ap.lastUpdated) { let daysPassed = (Date.now() - ap.lastUpdated) / (1000 * 60 * 60 * 24); if (daysPassed >= 5) { activePunishment = null; localStorage.removeItem('gym_punishment'); showPulseToast('⏳ Os deuses da hipertrofia perdoaram a tua dívida (5 dias). Estás limpo!'); } else { activePunishment = ap; } } else if (ap && !ap.lastUpdated) { ap.lastUpdated = Date.now(); localStorage.setItem('gym_punishment', JSON.stringify(ap)); activePunishment = ap; } }
-function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
-function fillSinPreset() { let sel = document.getElementById('sin-preset'); let opt = sel.options[sel.selectedIndex]; if(opt.value) { baseSinCals = parseInt(opt.value) || 0; baseSinPro = parseInt(opt.getAttribute('data-p')) || 0; baseSinCar = parseInt(opt.getAttribute('data-c')) || 0; document.getElementById('sin-qty').value = "1"; updateSinValuesFromQty(); } }
-function adjustSinQty(delta) { let input = document.getElementById('sin-qty'); let current = parseFloat(input.value) || 1; input.value = Math.max(0.5, current + delta); updateSinValuesFromQty(); }
-function updateSinValuesFromQty() { let qty = parseFloat(document.getElementById('sin-qty').value) || 1; document.getElementById('sin-cals').value = Math.round(baseSinCals * qty); document.getElementById('sin-pro').value = Math.round(baseSinPro * qty); document.getElementById('sin-car').value = Math.round(baseSinCar * qty); }
-function calculateSinFromMacros() { let p = parseInt(document.getElementById('sin-pro').value) || 0; let c = parseInt(document.getElementById('sin-car').value) || 0; let cals = (p * 4) + (c * 4); if (cals > 0) { document.getElementById('sin-cals').value = cals; document.getElementById('sin-preset').value = ""; } }
-function generatePunishmentTask(cals) { let cardioMins = Math.min(20, 5 + Math.floor(cals / 100)); let extraReps = Math.min(5, Math.ceil(cals / 250)); let coreSets = Math.min(6, 2 + Math.floor(cals / 200)); const punishments = [ `🏃‍♂️ ${cardioMins} mins de Passadeira (Passo acelerado, inclinação máxima contínua)`, `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (Alterna: 1 min forte com 1 min suave)`, `💦 ${cardioMins} mins de Elítica (Cadência alta com resistência pesada)`, `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Tempo limite) + 20 Abdominais`, `💪 +1 Série Extra (até à falha muscular absoluta) no último exercício do treino`, `🥵 +${extraReps} Repetições forçadas a adicionar no final de TODAS as séries`, `🔥 Adicionar Dropset na última série de TODOS os exercícios de hoje` ]; return punishments[Math.floor(Math.random() * punishments.length)]; }
-function triggerPunishment() { const newCals = parseInt(document.getElementById('sin-cals').value); if (!newCals || newCals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } let task = generatePunishmentTask(newCals); if (!activePunishment) { activePunishment = { cals: 0, tasks: [], lastUpdated: Date.now() }; } else if (!activePunishment.tasks) { activePunishment.tasks = [activePunishment.task || "Punição Antiga"]; } activePunishment.cals += newCals; activePunishment.tasks.push(task); activePunishment.lastUpdated = Date.now(); localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); closePunishmentModal(); renderPunishmentStatus(); showPulseToast('🔥 Castigo Acumulado com Sucesso!', true); let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; let qty = document.getElementById('sin-qty').value; dailyIntake.foods.push({ name: `⚠️ ${presetName} (${qty}x)`, cals: newCals, pro: parseInt(document.getElementById('sin-pro').value) || 0, car: parseInt(document.getElementById('sin-car').value) || 0 }); localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); renderDieta(); }
-function renderPunishmentStatus() { checkPunishmentExpiration(); const container = document.getElementById('punishment-status'); if (!container) return; if (!activePunishment || !activePunishment.tasks || activePunishment.tasks.length === 0) { container.innerHTML = ``; } else { let firstTask = activePunishment.tasks[0]; let remaining = activePunishment.tasks.length - 1; let extraText = remaining > 0 ? `<br><br><span style="font-size:11px; color:var(--muted);">⚠️ Ficam a faltar mais ${remaining} castigo(s) na fila.</span>` : ''; container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;"><div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (Fila: ${activePunishment.tasks.length})</div><div style="font-size:13px; color:white; line-height:1.4; margin-bottom:15px;">No teu <b>Próximo Treino</b>, tens de abater a primeira tarefa da dívida:<br><br>👉 <b>${firstTask}</b> ${extraText}</div><p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino a app vai perguntar se cumpriste. Prescreve em 5 dias.</p><button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="openConfessModal()">🩸 Ou confessar e limpar TUDO agora (Fraqueza)</button></div>`; } }
-function openConfessModal() { document.getElementById('confess-modal').style.display = 'flex'; } function closeConfessModal() { document.getElementById('confess-modal').style.display = 'none'; }
-function confirmConfess() { activePunishment = null; localStorage.removeItem('gym_punishment'); closeConfessModal(); renderPunishmentStatus(); showPulseToast('⛓️ Estás perdoado. Mais foco na próxima vez.'); }
+
+function checkPunishmentExpiration() {
+    let ap = JSON.parse(localStorage.getItem('gym_punishment'));
+    if (ap && ap.lastUpdated) {
+        let daysPassed = (Date.now() - ap.lastUpdated) / (1000 * 60 * 60 * 24);
+        if (daysPassed >= 5) {
+            activePunishment = null;
+            localStorage.removeItem('gym_punishment');
+            showPulseToast('⏳ Os deuses da hipertrofia perdoaram a tua dívida (5 dias). Estás limpo!');
+        } else {
+            activePunishment = ap;
+        }
+    } else if (ap && !ap.lastUpdated) {
+        ap.lastUpdated = Date.now();
+        localStorage.setItem('gym_punishment', JSON.stringify(ap));
+        activePunishment = ap;
+    }
+}
+
+function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } 
+function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
+
+function fillSinPreset() { 
+    let sel = document.getElementById('sin-preset'); 
+    let opt = sel.options[sel.selectedIndex]; 
+    if(opt.value) { 
+        baseSinCals = parseInt(opt.value) || 0;
+        baseSinPro = parseInt(opt.getAttribute('data-p')) || 0;
+        baseSinCar = parseInt(opt.getAttribute('data-c')) || 0;
+        document.getElementById('sin-qty').value = "1";
+        updateSinValuesFromQty();
+    } 
+}
+
+function adjustSinQty(delta) {
+    let input = document.getElementById('sin-qty');
+    let current = parseFloat(input.value) || 1;
+    let next = Math.max(0.5, current + delta);
+    input.value = next;
+    updateSinValuesFromQty();
+}
+
+function updateSinValuesFromQty() {
+    let qty = parseFloat(document.getElementById('sin-qty').value) || 1;
+    document.getElementById('sin-cals').value = Math.round(baseSinCals * qty);
+    document.getElementById('sin-pro').value = Math.round(baseSinPro * qty);
+    document.getElementById('sin-car').value = Math.round(baseSinCar * qty);
+}
+
+function calculateSinFromMacros() { 
+    let p = parseInt(document.getElementById('sin-pro').value) || 0; 
+    let c = parseInt(document.getElementById('sin-car').value) || 0; 
+    let cals = (p * 4) + (c * 4); 
+    if (cals > 0) { 
+        document.getElementById('sin-cals').value = cals; 
+        document.getElementById('sin-preset').value = ""; 
+    } 
+}
+
+function generatePunishmentTask(cals) {
+    let cardioMins = Math.min(20, 5 + Math.floor(cals / 100)); 
+    let extraReps = Math.min(5, Math.ceil(cals / 250)); 
+    let coreSets = Math.min(6, 2 + Math.floor(cals / 200)); 
+
+    const punishments = [
+        `🏃‍♂️ ${cardioMins} mins de Passadeira (Passo acelerado, inclinação máxima contínua)`,
+        `🚴‍♂️ ${cardioMins} mins de Bicicleta em HIIT (Alterna: 1 min forte com 1 min suave)`,
+        `💦 ${cardioMins} mins de Elítica (Cadência alta com resistência pesada)`,
+        `🧱 Finisher de Core: ${coreSets} Séries de Prancha (Tempo limite) + 20 Abdominais`,
+        `💪 +1 Série Extra (até à falha muscular absoluta) no último exercício do treino`,
+        `🥵 +${extraReps} Repetições forçadas a adicionar no final de TODAS as séries`,
+        `🔥 Adicionar Dropset na última série de TODOS os exercícios de hoje`
+    ];
+    return punishments[Math.floor(Math.random() * punishments.length)];
+}
+
+function triggerPunishment() { 
+    const newCals = parseInt(document.getElementById('sin-cals').value); 
+    if (!newCals || newCals < 100) { showPulseToast('Mínimo 100kcal!', true); return; } 
+    
+    let task = generatePunishmentTask(newCals);
+    
+    if (!activePunishment) {
+        activePunishment = { cals: 0, tasks: [], lastUpdated: Date.now() };
+    } else if (!activePunishment.tasks) {
+        activePunishment.tasks = [activePunishment.task || "Punição Antiga"];
+    }
+    
+    activePunishment.cals += newCals;
+    activePunishment.tasks.push(task);
+    activePunishment.lastUpdated = Date.now(); // Renova o prazo de prescrição
+
+    localStorage.setItem('gym_punishment', JSON.stringify(activePunishment)); 
+    closePunishmentModal(); 
+    renderPunishmentStatus(); 
+    showPulseToast('🔥 Castigo Acumulado com Sucesso!', true); 
+    
+    let presetName = document.getElementById('sin-preset').options[document.getElementById('sin-preset').selectedIndex].text || "Pecado"; 
+    if(presetName === "Seleciona o Pecado...") presetName = "Pecado / Cheat Meal"; 
+    let qty = document.getElementById('sin-qty').value;
+    dailyIntake.foods.push({ name: `⚠️ ${presetName} (${qty}x)`, cals: newCals, pro: parseInt(document.getElementById('sin-pro').value) || 0, car: parseInt(document.getElementById('sin-car').value) || 0 }); 
+    localStorage.setItem('gym_daily_intake', JSON.stringify(dailyIntake)); 
+    renderDieta(); 
+}
+
+function renderPunishmentStatus() { 
+    checkPunishmentExpiration(); // Garante que limpamos dívidas caducadas ao desenhar
+    const container = document.getElementById('punishment-status'); 
+    if (!container) return; 
+
+    if (!activePunishment || !activePunishment.tasks || activePunishment.tasks.length === 0) { 
+        container.innerHTML = ``; 
+    } else { 
+        let firstTask = activePunishment.tasks[0];
+        let remaining = activePunishment.tasks.length - 1;
+        let extraText = remaining > 0 ? `<br><br><span style="font-size:11px; color:var(--muted);">⚠️ Ficam a faltar mais ${remaining} castigo(s) na fila para os próximos treinos.</span>` : '';
+        
+        container.innerHTML = `<div style="background: rgba(239,68,68,0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px;">
+            <div style="color:var(--danger); font-weight:bold; margin-bottom:10px;">🚨 PENITÊNCIA PENDENTE (Fila: ${activePunishment.tasks.length})</div>
+            <div style="font-size:13px; color:white; line-height:1.4; margin-bottom:15px;">No teu <b>Próximo Treino</b>, tens de abater a primeira tarefa da dívida:<br><br>👉 <b>${firstTask}</b> ${extraText}</div>
+            <p style="font-size:11px; color:var(--muted); font-style:italic; margin-bottom: 15px;">Ao gravares o próximo treino, a app vai perguntar se cumpriste este castigo para o poder abater. Prescreve em 5 dias se não pecares mais.</p>
+            <button class="beast-action-btn dropset" style="width:100%; padding:12px; background:#1e293b; border: 1px solid var(--danger); color: var(--danger);" onclick="openConfessModal()">🩸 Ou confessar e limpar TUDO agora (Fraqueza)</button>
+        </div>`; 
+    } 
+}
+
+function openConfessModal() {
+    document.getElementById('confess-modal').style.display = 'flex';
+}
+
+function closeConfessModal() {
+    document.getElementById('confess-modal').style.display = 'none';
+}
+
+function confirmConfess() {
+    activePunishment = null; 
+    localStorage.removeItem('gym_punishment'); 
+    closeConfessModal();
+    renderPunishmentStatus(); 
+    showPulseToast('⛓️ Estás perdoado. Mais foco na próxima vez.');
+}
 
 // --- MODAIS GERAIS, FLEX E INSTAGRAM ---
 let currentBarWeight = 20; 
