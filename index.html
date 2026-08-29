@@ -134,7 +134,6 @@
 
     <!-- ABA 3: EVOLUÇÃO (Menu Otimizado em Tabs) -->
     <div id="view-evolucao" class="view-section">
-        <h2 style="margin-bottom: 15px;">📈 Progresso</h2>
         
         <!-- TABS DE NAVEGAÇÃO -->
         <div class="tabs" style="display: flex; margin-bottom: 20px; gap: 5px;">
@@ -157,7 +156,11 @@
                     <div id="hm-core" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
                 </div>
             </div>
-            <div class="goal-container text-center" style="margin-top: 20px;"><h3>⚖️ Evolução Corporal</h3><canvas id="bodyStatsChart"></canvas></div>
+            <div class="goal-container text-center" style="margin-top: 20px;">
+                <h3>⚖️ Evolução Corporal</h3>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">RFM = Massa Gorda Relativa Estimada</p>
+                <canvas id="bodyStatsChart"></canvas>
+            </div>
             <div class="goal-container text-center" style="margin-top: 20px;"><h3>📏 Evolução de Medidas</h3><canvas id="measChart"></canvas></div>
         </div>
 
@@ -175,9 +178,14 @@
                 <div id="rpg-stats-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
             </div>
 
-            <div style="margin-top: 20px;">
-                <select id="exercise-select" class="chart-select"></select>
-                <canvas id="progressChart"></canvas>
+            <!-- Gráfico de progressão de carga alargado e encapsulado -->
+            <div class="goal-container text-center" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px;">📈 Progressão de Carga</h3>
+                <select id="exercise-select" class="chart-select" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; border:none; color:white; margin-bottom:15px;" onchange="renderChart()"></select>
+                <div style="position: relative; width: 100%;">
+                    <canvas id="progressChart"></canvas>
+                </div>
+                <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
             </div>
             
             <div id="pr-display" class="goal-container" style="margin-top: 20px;">
