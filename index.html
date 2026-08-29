@@ -652,6 +652,18 @@
         </div>
     </div>
 
+    <!-- MODAL ESVAZIAR CONSTRUTOR -->
+    <div id="clear-builder-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+            <h3 style="color: var(--danger); margin-bottom: 10px;">🗑️ Esvaziar Esboço?</h3>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Vais apagar todos os exercícios que escolheste até agora.</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="beast-action-btn" onclick="confirmClearBuilder()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Apagar</button>
+                <button class="beast-action-btn" onclick="closeClearBuilderModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- CARREGAMENTO DOS SCRIPTS -->
     <script src="js/db.js"></script>
     <script src="js/logic.js"></script>
