@@ -199,6 +199,24 @@ function injectFinisher(exName) {
     showPulseToast('🔥 Finisher Injetado no Treino!');
 }
 
+function moveActiveExerciseUp(index) {
+    if (index > 0) {
+        const temp = workoutData[currentDay][index];
+        workoutData[currentDay][index] = workoutData[currentDay][index - 1];
+        workoutData[currentDay][index - 1] = temp;
+        renderWorkout();
+    }
+}
+
+function moveActiveExerciseDown(index) {
+    if (index < workoutData[currentDay].length - 1) {
+        const temp = workoutData[currentDay][index];
+        workoutData[currentDay][index] = workoutData[currentDay][index + 1];
+        workoutData[currentDay][index + 1] = temp;
+        renderWorkout();
+    }
+}
+
 function renderWorkout() {
     checkPunishmentExpiration(); // Garante que atualizamos o estado
     const container = document.getElementById('workout-container'); if(!container) return; container.innerHTML = ''; 
@@ -225,7 +243,7 @@ function renderWorkout() {
         if(lastPerf && lastPerf.length > 0) { let w = parseFloat(lastPerf[0].weight || lastPerf[0].w || 0); if(isDeloadMode && w > 0) preWeight = Math.round(w * 0.7); else preWeight = w || ''; preReps = lastPerf[0].reps || lastPerf[0].r || ''; }
         let painWarn = checkPainWarning(ex.name); let painHtml = painWarn ? `<div style="background:rgba(239,68,68,0.1); color:var(--danger); padding:8px; border-radius:8px; font-size:11px; margin-bottom:10px; border:1px solid var(--danger);">${painWarn}</div>` : '';
         let setsToRender = isDeloadMode ? Math.max(2, ex.sets - 1) : ex.sets;
-        let html = `<div class="exercise-card" style="padding: 15px;">${painHtml}<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><div class="exercise-name" style="margin:0; font-size:18px;">${ex.name}</div><div style="display:flex; gap:8px;"><button onclick="openSwapModal('${ex.name}', ${exIdx})" style="background:#1e293b; color:white; border:1px solid #334155; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">🔄 Trocar</button><button onclick="openModal('${ex.name}', 'Consulta a execução.')" style="background:#1e293b; color:white; border:1px solid #334155; border-radius:8px; padding:6px 10px; font-size:14px; cursor:pointer;">🎥</button></div></div><div style="display:grid; grid-template-columns: 40px 1fr 1fr 60px 45px; gap:8px; margin-bottom:8px; padding:0 2px;"><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">TIPO</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">KG</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">REPS</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">RIR</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">✔</div></div>`;
+        let html = `<div class="exercise-card" style="padding: 15px;">${painHtml}<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><div class="exercise-name" style="margin:0; font-size:18px; max-width:60%; line-height:1.2;">${ex.name}</div><div style="display:flex; gap:6px;"><button onclick="moveActiveExerciseUp(${exIdx})" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer;">▲</button><button onclick="moveActiveExerciseDown(${exIdx})" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer;">▼</button><button onclick="openSwapModal('${ex.name}', ${exIdx})" style="background:#1e293b; color:white; border:1px solid #334155; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer;">🔄</button></div></div><div style="display:grid; grid-template-columns: 40px 1fr 1fr 60px 45px; gap:8px; margin-bottom:8px; padding:0 2px;"><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">TIPO</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">KG</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">REPS</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">RIR</div><div style="font-size:10px; color:var(--muted); text-align:center; font-weight:bold;">✔</div></div>`;
         for (let i = 1; i <= setsToRender; i++) { html += `<div class="set-row" id="row-${currentDay}-${exIdx}-${i}" style="display:grid; grid-template-columns: 40px 1fr 1fr 60px 45px; gap:8px; align-items:center; margin-bottom:8px;"><button onclick="toggleSetType(this)" class="set-type-btn work" id="type-${currentDay}-${exIdx}-${i}" data-type="work" style="width:100%; height:40px; border-radius:8px; padding:0; display:flex; align-items:center; justify-content:center; font-size:16px;">💪</button><input type="number" id="weight-${currentDay}-${exIdx}-${i}" value="${preWeight}" style="width:100%; height:40px; text-align:center; background:#0f172a; border:1px solid #334155; border-radius:8px; color:white; font-size:16px; font-weight:bold; box-sizing:border-box;"><input type="number" id="reps-${currentDay}-${exIdx}-${i}" value="${preReps}" style="width:100%; height:40px; text-align:center; background:#0f172a; border:1px solid #334155; border-radius:8px; color:white; font-size:16px; font-weight:bold; box-sizing:border-box;"><select id="rir-${currentDay}-${exIdx}-${i}" style="width:100%; height:40px; text-align:center; background:#0f172a; border:1px solid #334155; border-radius:8px; color:white; font-size:14px; font-weight:bold; appearance:none; box-sizing:border-box;"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3+</option></select><button class="check-btn" onclick="toggleSetDone(this, '${ex.name}')" style="width:100%; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0;">✔</button></div>`; }
         html += `<input type="text" id="notes-${currentDay}-${exIdx}" class="exercise-notes" placeholder="Notas e Setup (ex: Polia no 3)..." style="margin-top:10px; width:100%; padding:10px; border-radius:8px; border:1px dashed #334155; background:transparent; color:white; font-size:12px; box-sizing:border-box;"></div>`; container.innerHTML += html;
     });
