@@ -128,36 +128,54 @@
     <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
         
+        <!-- ESTILOS EXCLUSIVOS DO CONSTRUTOR -->
+        <style>
+            .modern-tab-btn { flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted); }
+            .modern-tab-btn.active { background: #1e293b; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+            
+            .modern-fatigue-btn { flex: 1; background: #0f172a; color: var(--muted); border: 1px solid #334155; border-radius: 10px; padding: 15px 5px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display:flex; flex-direction:column; align-items:center; gap:6px; }
+            .modern-fatigue-btn.active { background: rgba(56,189,248,0.1); color: var(--accent); border-color: var(--accent); }
+            
+            .modern-select { width: 100%; padding: 15px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; margin-bottom: 25px; outline:none; appearance: none; text-align:center; cursor:pointer; }
+        </style>
+
         <!-- TABS DE NAVEGAÇÃO DO CONSTRUTOR -->
-        <div style="display: flex; background: #0f172a; padding: 6px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155;">
-            <button id="btn-mode-auto" class="mode-btn active" onclick="setBuilderMode('auto')" style="flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted);">🤖 IA</button>
-            <button id="btn-mode-manual" class="mode-btn" onclick="setBuilderMode('manual')" style="flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted);">🖐️ Manual</button>
-            <button id="btn-mode-directory" class="mode-btn" onclick="setBuilderMode('directory')" style="flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted);">📖 Lista</button>
+        <div style="display: flex; background: #0f172a; padding: 6px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #334155;">
+            <button id="btn-mode-auto" class="mode-btn modern-tab-btn active" onclick="setBuilderMode('auto')">🤖 IA</button>
+            <button id="btn-mode-manual" class="mode-btn modern-tab-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
+            <button id="btn-mode-directory" class="mode-btn modern-tab-btn" onclick="setBuilderMode('directory')">📖 Lista</button>
         </div>
 
         <!-- PAINEL AUTO -->
-        <div id="auto-focus-panel" class="goal-container">
-            <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:10px; display:block;">Nível de Fadiga Hoje</label>
-            <div style="display: flex; gap: 5px; margin-bottom: 25px;">
-                <button id="btn-fatigue-energized" class="fatigue-btn active" onclick="setFatigue('energized')" style="flex:1;">🔋 100%</button>
-                <button id="btn-fatigue-normal" class="fatigue-btn" onclick="setFatigue('normal')" style="flex:1;">⚡ Normal</button>
-                <button id="btn-fatigue-tired" class="fatigue-btn" onclick="setFatigue('tired')" style="flex:1;">🪫 Cansado</button>
+        <div id="auto-focus-panel">
+            <div style="background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155;">
+                
+                <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Nível de Fadiga</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 25px;">
+                    <button id="btn-fatigue-energized" class="fatigue-btn modern-fatigue-btn active" onclick="setFatigue('energized')"><span style="font-size:18px;">🔋</span>100%</button>
+                    <button id="btn-fatigue-normal" class="fatigue-btn modern-fatigue-btn" onclick="setFatigue('normal')"><span style="font-size:18px;">⚡</span>Normal</button>
+                    <button id="btn-fatigue-tired" class="fatigue-btn modern-fatigue-btn" onclick="setFatigue('tired')"><span style="font-size:18px;">🪫</span>Cansado</button>
+                </div>
+                
+                <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Foco Muscular</label>
+                <div style="position: relative;">
+                    <select id="auto-focus-select" class="modern-select">
+                        <option value="FULL">Corpo Inteiro</option>
+                        <option value="PUSH">Push (Peito, Ombro, Tríceps)</option>
+                        <option value="PULL">Pull (Costas, Bíceps)</option>
+                        <option value="LEGS">Legs (Pernas)</option>
+                        <option value="Peito">Isolado: Peito</option>
+                        <option value="Costas">Isolado: Costas</option>
+                        <option value="Ombros">Isolado: Ombros</option>
+                        <option value="Braços">Isolado: Braços</option>
+                        <option value="Core">Isolado: Core</option>
+                    </select>
+                    <span style="position: absolute; right: 15px; top: 15px; pointer-events: none; color: var(--accent);">▼</span>
+                </div>
+                
+                <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px; border-radius:10px; text-transform: uppercase;" onclick="generateWorkout()">Gerar Treino</button>
+                
             </div>
-            
-            <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:10px; display:block;">Foco Muscular</label>
-            <select id="auto-focus-select" style="width: 100%; padding: 14px; border-radius: 12px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; margin-bottom: 20px; outline:none;">
-                <option value="FULL">Corpo Inteiro</option>
-                <option value="PUSH">Push (Peito, Ombro, Tríceps)</option>
-                <option value="PULL">Pull (Costas, Bíceps)</option>
-                <option value="LEGS">Legs (Pernas)</option>
-                <option value="Peito">Isolado: Peito</option>
-                <option value="Costas">Isolado: Costas</option>
-                <option value="Ombros">Isolado: Ombros</option>
-                <option value="Braços">Isolado: Braços</option>
-                <option value="Core">Isolado: Core</option>
-            </select>
-            
-            <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px;" onclick="generateWorkout()">✨ GERAR ROTINA INTELIGENTE</button>
         </div>
 
         <!-- PAINEL MANUAL -->
