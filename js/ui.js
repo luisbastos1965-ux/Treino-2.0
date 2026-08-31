@@ -117,6 +117,43 @@ function renderWorkoutSlots() {
     const container = document.getElementById('workout-slots-container'); if(!container) return; container.innerHTML = ''; let slotCount = 0; const minSlots = 7;
     const createSlotHTML = (type, index, title, subtitle, color) => { slotCount++; return `<div class="slot-container-flex"><div class="built-item" style="flex:1; border:1px solid ${color}; cursor:pointer;" onclick="${deleteMode ? '' : `openWorkoutSlot('${type}', ${index})`}"><div class="built-item-info"><span class="built-item-title" style="color:${color}; font-size:16px;">${title}</span><span style="font-size:12px; color:var(--muted); margin-top:3px;">${subtitle}</span></div></div><button class="info-btn" onclick="showWorkoutInfo('${type}', ${index})">i</button></div>`; };
     
+    // --- 💡 IA: SMART COACH ---
+    if (!deleteMode) {
+        const now = new Date(); const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(now.getDate() - 7); 
+        let vol = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0 };
+        history.forEach(log => { 
+            const parts = log.date.split('/'); 
+            if(parts.length === 3) { 
+                const logDate = new Date(parts[2], parts[1]-1, parts[0]); 
+                if (logDate >= sevenDaysAgo && logDate <= now && log.exercises) {
+                    Object.entries(log.exercises).forEach(([ex, sets]) => { 
+                        let m = typeof getMuscleForExercise === 'function' ? getMuscleForExercise(ex) : categorizeMuscleByNameRPG(ex); 
+                        if (vol[m] !== undefined) vol[m] += sets.length; 
+                    }); 
+                }
+            } 
+        });
+        
+        let push = vol['Peito'] + vol['Ombros']; let pull = vol['Costas']; let legs = vol['Pernas'];
+        let minVol = Math.min(push, pull, legs);
+        let sugg = {};
+        
+        if (minVol > 20) sugg = { title: 'Mobilidade Activa', desc: '⚠️ Muito volume acumulado. Foca na recuperação do SNC.', action: `openWorkoutSlot('MOBILITY')`, color: 'var(--success)' };
+        else if (minVol === push) sugg = { title: 'Titã (PUSH)', desc: '💡 Peito e Ombros descansados. Bora destruir.', action: `startTitanDay('PUSH')`, color: '#38bdf8' };
+        else if (minVol === pull) sugg = { title: 'Titã (PULL)', desc: '💡 Costas recuperadas. Hora de puxar ferro.', action: `startTitanDay('PULL')`, color: '#22c55e' };
+        else sugg = { title: 'Titã (LEGS)', desc: '💡 Pernas frescas. Hoje é dia de agachar pesado.', action: `startTitanDay('LEGS')`, color: '#f59e0b' };
+
+        container.innerHTML += `<div style="background:linear-gradient(135deg, rgba(15,23,42,1) 0%, rgba(30,41,59,1) 100%); border: 1px solid ${sugg.color}; padding:18px 20px; border-radius:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.4);" onclick="${sugg.action}">
+            <div>
+                <div style="font-size:11px; color:var(--accent); font-weight:900; margin-bottom:5px; text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:5px;"><span>🧠</span> Smart Coach</div>
+                <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:4px;">${sugg.title}</div>
+                <div style="color:var(--muted); font-size:12px; line-height:1.4;">${sugg.desc}</div>
+            </div>
+            <div style="background:${sugg.color}; color:#0f172a; min-width:40px; height:40px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:900; font-size:18px; box-shadow: 0 0 15px ${sugg.color}40;">▶</div>
+        </div>`;
+    }
+    // --- FIM DA IA ---
+    
     container.innerHTML += createSlotHTML('TITAN', 0, 'Divisão Titã (PPL)', 'Push, Pull e Legs', '#38bdf8'); 
     container.innerHTML += createSlotHTML('MOBILITY', 0, 'Mobilidade Activa', 'SNC e Articulações', 'var(--success)');
     
