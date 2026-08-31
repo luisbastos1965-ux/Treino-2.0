@@ -161,14 +161,12 @@ function updateGamificationLogic() {
     localStorage.setItem('gym_mission', JSON.stringify(activeMission));
 }
 
-function checkAchievements() {
+function checkAchievements(sessionVol = 0, hasFinisher = false) {
     let newlyUnlocked = false;
     let totalWorkouts = history.length;
     let totalVol = 0;
     
-    let maxBench = 0;
-    let maxSquat = 0;
-    let maxDeadlift = 0;
+    let maxBench = 0; let maxSquat = 0; let maxDeadlift = 0;
 
     history.forEach(log => {
         if(log.exercises) {
@@ -182,10 +180,8 @@ function checkAchievements() {
                     let w = parseFloat(set.weight || set.w || 0);
                     let r = parseInt(set.reps || set.r || 0);
                     
-                    if (w > 0 && r > 0) {
-                        if (set.type !== 'W') totalVol += (w * r); // Apenas carga de trabalho conta
-                        
-                        // Atualizar recordes absolutos do utilizador
+                    if (w > 0 && r > 0 && set.type !== 'W') {
+                        totalVol += (w * r); 
                         if (isBench && w > maxBench) maxBench = w;
                         if (isSquat && w > maxSquat) maxSquat = w;
                         if (isDead && w > maxDeadlift) maxDeadlift = w;
@@ -195,21 +191,33 @@ function checkAchievements() {
         }
     });
 
+    // Pega no BW do user para os achivements relativos
+    let bw = userProfile.weight || 70;
+
     allAchievements.forEach(ach => {
         if (!achievementsUnlocked.includes(ach.id)) {
             let unlock = false;
             
-            // Lógica de Desbloqueio
+            // Regras Antigas
             if (ach.reqWorkouts && totalWorkouts >= ach.reqWorkouts) unlock = true;
             if (ach.reqVol && totalVol >= ach.reqVol) unlock = true;
             if (ach.reqBench && maxBench >= ach.reqBench) unlock = true;
             if (ach.reqSquat && maxSquat >= ach.reqSquat) unlock = true;
             if (ach.reqDeadlift && maxDeadlift >= ach.reqDeadlift) unlock = true;
 
+            // Regras Novas Absurdas
+            if (ach.reqSingleVol && sessionVol >= ach.reqSingleVol) unlock = true;
+            if (ach.reqGlobalVol && totalVol >= ach.reqGlobalVol) unlock = true;
+            if (ach.reqGlobalVolMulti && totalVol >= (ach.reqGlobalVolMulti * bw)) unlock = true;
+            if (ach.reqFinisher && hasFinisher) unlock = true;
+
             if (unlock) {
                 achievementsUnlocked.push(ach.id);
                 newlyUnlocked = true;
-                setTimeout(() => alert(`🏆 NOVA CONQUISTA DESBLOQUEADA: ${ach.title}!\n${ach.desc}`), 500);
+                setTimeout(() => {
+                    if(typeof showPulseToast === 'function') showPulseToast(`🏆 NOVA CONQUISTA: ${ach.title}!`);
+                    else alert(`🏆 NOVA CONQUISTA DESBLOQUEADA: ${ach.title}!\n${ach.desc}`);
+                }, 800); // Delay ligeiro para aparecer já depois do Recap
             }
         }
     });
