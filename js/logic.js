@@ -306,3 +306,104 @@ function importData(event) {
     }; 
     reader.readAsText(file); 
 }
+
+// ==========================================
+// 🦖 SISTEMA ABSURDO DE VOLUME & RECAP
+// ==========================================
+
+const absurdComparisonsDB = [
+    // Animais
+    { id: 'trex', name: 'T-Rex', cat: 'Animais', weight: 7000, emoji: '🦖' },
+    { id: 'elefante', name: 'Elefante-Africano', cat: 'Animais', weight: 6000, emoji: '🐘' },
+    { id: 'girafa', name: 'Girafa', cat: 'Animais', weight: 1200, emoji: '🦒' },
+    { id: 'rinoceronte', name: 'Rinoceronte', cat: 'Animais', weight: 2300, emoji: '🦏' },
+    { id: 'hipopotamo', name: 'Hipopótamo', cat: 'Animais', weight: 1500, emoji: '🦛' },
+    { id: 'gorila', name: 'Gorila', cat: 'Animais', weight: 180, emoji: '🦍' },
+    { id: 'urso', name: 'Urso-Polar', cat: 'Animais', weight: 450, emoji: '🐻‍❄️' },
+    { id: 'crocodilo', name: 'Crocodilo', cat: 'Animais', weight: 500, emoji: '🐊' },
+    // Veículos
+    { id: 'fiat', name: 'Fiat 500', cat: 'Veículos', weight: 1000, emoji: '🚗' },
+    { id: 'clio', name: 'Renault Clio', cat: 'Veículos', weight: 1200, emoji: '🚙' },
+    { id: 'mota', name: 'Motociclo', cat: 'Veículos', weight: 200, emoji: '🏍️' },
+    { id: 'trator', name: 'Trator', cat: 'Veículos', weight: 4000, emoji: '🚜' },
+    { id: 'escavadora', name: 'Escavadora', cat: 'Veículos', weight: 20000, emoji: '🏗️' },
+    { id: 'bus', name: 'Autocarro', cat: 'Veículos', weight: 12000, emoji: '🚌' },
+    { id: 'comboio', name: 'Comboio', cat: 'Veículos', weight: 80000, emoji: '🚆' },
+    { id: 'boeing', name: 'Boeing 737', cat: 'Veículos', weight: 41000, emoji: '✈️' },
+    // Monumentos
+    { id: 'eiffel', name: 'Torre Eiffel', cat: 'Monumentos', weight: 10100000, emoji: '🗼' },
+    { id: 'liberdade', name: 'Estátua da Liberdade', cat: 'Monumentos', weight: 225000, emoji: '🗽' },
+    { id: 'ponte', name: 'Ponte D. Luís I', cat: 'Monumentos', weight: 3000000, emoji: '🌉' },
+    { id: 'bigben', name: 'Big Ben', cat: 'Monumentos', weight: 8400000, emoji: '🕰️' },
+    { id: 'cristo', name: 'Cristo Redentor', cat: 'Monumentos', weight: 1145000, emoji: '⛰️' },
+    { id: 'coliseu', name: 'Coliseu de Roma', cat: 'Monumentos', weight: 500000000, emoji: '🏛️' },
+    // Comida
+    { id: 'pizza', name: 'Pizza Grande', cat: 'Comida', weight: 1, emoji: '🍕' },
+    { id: 'hamburguer', name: 'Hambúrgueres', cat: 'Comida', weight: 0.25, emoji: '🍔' },
+    { id: 'melancia', name: 'Melancias', cat: 'Comida', weight: 5, emoji: '🍉' },
+    { id: 'frango', name: 'Frangos Assados', cat: 'Comida', weight: 1.2, emoji: '🍗' },
+    { id: 'arroz', name: 'Sacos de Arroz (5kg)', cat: 'Comida', weight: 5, emoji: '🍚' },
+    { id: 'queijo', name: 'Rodas de Queijo', cat: 'Comida', weight: 25, emoji: '🧀' },
+    // Objetos
+    { id: 'frigo', name: 'Frigoríficos', cat: 'Objetos', weight: 70, emoji: '🧊' },
+    { id: 'lavar', name: 'Máquinas de Lavar', cat: 'Objetos', weight: 70, emoji: '🧺' },
+    { id: 'sofa', name: 'Sofás', cat: 'Objetos', weight: 80, emoji: '🛋️' },
+    { id: 'piano', name: 'Pianos de Cauda', cat: 'Objetos', weight: 400, emoji: '🎹' },
+    { id: 'bike', name: 'Bicicletas', cat: 'Objetos', weight: 15, emoji: '🚲' },
+    { id: 'mala', name: 'Malas de Viagem', cat: 'Objetos', weight: 20, emoji: '🧳' },
+    // História / Fantasia
+    { id: 'armadura', name: 'Armaduras Medievais', cat: 'História', weight: 25, emoji: '🛡️' },
+    { id: 'canhao', name: 'Canhões', cat: 'História', weight: 1000, emoji: '🏴‍☠️' },
+    { id: 'ancora', name: 'Âncoras', cat: 'História', weight: 2000, emoji: '⚓' },
+    { id: 'carruagem', name: 'Carruagens', cat: 'História', weight: 500, emoji: '🐴' },
+    // Easter Eggs
+    { id: 'minion', name: 'Minions', cat: 'Easter Egg', weight: 40, emoji: '🍌' },
+    { id: 'ego', name: 'O Ego do gajo que faz supino ao teu lado', cat: 'Easter Egg', weight: Infinity, emoji: '😎', isEasterEgg: true }
+];
+
+function getAbsurdComparisons(volumeKg, maxItems = 2) {
+    if (volumeKg === 0) return [{ name: "O Ego do gajo que faz supino ao teu lado", count: 1, emoji: "😎" }];
+    
+    // Filtra objetos matematicamente relevantes (quantidade entre 0.5 e 10.000)
+    let valid = absurdComparisonsDB.filter(obj => {
+        if (obj.isEasterEgg) return false;
+        let qty = volumeKg / obj.weight;
+        return qty >= 0.5 && qty <= 10000;
+    });
+
+    if (valid.length === 0) valid = absurdComparisonsDB.filter(obj => !obj.isEasterEgg);
+
+    // Baralha e escolhe os melhores
+    valid.sort(() => 0.5 - Math.random());
+    let selected = valid.slice(0, maxItems);
+    
+    // Adiciona Easter Egg com 5% de probabilidade
+    if (Math.random() < 0.05) {
+        selected[0] = absurdComparisonsDB.find(o => o.id === 'ego');
+    }
+
+    return selected.map(obj => {
+        if (obj.isEasterEgg) return { name: obj.name, count: "Infinito", emoji: obj.emoji };
+        let count = volumeKg / obj.weight;
+        // Arredondamento limpo (ex: 2, 2.5, ou 2.15 se for muito pequeno)
+        let formattedCount = count >= 10 ? Math.round(count) : Number(count.toFixed(1));
+        return { name: obj.name, count: formattedCount, emoji: obj.emoji };
+    });
+}
+
+// Injetar Achievements Divertidos (Sem mexer no db.js)
+setTimeout(() => {
+    if (typeof allAchievements !== 'undefined') {
+        const funAchievements = [
+            { id: 'jurassic', title: 'Jurassic Gains', desc: 'Levantar 7.000 kg (1 T-Rex) num só treino.', icon: '🦖', reqSingleVol: 7000 },
+            { id: 'grua', title: 'Grua Humana', desc: 'Levantar 10 Toneladas numa sessão.', icon: '🏗️', reqSingleVol: 10000 },
+            { id: 'gorilla', title: 'Certified Gorilla', desc: 'Levantar 100x o teu peso corporal (Acumulado).', icon: '🦍', reqGlobalVolMulti: 100, secret: true },
+            { id: 'eiffel_ach', title: 'Tour Eiffel', desc: 'Acumular o peso da Torre Eiffel (10.100.000 kg).', icon: '🗼', reqGlobalVol: 10100000, secret: true },
+            { id: 'pizza_ach', title: 'Pizzaiolo', desc: 'Levantar o equivalente a 10.000 pizzas (Global).', icon: '🍕', reqGlobalVol: 10000 },
+            { id: 'onemoreset', title: 'One More Set', desc: 'Injetaste um finisher (Castigo) e sobreviveste.', icon: '💀', reqFinisher: true, secret: true }
+        ];
+        funAchievements.forEach(fa => {
+            if (!allAchievements.find(a => a.id === fa.id)) allAchievements.push(fa);
+        });
+    }
+}, 1000);
