@@ -1154,3 +1154,44 @@ function copyFlexText() { navigator.clipboard.writeText(`🔥 ACABEI DE FRITAR O
 function shareToInstagram() { if(typeof html2canvas === 'undefined') { showPulseToast("❌ Erro de imagem.", true); return; } const card = document.getElementById('flex-card'); html2canvas(card, { backgroundColor: '#0f172a', scale: 2 }).then(canvas => { canvas.toBlob(blob => { const file = new File([blob], 'pulse-workout.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ title: 'Treino Pulse', text: '🔥', files: [file] }).catch(err => console.log(err)); } else { const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = 'pulse_story.png'; a.click(); showPulseToast('📥 Imagem guardada na galeria!'); } }); }); }
 
 setTimeout(() => { updateGamificationLogic(); }, 1000);
+
+// --- MOTOR DE DROPDOWNS PREMIUM (FALSOS SELECTS) ---
+function togglePulseDropdown(id) {
+    const optionsDiv = document.getElementById(id + '-options');
+    const arrow = document.getElementById(id + '-arrow');
+    
+    // Fecha todos os outros que possam estar abertos
+    document.querySelectorAll('.pulse-drop-list').forEach(el => {
+        if (el.id !== id + '-options') { el.style.display = 'none'; }
+    });
+
+    if (optionsDiv.style.display === 'none' || optionsDiv.style.display === '') {
+        optionsDiv.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+    } else {
+        optionsDiv.style.display = 'none';
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function selectPulseOption(dropdownId, value, label, callbackName) {
+    // 1. Atualiza o valor invisível
+    document.getElementById(dropdownId).value = value;
+    // 2. Atualiza o texto visível
+    document.getElementById(dropdownId + '-label').innerText = label;
+    // 3. Fecha o menu
+    togglePulseDropdown(dropdownId);
+    
+    // 4. Corre a função que precisa de ser corrida (ex: updateProfileData, changeTheme)
+    if (callbackName && typeof window[callbackName] === 'function') {
+        window[callbackName](value);
+    }
+}
+
+// Fechar se clicar fora
+document.addEventListener('click', function(event) { 
+    if (!event.target.closest('.pulse-drop-container')) {
+        document.querySelectorAll('.pulse-drop-list').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.pulse-drop-arrow').forEach(el => el.style.transform = 'rotate(0deg)');
+    }
+});
