@@ -1249,11 +1249,19 @@ function selectPulseOption(dropdownId, value, label, callbackName) {
     if (callbackName && typeof window[callbackName] === 'function') { window[callbackName](value); }
 }
 
-document.addEventListener('click', function(event) { 
-    if (!event.target.closest('.pulse-drop-container') && !event.target.closest('#custom-select-trigger')) {
-        document.querySelectorAll('.pulse-drop-list').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.pulse-drop-arrow').forEach(el => el.style.transform = 'rotate(0deg)');
+window.onclick = function(event) {
+    if (!event.target.matches('.pulse-drop-trigger') && !event.target.closest('.pulse-drop-trigger')) {
+        let dropdowns = document.getElementsByClassName("pulse-drop-list");
+        let arrows = document.getElementsByClassName("pulse-drop-arrow");
+        for (let i = 0; i < dropdowns.length; i++) {
+            if (dropdowns[i].style.display === 'block') {
+                dropdowns[i].style.display = 'none';
+            }
+        }
+        for (let i = 0; i < arrows.length; i++) {
+            arrows[i].style.transform = 'rotate(0deg)';
+        }
     }
-});
+}
 
 function triggerTRexReveal() { document.getElementById('btn-trex-reveal').style.display = 'none'; let rainArea = document.getElementById('trex-rain-area'); let textEl = document.getElementById('trex-reveal-text'); let trexCount = (window.lastSessionVol / 7000).toFixed(2); for(let i=0; i<30; i++) { let dino = document.createElement('div'); dino.innerText = '🦖'; dino.style.position = 'absolute'; dino.style.left = Math.floor(Math.random() * 90) + '%'; dino.style.fontSize = (Math.random() * 15 + 15) + 'px'; dino.style.animation = `dinoFall ${Math.random() * 1.5 + 1}s linear forwards`; dino.style.opacity = Math.random() * 0.5 + 0.5; rainArea.appendChild(dino); setTimeout(() => { dino.remove(); }, 2500); } setTimeout(() => { textEl.innerHTML = `<span style="font-size:12px; color:white; display:block; margin-bottom:2px; font-weight:bold;">ISSO EQUIVALE A</span> ${trexCount}x T-REXES!`; textEl.style.display = 'block'; textEl.style.animation = 'pulseTRex 0.8s ease-out forwards'; }, 1200); }
