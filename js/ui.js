@@ -106,13 +106,39 @@ function checkSundayDebrief() {
 function closeDebrief() { document.getElementById('sunday-debrief-modal').style.display = 'none'; }
 
 // --- BIBLIOTECA E TREINOS ---
+// --- BIBLIOTECA E TREINOS ---
 function toggleDeleteMode() { deleteMode = !deleteMode; renderWorkoutSlots(); }
+
+// Motor de Eliminação de Treinos com Modal Premium
+let routineToDeleteIndex = -1;
+function deleteSavedRoutine(index) { routineToDeleteIndex = index; document.getElementById('delete-routine-modal').style.display = 'flex'; }
+function confirmDeleteRoutine() { if(routineToDeleteIndex !== -1) { savedRoutines.splice(routineToDeleteIndex, 1); localStorage.setItem('gym_saved_routines', JSON.stringify(savedRoutines)); renderWorkoutSlots(); showPulseToast("🗑️ Treino apagado da biblioteca."); document.getElementById('delete-routine-modal').style.display = 'none'; routineToDeleteIndex = -1; } }
+
 function renderWorkoutSlots() {
     const container = document.getElementById('workout-slots-container'); if(!container) return; container.innerHTML = ''; let slotCount = 0; const minSlots = 7;
     const createSlotHTML = (type, index, title, subtitle, color) => { slotCount++; return `<div class="slot-container-flex"><div class="built-item" style="flex:1; border:1px solid ${color}; cursor:pointer;" onclick="${deleteMode ? '' : `openWorkoutSlot('${type}', ${index})`}"><div class="built-item-info"><span class="built-item-title" style="color:${color}; font-size:16px;">${title}</span><span style="font-size:12px; color:var(--muted); margin-top:3px;">${subtitle}</span></div></div><button class="info-btn" onclick="showWorkoutInfo('${type}', ${index})">i</button></div>`; };
-    container.innerHTML += createSlotHTML('TITAN', 0, 'Divisão Titã (PPL)', 'Push, Pull e Legs', '#38bdf8'); container.innerHTML += createSlotHTML('MOBILITY', 0, 'Mobilidade Activa', 'SNC e Articulações', 'var(--success)');
-    savedRoutines.forEach((item, index) => { let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0); let actionBtn = deleteMode ? `<button class="info-btn" style="color:var(--danger); border-color:var(--danger);" onclick="deleteSavedRoutine(${index})">X</button>` : `<button class="info-btn" onclick="showWorkoutInfo('SAVED', ${index})">i</button>`; container.innerHTML += `<div class="slot-container-flex"><div class="built-item" style="flex:1; border:1px solid ${deleteMode ? 'var(--danger)' : '#f8fafc'}; cursor:pointer;" onclick="${deleteMode ? '' : `openWorkoutSlot('SAVED', ${index})`}"><div class="built-item-info"><span class="built-item-title" style="color:${deleteMode ? 'var(--danger)' : '#f8fafc'}; font-size:16px;">${item.name}</span><span style="font-size:12px; color:var(--muted); margin-top:3px;">${item.routine.length} Exs | ${totalSets} Séries</span></div></div>${actionBtn}</div>`; slotCount++; });
-    while(slotCount < minSlots) { container.innerHTML += `<div class="slot-container-flex"><div class="built-item empty-slot" style="flex:1; border:1px dashed #334155; background:transparent;"><div class="built-item-info"><span class="built-item-title" style="color:#64748b;">Slot Vazio</span></div></div><div style="width:55px; border-radius:12px; border:1px dashed #334155; background:transparent;"></div></div>`; slotCount++; }
+    
+    container.innerHTML += createSlotHTML('TITAN', 0, 'Divisão Titã (PPL)', 'Push, Pull e Legs', '#38bdf8'); 
+    container.innerHTML += createSlotHTML('MOBILITY', 0, 'Mobilidade Activa', 'SNC e Articulações', 'var(--success)');
+    
+    if(typeof savedRoutines !== 'undefined') {
+        savedRoutines.forEach((item, index) => { 
+            let totalSets = item.routine.reduce((sum, ex) => sum + parseInt(ex.sets), 0); 
+            // O botão da "Cruz Elegante" em modo Delete:
+            let actionBtn = deleteMode 
+                ? `<button class="info-btn" style="color:var(--danger); border-color:var(--danger); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; padding:0;" onclick="deleteSavedRoutine(${index})">✖</button>` 
+                : `<button class="info-btn" onclick="showWorkoutInfo('SAVED', ${index})">i</button>`; 
+            container.innerHTML += `<div class="slot-container-flex"><div class="built-item" style="flex:1; border:1px solid ${deleteMode ? 'var(--danger)' : '#f8fafc'}; cursor:pointer;" onclick="${deleteMode ? '' : `openWorkoutSlot('SAVED', ${index})`}"><div class="built-item-info"><span class="built-item-title" style="color:${deleteMode ? 'var(--danger)' : '#f8fafc'}; font-size:16px;">${item.name}</span><span style="font-size:12px; color:var(--muted); margin-top:3px;">${item.routine.length} Exs | ${totalSets} Séries</span></div></div>${actionBtn}</div>`; 
+            slotCount++; 
+        });
+    }
+    
+    // Slots Inativas Largas a 100% (Sem o buraco do lado direito)
+    while(slotCount < minSlots) { 
+        container.innerHTML += `<div class="slot-container-flex"><div class="built-item empty-slot" style="flex:1; border:1px dashed #334155; background:transparent;"><div class="built-item-info" style="width:100%; text-align:center;"><span class="built-item-title" style="color:#64748b; font-size:14px;">Slot Vazio</span></div></div></div>`; 
+        slotCount++; 
+    }
+    
     container.innerHTML += `<div style="display: flex; gap: 10px; margin-top: 10px;"><div class="built-item" style="flex:2; border:1px dashed var(--accent); background:rgba(56,189,248,0.05); justify-content:center; cursor:pointer;" onclick="navigateTo('view-construtor')"><span style="color:var(--accent); font-weight:bold; font-size:14px;">+ Criar Novo</span></div><div class="built-item" style="flex:1; border:1px dashed var(--danger); background:${deleteMode ? 'var(--danger)' : 'rgba(239,68,68,0.05)'}; justify-content:center; cursor:pointer;" onclick="toggleDeleteMode()"><span style="color:${deleteMode ? 'white' : 'var(--danger)'}; font-weight:bold; font-size:14px;">${deleteMode ? 'Concluir' : 'Eliminar'}</span></div></div>`;
 }
 function showWorkoutInfo(type, index) {
