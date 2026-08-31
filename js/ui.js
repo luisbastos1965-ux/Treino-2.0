@@ -220,7 +220,7 @@ function startTitanDay(day) {
 function backToWorkoutSlots() { document.getElementById('fab-home').style.display = ''; document.getElementById('treino-slots-view').style.display = 'block'; document.getElementById('treino-active-view').style.display = 'none'; }
 function switchWorkout(event, day) { currentDay = day; document.querySelectorAll('#active-workout-tabs .tab-btn').forEach(btn => btn.classList.remove('active')); event.currentTarget.classList.add('active'); const beastBtn = document.getElementById('main-beast-btn'); if (beastBtn) beastBtn.style.display = (day === 'MOBILITY') ? 'none' : 'block'; renderWorkout(); }
 function toggleDeloadMode() { isDeloadMode = !isDeloadMode; const btn = document.getElementById('btn-deload-toggle'); if(isDeloadMode) { btn.innerHTML = '🧘 Deload ON (Cargas 70%)'; btn.style.background = 'var(--success)'; showPulseToast("Modo Deload Ativado: Cargas a 70%."); } else { btn.innerHTML = '📉 Modo Deload'; btn.style.background = '#1e293b'; showPulseToast("Modo Deload Desativado."); } renderWorkout(); }
-function toggleSetType(btn) { let type = btn.getAttribute('data-type'); if (type === 'work') { btn.setAttribute('data-type', 'warmup'); btn.innerHTML = '🔥'; btn.className = 'set-type-btn warmup'; } else { btn.setAttribute('data-type', 'work'); btn.innerHTML = '💪'; btn.className = 'set-type-btn work'; } }
+function toggleSetType(btn) { let type = btn.getAttribute('data-type'); if (type === 'work') { btn.setAttribute('data-type', 'failure'); btn.innerHTML = '💀'; btn.className = 'set-type-btn failure'; } else if (type === 'failure') { btn.setAttribute('data-type', 'warmup'); btn.innerHTML = '🔥'; btn.className = 'set-type-btn warmup'; } else { btn.setAttribute('data-type', 'work'); btn.innerHTML = '💪'; btn.className = 'set-type-btn work'; } }
 
 // LÓGICA DO SWAP MODAL E INJEÇÃO DE FINISHER
 function openSwapModal(exName, idx) { 
@@ -351,7 +351,7 @@ function saveCurrentWorkout() {
         let setsDetails = []; let notes = document.getElementById(`notes-${currentDay}-${exIdx}`).value || "";
         for (let i = 1; i <= (ex.sets + 10); i++) { 
             let w = document.getElementById(`weight-${currentDay}-${exIdx}-${i}`); let r = document.getElementById(`reps-${currentDay}-${exIdx}-${i}`); let typeBtn = document.getElementById(`type-${currentDay}-${exIdx}-${i}`);
-            if (w && r && w.value && r.value) { setsDetails.push({ weight: parseFloat(w.value), reps: parseInt(r.value), rir: document.getElementById(`rir-${currentDay}-${exIdx}-${i}`).value, type: typeBtn ? (typeBtn.getAttribute('data-type') === 'warmup' ? 'W' : 'S') : 'S', notes: notes }); }
+            if (w && r && w.value && r.value) { let fType = 'S'; if(typeBtn) { let t = typeBtn.getAttribute('data-type'); if(t === 'warmup') fType = 'W'; if(t === 'failure') fType = 'F'; } setsDetails.push({ weight: parseFloat(w.value), reps: parseInt(r.value), rir: document.getElementById(`rir-${currentDay}-${exIdx}-${i}`).value, type: fType, notes: notes }); }
         }
         if (setsDetails.length > 0) workoutRecord.exercises[ex.name] = setsDetails;
     });
@@ -403,8 +403,8 @@ function updateHeatmap() {
         } 
     });
     
-    const getColor = (sets) => { if (sets === 0) return '#334155'; if (sets <= 6) return '#eab308'; if (sets <= 12) return '#f97316'; return '#ef4444'; };
-    const getLabel = (sets) => { if (sets === 0) return 'Recuperado'; if (sets <= 6) return 'Ativado'; if (sets <= 12) return 'Fadigado'; return 'Destruído'; };
+    const getColor = (sets) => { if (sets === 0) return '#334155'; if (sets < 10) return '#eab308'; if (sets <= 20) return '#22c55e'; return '#ef4444'; };
+    const getLabel = (sets) => { if (sets === 0) return 'Descanso'; if (sets < 10) return 'Falta Volume'; if (sets <= 20) return 'Sweet Spot'; return 'Overtraining'; };
 
     const muscles = [
         { name: 'Peito', id: 'peito', pain: [] },
@@ -431,7 +431,7 @@ function updateHeatmap() {
                 </div>
                 <div style="font-size:11px; color:${color}; margin-top:8px; font-weight:bold;">${label} (${volume[m.name]} S)</div>
                 <div class="progress-bar" style="height:6px; margin-top:8px; background:rgba(255,255,255,0.05); border-radius:3px;">
-                    <div style="height:100%; width:${Math.min((volume[m.name]/15)*100, 100)}%; background:${color}; border-radius:3px; transition:0.4s;"></div>
+                    <div style="height:100%; width:${Math.min((volume[m.name]/20)*100, 100)}%; background:${color}; border-radius:3px; transition:0.4s;"></div>
                 </div>
             `;
             el.style.borderLeft = `4px solid ${isPain ? 'var(--danger)' : color}`;
@@ -461,8 +461,8 @@ function renderAdvancedCharts() {
 }
 function renderChart() {
     const exercise = document.getElementById('exercise-select').value; if (!exercise) return; const labels = []; const data = []; const reps = [];
-    history.forEach(log => { if (log.exercises && log.exercises[exercise]) { labels.push(log.date); let workSets = log.exercises[exercise].filter(s => s.type !== 'W'); if(workSets.length===0) workSets = log.exercises[exercise]; data.push(workSets[0].weight || workSets[0].w); reps.push(workSets[0].reps || workSets[0].r); } });
-    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Carga (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: true, position: 'bottom', labels: { color: 'white', usePointStyle: true, padding: 20 } } }, scales: { x: { grid: { color: '#334155'} }, y: { grid: { color: '#334155' } } } } });
+    history.forEach(log => { if (log.exercises && log.exercises[exercise]) { labels.push(log.date); let workSets = log.exercises[exercise].filter(s => s.type !== 'W'); if(workSets.length===0) workSets = log.exercises[exercise]; let max1RM = 0; workSets.forEach(s => { let rm = calculate1RM(s.weight || s.w || 0, s.reps || s.r || 0); if(rm > max1RM) max1RM = rm; }); data.push(Math.round(max1RM)); reps.push(workSets[0].reps || workSets[0].r); } });
+    if (chartInstance) chartInstance.destroy(); const ctx = document.getElementById('progressChart').getContext('2d'); chartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: '1RM Estimado (kg)', data, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.2)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { display: true, position: 'bottom', labels: { color: 'white', usePointStyle: true, padding: 20 } } }, scales: { x: { grid: { color: '#334155'} }, y: { grid: { color: '#334155' } } } } });
     const maxWeight = Math.max(...data, 0); const maxReps = Math.max(...reps, 0); let totalVolume = 0; history.forEach(log => { if (log.exercises && log.exercises[exercise]) { log.exercises[exercise].forEach(set => { if(set.type !== 'W') totalVolume += (set.weight || set.w) * (set.reps || set.r); }); } });
     update1RMPrediction(exercise, maxWeight, maxReps, totalVolume);
 }
