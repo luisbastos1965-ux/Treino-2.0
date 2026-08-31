@@ -477,7 +477,7 @@ function updateHeatmap() {
     });
 }
 
-function setupChartSelect() { const select = document.getElementById('exercise-select'); if (!select) return; select.innerHTML = '<option value="">Escolhe um exercício...</option>'; const uniqueExercises = new Set(); history.forEach(log => { if(log.exercises) Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); }); uniqueExercises.forEach(ex => { select.innerHTML += `<option value="${ex}">${ex}</option>`; }); }
+function setupChartSelect() { const optionsContainer = document.getElementById('exercise-select-options'); if (!optionsContainer) return; optionsContainer.innerHTML = `<div class="pulse-drop-option" onclick="selectPulseOption('exercise-select', '', 'Escolhe um exercício...', 'renderChart')">Escolhe um exercício...</div>`; const uniqueExercises = new Set(); history.forEach(log => { if(log.exercises) Object.keys(log.exercises).forEach(ex => uniqueExercises.add(ex)); }); uniqueExercises.forEach(ex => { optionsContainer.innerHTML += `<div class="pulse-drop-option" onclick="selectPulseOption('exercise-select', '${ex}', '${ex}', 'renderChart')">${ex}</div>`; }); }
 function renderAdvancedCharts() {
     let radarVol = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
     history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([ex, sets]) => { let m = getMuscleForExercise(ex); sets.forEach(s => { if(s.type !== 'W') { if(radarVol[m] !== undefined) radarVol[m] += (s.weight||s.w||0) * (s.reps||s.r||0); else if(m==='Bíceps'||m==='Tríceps') radarVol['Braços'] += (s.weight||s.w||0) * (s.reps||s.r||0); }}); }); });
@@ -1005,16 +1005,17 @@ function checkPunishmentExpiration() {
 function openPunishmentModal() { document.getElementById('punishment-modal').style.display = 'flex'; } 
 function closePunishmentModal() { document.getElementById('punishment-modal').style.display = 'none'; }
 
-function fillSinPreset() { 
-    let sel = document.getElementById('sin-preset'); 
-    let opt = sel.options[sel.selectedIndex]; 
-    if(opt.value) { 
-        baseSinCals = parseInt(opt.value) || 0;
-        baseSinPro = parseInt(opt.getAttribute('data-p')) || 0;
-        baseSinCar = parseInt(opt.getAttribute('data-c')) || 0;
-        document.getElementById('sin-qty').value = "1";
-        updateSinValuesFromQty();
-    } 
+function selectSinPreset(cals, pro, car, label) {
+    document.getElementById('sin-preset-label').innerText = label;
+    document.getElementById('sin-preset-label').style.color = 'white';
+    togglePulseDropdown('sin-preset');
+    
+    baseSinCals = parseInt(cals) || 0;
+    baseSinPro = parseInt(pro) || 0;
+    baseSinCar = parseInt(car) || 0;
+    
+    document.getElementById('sin-qty').value = "1";
+    updateSinValuesFromQty();
 }
 
 function adjustSinQty(delta) {
@@ -1038,7 +1039,8 @@ function calculateSinFromMacros() {
     let cals = (p * 4) + (c * 4); 
     if (cals > 0) { 
         document.getElementById('sin-cals').value = cals; 
-        document.getElementById('sin-preset').value = ""; 
+        document.getElementById('sin-preset-label').innerText = "Pecado Personalizado";
+        document.getElementById('sin-preset-label').style.color = 'white';
     } 
 }
 
@@ -1159,38 +1161,21 @@ setTimeout(() => { updateGamificationLogic(); }, 1000);
 function togglePulseDropdown(id) {
     const optionsDiv = document.getElementById(id + '-options');
     const arrow = document.getElementById(id + '-arrow');
-    
-    // Fecha todos os outros que possam estar abertos
-    document.querySelectorAll('.pulse-drop-list').forEach(el => {
-        if (el.id !== id + '-options') { el.style.display = 'none'; }
-    });
-
-    if (optionsDiv.style.display === 'none' || optionsDiv.style.display === '') {
-        optionsDiv.style.display = 'block';
-        if (arrow) arrow.style.transform = 'rotate(180deg)';
-    } else {
-        optionsDiv.style.display = 'none';
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-    }
+    document.querySelectorAll('.pulse-drop-list').forEach(el => { if (el.id !== id + '-options') { el.style.display = 'none'; } });
+    if (optionsDiv.style.display === 'none' || optionsDiv.style.display === '') { optionsDiv.style.display = 'block'; if (arrow) arrow.style.transform = 'rotate(180deg)'; } 
+    else { optionsDiv.style.display = 'none'; if (arrow) arrow.style.transform = 'rotate(0deg)'; }
 }
 
 function selectPulseOption(dropdownId, value, label, callbackName) {
-    // 1. Atualiza o valor invisível
     document.getElementById(dropdownId).value = value;
-    // 2. Atualiza o texto visível
     document.getElementById(dropdownId + '-label').innerText = label;
-    // 3. Fecha o menu
+    document.getElementById(dropdownId + '-label').style.color = "white"; // Tira o tom "muted" após selecionar
     togglePulseDropdown(dropdownId);
-    
-    // 4. Corre a função que precisa de ser corrida (ex: updateProfileData, changeTheme)
-    if (callbackName && typeof window[callbackName] === 'function') {
-        window[callbackName](value);
-    }
+    if (callbackName && typeof window[callbackName] === 'function') { window[callbackName](value); }
 }
 
-// Fechar se clicar fora
 document.addEventListener('click', function(event) { 
-    if (!event.target.closest('.pulse-drop-container')) {
+    if (!event.target.closest('.pulse-drop-container') && !event.target.closest('#custom-select-trigger')) {
         document.querySelectorAll('.pulse-drop-list').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.pulse-drop-arrow').forEach(el => el.style.transform = 'rotate(0deg)');
     }
