@@ -18,37 +18,17 @@
     <link rel="stylesheet" href="css/views.css">
 
     <style>
-        html, body {
-            overscroll-behavior-y: none;
-        }
+        html, body { overscroll-behavior-y: none; }
 
-        /* CLASSE ESPECÍFICA PARA DROPDOWNS PREMIUM (BLINDADA) */
-        .pulse-dropdown {
-            -webkit-appearance: none !important;
-            -moz-appearance: none !important;
-            appearance: none !important;
-            background: #0f172a url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2338bdf8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") no-repeat right 15px top 50% !important;
-            background-size: 12px auto !important;
-            border: 1px solid #334155 !important;
-            color: white !important;
-            border-radius: 8px !important;
-            padding: 12px 35px 12px 15px !important;
-            font-size: 14px !important;
-            font-weight: bold !important;
-            outline: none !important;
-            cursor: pointer !important;
-            box-sizing: border-box !important;
-        }
-        .pulse-dropdown:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 10px rgba(56,189,248,0.2) !important;
-        }
-        .pulse-dropdown option {
-            background-color: #0f172a !important;
-            color: white !important;
-            font-weight: bold !important;
-            padding: 12px !important;
-        }
+        /* ESTILOS DOS DROPDOWNS PREMIUM (FALSOS SELECTS) */
+        .pulse-drop-container { position: relative; width: 100%; box-sizing: border-box; }
+        .pulse-drop-trigger { width: 100%; padding: 12px 15px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-sizing: border-box; }
+        .pulse-drop-trigger:active { border-color: var(--accent); box-shadow: 0 0 10px rgba(56,189,248,0.2); }
+        .pulse-drop-arrow { color: var(--accent); font-size: 12px; transition: transform 0.3s; }
+        .pulse-drop-list { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid #334155; border-radius: 8px; margin-top: 5px; z-index: 9999; max-height: 200px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .pulse-drop-option { padding: 12px 15px; color: #cbd5e1; font-size: 14px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #0f172a; text-align: left; }
+        .pulse-drop-option:last-child { border-bottom: none; }
+        .pulse-drop-option:active, .pulse-drop-option:hover { background: rgba(56,189,248,0.1); color: var(--accent); padding-left: 20px; transition: 0.2s; }
     </style>
 </head>
 <body>
@@ -57,11 +37,12 @@
 
     <!-- ECRÃ DE DESCANSO INTELIGENTE -->
     <div id="rest-timer-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
-        <button onclick="minimizeRestTimer()" style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:1px solid #334155; color:white; font-size:14px; padding:10px 15px; border-radius:12px; cursor:pointer; font-weight:bold;">↙ Minimizar</button>
-        <div class="rest-content" style="text-align:center;">
-            <h2 id="rest-time-display" style="font-size:90px; color:var(--accent); font-weight:900; margin:0; text-shadow: 0 0 30px rgba(56,189,248,0.5);">90s</h2>
-            <p class="rest-subtitle" style="color:var(--muted); margin-bottom:40px; font-size:16px;">Recupera o fôlego, Titã!</p>
-            <button onclick="skipRestTimer()" style="background:var(--danger); color:white; border:none; padding:15px 40px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:16px;">✖ Saltar Descanso</button>
+        <div class="rest-content" style="background:var(--card-bg); padding:40px 30px; border-radius:24px; text-align:center; border:1px solid var(--accent); box-shadow:0 10px 40px rgba(56,189,248,0.15); width:90%; max-width:320px;">
+            <h2 id="rest-time-display" style="font-size:85px; color:var(--accent); font-weight:900; margin:0 0 30px 0; text-shadow: 0 0 20px rgba(56,189,248,0.4); line-height:1;">90s</h2>
+            <div style="display:flex; gap:10px; width:100%;">
+                <button onclick="minimizeRestTimer()" style="flex:1; background:#1e293b; color:white; border:1px solid #334155; padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">↙ Minimizar</button>
+                <button onclick="skipRestTimer()" style="flex:1; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.3); padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">✖ Saltar</button>
+            </div>
         </div>
     </div>
     
@@ -106,7 +87,6 @@
             <style>#active-workout-tabs:empty { display: none !important; }</style>
             <div class="tabs" id="active-workout-tabs" style="display: flex; margin-bottom: 15px;"></div>
             
-            <div class="tabs" id="active-workout-tabs" style="display: flex;"></div>
             <div id="workout-container"></div>
             <div class="footer-action">
                 <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Flex</button>
@@ -118,18 +98,13 @@
     <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
         
-        <!-- ESTILOS EXCLUSIVOS DO CONSTRUTOR -->
         <style>
             .modern-tab-btn { flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted); }
             .modern-tab-btn.active { background: #1e293b; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-            
             .modern-fatigue-btn { flex: 1; background: #0f172a; color: var(--muted); border: 1px solid #334155; border-radius: 10px; padding: 15px 5px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display:flex; flex-direction:column; align-items:center; gap:6px; }
             .modern-fatigue-btn.active { background: rgba(56,189,248,0.1); color: var(--accent); border-color: var(--accent); }
-            
-            .modern-select { width: 100%; padding: 15px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; margin-bottom: 25px; outline:none; appearance: none; text-align:center; cursor:pointer; }
         </style>
 
-        <!-- TABS DE NAVEGAÇÃO DO CONSTRUTOR -->
         <div style="display: flex; background: #0f172a; padding: 6px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #334155;">
             <button id="btn-mode-auto" class="mode-btn modern-tab-btn active" onclick="setBuilderMode('auto')">🤖 IA</button>
             <button id="btn-mode-manual" class="mode-btn modern-tab-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
@@ -139,7 +114,6 @@
         <!-- PAINEL AUTO -->
         <div id="auto-focus-panel">
             <div style="background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155;">
-                
                 <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Nível de Fadiga</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 25px;">
                     <button id="btn-fatigue-energized" class="fatigue-btn modern-fatigue-btn active" onclick="setFatigue('energized')"><span style="font-size:18px;">🔋</span>100%</button>
@@ -149,51 +123,61 @@
                 
                 <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Foco Muscular</label>
                 
-                <!-- MENU DROPDOWN PERSONALIZADO -->
-                <div style="position: relative; margin-bottom: 25px;">
-                    <!-- Motor invisível que guarda a escolha para o gerador -->
+                <!-- DROPDOWN FOCO MUSCULAR -->
+                <div class="pulse-drop-container" style="margin-bottom: 25px;">
                     <input type="hidden" id="auto-focus-select" value="FULL">
-                    
-                    <!-- Botão visível -->
-                    <div id="custom-select-trigger" onclick="toggleCustomSelect()" style="width: 100%; padding: 15px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-sizing: border-box;">
-                        <span id="custom-select-label">Corpo Inteiro</span>
-                        <span id="custom-select-arrow" style="color: var(--accent); font-size: 12px; transition: transform 0.3s;">▼</span>
+                    <div class="pulse-drop-trigger" onclick="togglePulseDropdown('auto-focus-select')">
+                        <span id="auto-focus-select-label">Corpo Inteiro</span><span id="auto-focus-select-arrow" class="pulse-drop-arrow">▼</span>
                     </div>
-
-                    <!-- Lista de Opções Flutuante -->
-                    <div id="custom-select-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-top: 8px; z-index: 9999; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-                        <div class="custom-option" onclick="selectCustomOption('FULL', 'Corpo Inteiro')">Corpo Inteiro</div>
-                        <div class="custom-option" onclick="selectCustomOption('PUSH', 'Push (Peito, Ombro, Tríceps)')">Push (Peito, Ombro, Tríceps)</div>
-                        <div class="custom-option" onclick="selectCustomOption('PULL', 'Pull (Costas, Bíceps)')">Pull (Costas, Bíceps)</div>
-                        <div class="custom-option" onclick="selectCustomOption('LEGS', 'Legs (Pernas)')">Legs (Pernas)</div>
-                        <div class="custom-option" onclick="selectCustomOption('Peito', 'Isolado: Peito')">Isolado: Peito</div>
-                        <div class="custom-option" onclick="selectCustomOption('Costas', 'Isolado: Costas')">Isolado: Costas</div>
-                        <div class="custom-option" onclick="selectCustomOption('Ombros', 'Isolado: Ombros')">Isolado: Ombros</div>
-                        <div class="custom-option" onclick="selectCustomOption('Braços', 'Isolado: Braços')">Isolado: Braços</div>
-                        <div class="custom-option" onclick="selectCustomOption('Core', 'Isolado: Core')" style="border-bottom: none;">Isolado: Core</div>
+                    <div id="auto-focus-select-options" class="pulse-drop-list">
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'FULL', 'Corpo Inteiro')">Corpo Inteiro</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'PUSH', 'Push (Peito, Ombro, Tríceps)')">Push (Peito, Ombro, Tríceps)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'PULL', 'Pull (Costas, Bíceps)')">Pull (Costas, Bíceps)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'LEGS', 'Legs (Pernas)')">Legs (Pernas)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Peito', 'Isolado: Peito')">Isolado: Peito</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Costas', 'Isolado: Costas')">Isolado: Costas</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Ombros', 'Isolado: Ombros')">Isolado: Ombros</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Braços', 'Isolado: Braços')">Isolado: Braços</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Core', 'Isolado: Core')">Isolado: Core</div>
                     </div>
                 </div>
-
-                <!-- Estilos das opções do menu -->
-                <style>
-                    .custom-option { padding: 15px; color: #cbd5e1; font-size: 13px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #0f172a; transition: all 0.2s ease; }
-                    .custom-option:active, .custom-option:hover { background: rgba(56,189,248,0.1); color: var(--accent); padding-left: 20px; }
-                </style>
                 
                 <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px; border-radius:10px; text-transform: uppercase;" onclick="generateWorkout()">Gerar Treino</button>
-                
             </div>
         </div>
 
         <!-- PAINEL MANUAL -->
         <div id="manual-library-panel" class="goal-container" style="display: none;">
             <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <select id="filter-muscle" style="flex:1; padding: 12px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-weight:bold; outline:none;" onchange="renderLibrary()">
-                    <option value="ALL">Todos</option><option value="Peito">Peito</option><option value="Costas">Costas</option><option value="Pernas">Pernas</option><option value="Ombros">Ombros</option><option value="Braços">Braços</option><option value="Core">Core</option>
-                </select>
-                <select id="filter-tier" style="flex:1; padding: 12px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-weight:bold; outline:none;" onchange="renderLibrary()">
-                    <option value="ALL">Grau</option><option value="S">S-Tier</option><option value="A">A-Tier</option><option value="B">B-Tier</option>
-                </select>
+                <!-- DROPDOWN MÚSCULO -->
+                <div class="pulse-drop-container" style="flex:1;">
+                    <input type="hidden" id="filter-muscle" value="ALL">
+                    <div class="pulse-drop-trigger" onclick="togglePulseDropdown('filter-muscle')">
+                        <span id="filter-muscle-label">Todos</span><span id="filter-muscle-arrow" class="pulse-drop-arrow">▼</span>
+                    </div>
+                    <div id="filter-muscle-options" class="pulse-drop-list">
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Peito', 'Peito', 'renderLibrary')">Peito</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Costas', 'Costas', 'renderLibrary')">Costas</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Pernas', 'Pernas', 'renderLibrary')">Pernas</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Ombros', 'Ombros', 'renderLibrary')">Ombros</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Braços', 'Braços', 'renderLibrary')">Braços</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Core', 'Core', 'renderLibrary')">Core</div>
+                    </div>
+                </div>
+                <!-- DROPDOWN TIER -->
+                <div class="pulse-drop-container" style="flex:1;">
+                    <input type="hidden" id="filter-tier" value="ALL">
+                    <div class="pulse-drop-trigger" onclick="togglePulseDropdown('filter-tier')">
+                        <span id="filter-tier-label">Grau</span><span id="filter-tier-arrow" class="pulse-drop-arrow">▼</span>
+                    </div>
+                    <div id="filter-tier-options" class="pulse-drop-list">
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'S', 'S-Tier', 'renderLibrary')">S-Tier</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'A', 'A-Tier', 'renderLibrary')">A-Tier</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'B', 'B-Tier', 'renderLibrary')">B-Tier</div>
+                    </div>
+                </div>
             </div>
             <div id="library-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
@@ -218,10 +202,9 @@
         </div>
     </div>
 
-    <!-- ABA 3: EVOLUÇÃO (Menu Otimizado em Tabs) -->
+    <!-- ABA 3: EVOLUÇÃO -->
     <div id="view-evolucao" class="view-section">
         
-        <!-- TABS DE NAVEGAÇÃO -->
         <div class="tabs" style="display: flex; margin-bottom: 20px; gap: 5px;">
             <button class="tab-btn active" onclick="switchEvoTab(event, 'evo-corpo')">Físico</button>
             <button class="tab-btn" onclick="switchEvoTab(event, 'evo-forca')">Força & RPG</button>
@@ -256,7 +239,6 @@
         <!-- ABA: FORÇA & RPG -->
         <div id="evo-forca" class="evo-panel" style="display: none;">
             
-            <!-- HALL OF FAME -->
             <div class="goal-container text-center" style="margin-bottom: 20px;">
                 <h3 style="margin-bottom: 5px;">🏛️ Hall of Fame</h3>
                 <p style="font-size:11px; color:var(--muted); margin-bottom:15px;">Os teus 3 maiores levantamentos absolutos de sempre.</p>
@@ -275,10 +257,20 @@
                 <div id="rpg-stats-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
             </div>
 
-            <!-- Gráfico de progressão de carga alargado e encapsulado -->
             <div class="goal-container text-center" style="margin-top: 20px;">
                 <h3 style="margin-bottom: 15px;">📈 Progressão de Carga</h3>
-                <select id="exercise-select" class="chart-select" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; border:none; color:white; margin-bottom:15px;" onchange="renderChart()"></select>
+                
+                <!-- DROPDOWN EVOLUÇÃO (Preenchido pelo JS) -->
+                <div class="pulse-drop-container" style="margin-bottom: 15px;">
+                    <input type="hidden" id="exercise-select" value="">
+                    <div class="pulse-drop-trigger" onclick="togglePulseDropdown('exercise-select')">
+                        <span id="exercise-select-label">Escolhe um exercício...</span><span id="exercise-select-arrow" class="pulse-drop-arrow">▼</span>
+                    </div>
+                    <div id="exercise-select-options" class="pulse-drop-list">
+                        <!-- Gerado via JS -->
+                    </div>
+                </div>
+
                 <div style="position: relative; width: 100%;">
                     <canvas id="progressChart"></canvas>
                 </div>
@@ -350,14 +342,53 @@
             
             <div id="profile-form-container" class="profile-form" style="opacity: 0.7; pointer-events: none; margin-top: 15px; border-top: 1px dashed #334155; padding-top: 15px;">
                 <div class="form-group"><label>Nome</label><input type="text" id="prof-name" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
+                
                 <div class="form-row">
                     <div class="form-group"><label>Idade</label><input type="number" id="prof-age" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                    <div class="form-group"><label>Género</label><select id="prof-gender" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
+                    <div class="form-group"><label>Género</label>
+                        <div class="pulse-drop-container">
+                            <input type="hidden" id="prof-gender" value="male">
+                            <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-gender')">
+                                <span id="prof-gender-label">Masculino</span><span id="prof-gender-arrow" class="pulse-drop-arrow">▼</span>
+                            </div>
+                            <div id="prof-gender-options" class="pulse-drop-list">
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-gender', 'male', 'Masculino', 'updateProfileData')">Masculino</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-gender', 'female', 'Feminino', 'updateProfileData')">Feminino</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-row">
-                    <div class="form-group"><label>Atividade</label><select id="prof-activity" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">M. Ativo</option></select></div>
-                    <div class="form-group"><label>Objetivo</label><select id="prof-goal" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="cut">🔪 Secar</option><option value="maintain">⚡ Manter</option><option value="bulk">🔥 Bulk</option></select></div>
+                    <div class="form-group"><label>Atividade</label>
+                        <div class="pulse-drop-container">
+                            <input type="hidden" id="prof-activity" value="1.55">
+                            <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-activity')">
+                                <span id="prof-activity-label">Moderado</span><span id="prof-activity-arrow" class="pulse-drop-arrow">▼</span>
+                            </div>
+                            <div id="prof-activity-options" class="pulse-drop-list">
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.2', 'Sedentário', 'updateProfileData')">Sedentário</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.375', 'Leve', 'updateProfileData')">Leve</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.55', 'Moderado', 'updateProfileData')">Moderado</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.725', 'M. Ativo', 'updateProfileData')">M. Ativo</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Objetivo</label>
+                        <div class="pulse-drop-container">
+                            <input type="hidden" id="prof-goal" value="maintain">
+                            <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-goal')">
+                                <span id="prof-goal-label">⚡ Manter</span><span id="prof-goal-arrow" class="pulse-drop-arrow">▼</span>
+                            </div>
+                            <div id="prof-goal-options" class="pulse-drop-list">
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'cut', '🔪 Secar', 'updateProfileData')">🔪 Secar</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'maintain', '⚡ Manter', 'updateProfileData')">⚡ Manter</div>
+                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'bulk', '🔥 Bulk', 'updateProfileData')">🔥 Bulk</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
                 <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
 
@@ -379,13 +410,19 @@
 
                 <div class="form-group" style="margin-top:15px; border-top: 1px dashed #334155; padding-top: 15px;">
                     <label>🎨 Tema da Pulse</label>
-                    <select id="theme-selector" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="changeTheme(this.value)">
-                        <option value="default">Pulse Classic (Azul)</option>
-                        <option value="spartan">Spartan Blood (Vermelho)</option>
-                        <option value="cyberpunk">Cyberpunk (Néon Rosa)</option>
-                        <option value="silverback">Silverback (Metálico)</option>
-                        <option value="hulk">Mutant Serum (Verde)</option>
-                    </select>
+                    <div class="pulse-drop-container">
+                        <input type="hidden" id="theme-selector" value="default">
+                        <div class="pulse-drop-trigger" onclick="togglePulseDropdown('theme-selector')">
+                            <span id="theme-selector-label">Pulse Classic (Azul)</span><span id="theme-selector-arrow" class="pulse-drop-arrow">▼</span>
+                        </div>
+                        <div id="theme-selector-options" class="pulse-drop-list">
+                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'default', 'Pulse Classic (Azul)', 'changeTheme')">Pulse Classic (Azul)</div>
+                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'spartan', 'Spartan Blood (Vermelho)', 'changeTheme')">Spartan Blood (Vermelho)</div>
+                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'cyberpunk', 'Cyberpunk (Néon Rosa)', 'changeTheme')">Cyberpunk (Néon Rosa)</div>
+                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'silverback', 'Silverback (Metálico)', 'changeTheme')">Silverback (Metálico)</div>
+                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'hulk', 'Mutant Serum (Verde)', 'changeTheme')">Mutant Serum (Verde)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </details>
@@ -427,23 +464,19 @@
     <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
         
-        <!-- 1. DASHBOARD NUTRICIONAL VIVO (Sem Gorduras) -->
         <div class="goal-container">
             <h3 class="text-center">📊 Dashboard Nutricional</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-                <!-- Calorias (Ocupa 2 colunas) -->
                 <div style="grid-column: span 2; background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent);">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🔥 Calorias</div>
                     <div style="font-weight: bold; font-size: 20px;"><span id="dash-cals-done" style="color: white;">0</span> <span style="color: var(--muted); font-size: 12px;">/ <span id="dash-cals-target">0</span> Kcal</span></div>
                     <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-cals-bar" style="height:100%; width:0%; background:var(--accent); border-radius:3px; transition: 0.4s;"></div></div>
                 </div>
-                <!-- Proteína -->
                 <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--success);">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🥩 Proteína</div>
                     <div style="font-weight: bold; font-size: 18px;"><span id="dash-pro-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-pro-target">0</span>g</span></div>
                     <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-pro-bar" style="height:100%; width:0%; background:var(--success); border-radius:3px; transition: 0.4s;"></div></div>
                 </div>
-                <!-- Hidratos -->
                 <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid #3b82f6;">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🍚 Hidratos</div>
                     <div style="font-weight: bold; font-size: 18px;"><span id="dash-car-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-car-target">0</span>g</span></div>
@@ -452,7 +485,6 @@
             </div>
         </div>
 
-        <!-- 2. JEJUM & HIDRATAÇÃO -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
             <div class="goal-container text-center" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
                 <h3>⏳ Jejum</h3>
@@ -471,32 +503,33 @@
             </div>
         </div>
 
-        <!-- 3. REGISTO ALIMENTAR INTELIGENTE (Com DB Local) -->
         <div class="goal-container" style="margin-top: 20px;">
             <h3>📝 Registo Alimentar</h3>
             <div style="background:#0f172a; padding:15px; border-radius:12px; margin-top:15px; margin-bottom:15px; border: 1px dashed #334155;">
                 
                 <label style="font-size:11px; color:var(--accent); font-weight:bold; display:block; margin-bottom:5px;">Preenchimento Rápido</label>
-                <select id="db-food-select" onchange="fillCommonFood()" style="width:100%; padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; margin-bottom:15px;">
-                    <option value="">Ingredientes Comuns...</option>
-                    <option value="Ovo Cozido (1 uni)">Ovo Cozido (1 uni)</option>
-                    <option value="Peito de Frango Cru (100g)">Peito de Frango Cru (100g)</option>
-                    <option value="Peito de Frango Grelhado (100g)">Peito de Frango Grelhado (100g)</option>
-                    <option value="Bife de Vaca Magro (100g)">Bife de Vaca Magro (100g)</option>
-                    <option value="Salmão Grelhado (100g)">Salmão Grelhado (100g)</option>
-                    <option value="Arroz Branco (100g cozido)">Arroz Branco (100g cozido)</option>
-                    <option value="Massa (100g cozida)">Massa (100g cozida)</option>
-                    <option value="Batata Doce (100g cozida)">Batata Doce (100g cozida)</option>
-                    <option value="Aveia (50g)">Aveia (50g)</option>
-                    <option value="Whey Protein (1 scoop 30g)">Whey Protein (1 scoop 30g)</option>
-                    <option value="Banana (1 média)">Banana (1 média)</option>
-                    <option value="Maçã (1 média)">Maçã (1 média)</option>
-                    <option value="Manteiga de Amendoim (1 c.sopa)">Manteiga de Amendoim (1 c.sopa)</option>
-                    <option value="Azeite (1 colher de sopa)">Azeite (1 colher de sopa)</option>
-                    <option value="Atum em água (1 lata seca)">Atum em água (1 lata seca)</option>
-                    <option value="Pão Integral (1 fatia)">Pão Integral (1 fatia)</option>
-                    <option value="Leite Meio Gordo (250ml)">Leite Meio Gordo (250ml)</option>
-                </select>
+                
+                <!-- DROPDOWN COMIDA -->
+                <div class="pulse-drop-container" style="margin-bottom: 15px;">
+                    <input type="hidden" id="db-food-select" value="">
+                    <div class="pulse-drop-trigger" onclick="togglePulseDropdown('db-food-select')">
+                        <span id="db-food-select-label" style="color:var(--muted);">Ingredientes Comuns...</span><span id="db-food-select-arrow" class="pulse-drop-arrow">▼</span>
+                    </div>
+                    <div id="db-food-select-options" class="pulse-drop-list">
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Ovo Cozido (1 uni)', 'Ovo Cozido (1 uni)', 'fillCommonFood')">Ovo Cozido (1 uni)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Peito de Frango Cru (100g)', 'Peito de Frango Cru (100g)', 'fillCommonFood')">Peito de Frango Cru (100g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Peito de Frango Grelhado (100g)', 'Peito de Frango Grelhado (100g)', 'fillCommonFood')">Peito de Frango Grelhado (100g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Bife de Vaca Magro (100g)', 'Bife de Vaca Magro (100g)', 'fillCommonFood')">Bife de Vaca Magro (100g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Salmão Grelhado (100g)', 'Salmão Grelhado (100g)', 'fillCommonFood')">Salmão Grelhado (100g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Arroz Branco (100g cozido)', 'Arroz Branco (100g cozido)', 'fillCommonFood')">Arroz Branco (100g cozido)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Massa (100g cozida)', 'Massa (100g cozida)', 'fillCommonFood')">Massa (100g cozida)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Batata Doce (100g cozida)', 'Batata Doce (100g cozida)', 'fillCommonFood')">Batata Doce (100g cozida)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Aveia (50g)', 'Aveia (50g)', 'fillCommonFood')">Aveia (50g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Whey Protein (1 scoop 30g)', 'Whey Protein (1 scoop 30g)', 'fillCommonFood')">Whey Protein (1 scoop 30g)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Banana (1 média)', 'Banana (1 média)', 'fillCommonFood')">Banana (1 média)</div>
+                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Manteiga de Amendoim (1 c.sopa)', 'Manteiga de Amendoim (1 c.sopa)', 'fillCommonFood')">Manteiga de Amendoim (1 c.sopa)</div>
+                    </div>
+                </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
                     <input type="text" id="food-name" placeholder="Refeição..." style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
@@ -512,10 +545,8 @@
             <div id="daily-food-list" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
 
-        <!-- CAIXA DE PENITÊNCIA (Mostra o castigo se houver) -->
         <div id="punishment-status" style="margin-top: 20px;"></div>
 
-        <!-- 4. CARTÕES DE ATALHO EXTRAS -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
             <div onclick="openRecipesModal()" style="background: #1e293b; border: 1px solid var(--accent); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
                 <div style="font-size: 24px; margin-bottom: 5px;">📖</div>
@@ -544,7 +575,6 @@
                 <label style="font-size:12px;"><input type="checkbox" id="pain-joelhos"> Joelhos</label>
                 <label style="font-size:12px;"><input type="checkbox" id="pain-cotovelos"> Cotovelos</label>
             </div>
-
             <button class="btn-primary" style="width: 100%;" onclick="closeReadinessModal()">Confirmar Prontidão</button>
         </div>
     </div>
@@ -558,7 +588,6 @@
 
     <div id="workout-info-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10007;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid var(--accent);"><button onclick="closeWorkoutInfo()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 id="info-modal-title" style="color: white; margin-bottom: 20px;">Título</h3><div id="info-modal-content" style="color: var(--muted); font-size: 14px; line-height: 1.6; max-height: 50vh; overflow-y: auto;"></div><button class="btn-primary" style="width: 100%; margin-top: 25px; padding: 12px; background: #334155; color: white;" onclick="closeWorkoutInfo()">Voltar</button></div></div>
     
-    <!-- MODAL RECEITAS PARA HIPERTROFIA (Com scroll isolado) -->
     <div id="recipes-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
         <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative; overscroll-behavior: contain;">
             <button onclick="closeRecipesModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -567,29 +596,30 @@
         </div>
     </div>
     
-    <!-- MODAL TAXA DO PECADO (Com seletor de Quantidade / Porção) -->
     <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
         <div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4); overscroll-behavior: contain;">
             <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h3 style="color: #ef4444; margin-bottom: 5px; font-size:24px;">⛔ A Taxa do Pecado</h3>
             
-            <select id="sin-preset" onchange="fillSinPreset()" style="width:100%; margin-top:15px; margin-bottom:12px; padding:12px; border-radius:8px; border:none; background:#0f172a; color:white; font-size:14px;">
-                <option value="">Seleciona o Pecado...</option>
-                <option value="600" data-p="25" data-c="50">🍕 Fatias de Pizza (2 fatias)</option>
-                <option value="800" data-p="35" data-c="60">🍔 Hamburger c/ Queijo</option>
-                <option value="350" data-p="4" data-c="40">🍟 Batatas Fritas (Dose)</option>
-                <option value="1200" data-p="60" data-c="100">🥪 Francesinha (1 Inteira)</option>
-                <option value="400" data-p="5" data-c="60">🍩 Donut Recheado</option>
-                <option value="500" data-p="10" data-c="70">🍦 Gelado Grande</option>
-                <option value="450" data-p="5" data-c="55">🍰 Fatia de Bolo</option>
-                <option value="400" data-p="12" data-c="35">🥐 Croissant Misto</option>
-                <option value="270" data-p="3" data-c="30">🍫 Chocolate (Barra 50g)</option>
-                <option value="120" data-p="1" data-c="10">🍺 Cerveja / Fino (25cl)</option>
-                <option value="140" data-p="0" data-c="35">🥤 Refrigerante Cola (33cl)</option>
-                <option value="250" data-p="0" data-c="30">🍹 Bebida Branca c/ Sumo (Copo)</option>
-            </select>
+            <!-- DROPDOWN PECADOS -->
+            <div class="pulse-drop-container" style="margin-top: 15px; margin-bottom: 12px;">
+                <input type="hidden" id="sin-preset" value="">
+                <div class="pulse-drop-trigger" onclick="togglePulseDropdown('sin-preset')">
+                    <span id="sin-preset-label" style="color:var(--muted);">Seleciona o Pecado...</span><span id="sin-preset-arrow" class="pulse-drop-arrow">▼</span>
+                </div>
+                <div id="sin-preset-options" class="pulse-drop-list">
+                    <div class="pulse-drop-option" onclick="selectSinPreset('600', '25', '50', '🍕 Fatias de Pizza (2 fatias)')">🍕 Fatias de Pizza (2 fatias)</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('800', '35', '60', '🍔 Hamburger c/ Queijo')">🍔 Hamburger c/ Queijo</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('350', '4', '40', '🍟 Batatas Fritas (Dose)')">🍟 Batatas Fritas (Dose)</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('1200', '60', '100', '🥪 Francesinha (1 Inteira)')">🥪 Francesinha (1 Inteira)</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('400', '5', '60', '🍩 Donut Recheado')">🍩 Donut Recheado</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('500', '10', '70', '🍦 Gelado Grande')">🍦 Gelado Grande</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('450', '5', '55', '🍰 Fatia de Bolo')">🍰 Fatia de Bolo</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('270', '3', '30', '🍫 Chocolate (Barra 50g)')">🍫 Chocolate (Barra 50g)</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('120', '1', '10', '🍺 Cerveja / Fino (25cl)')">🍺 Cerveja / Fino (25cl)</div>
+                </div>
+            </div>
 
-            <!-- Seletor de Quantidade/Porção -->
             <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; background:#0f172a; padding:8px 12px; border-radius:8px;">
                 <span style="font-size:12px; color:var(--muted); font-weight:bold;">Quantidade:</span>
                 <button onclick="adjustSinQty(-0.5)" style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">-</button>
@@ -609,7 +639,6 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAR CONFISSÃO (Personalizado) -->
     <div id="confess-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <h3 style="color: var(--danger); margin-bottom: 10px;">🩸 Confessar Pecado?</h3>
@@ -645,7 +674,6 @@
         </div>
     </div>
 
-    <!-- MODAL ÁGUA: GARRAFAS -->
     <div id="water-garrafas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
             <button onclick="closeWaterModal('garrafas')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -660,7 +688,6 @@
         </div>
     </div>
 
-    <!-- MODAL ÁGUA: COPOS -->
     <div id="water-copos-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
             <button onclick="closeWaterModal('copos')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
@@ -689,7 +716,7 @@
         </div>
     </div>
 
-<!-- MODAL GRAVAR ROTINA -->
+    <!-- MODAL GRAVAR ROTINA -->
     <div id="save-routine-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
         <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--accent); box-shadow: 0 10px 40px rgba(56,189,248,0.2);">
             <h3 style="color: var(--accent); margin-bottom: 10px;">💾 Guardar Treino</h3>
@@ -720,21 +747,34 @@
             <h3 style="color: var(--success); margin-bottom: 10px;">✚ Novo Exercício</h3>
             <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Adiciona uma nova variação à biblioteca.</p>
             <input type="text" id="custom-ex-name" placeholder="Nome do exercício..." style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
-            <select id="custom-ex-muscle" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; font-weight:bold; text-align:center; outline:none;">
-                <option value="" disabled selected>Seleciona o Músculo</option>
-                <option value="Peito">Peito</option>
-                <option value="Costas">Costas</option>
-                <option value="Pernas">Pernas</option>
-                <option value="Ombros">Ombros</option>
-                <option value="Braços">Braços</option>
-                <option value="Core">Core</option>
-            </select>
-            <select id="custom-ex-tier" style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; font-weight:bold; text-align:center; outline:none;">
-                <option value="" disabled selected>Seleciona o Grau</option>
-                <option value="S">Grau S (Forte/Composto)</option>
-                <option value="A">Grau A (Acessório/Máquina)</option>
-                <option value="B">Grau B (Isolamento/Cabo)</option>
-            </select>
+            
+            <div class="pulse-drop-container" style="margin-bottom: 10px;">
+                <input type="hidden" id="custom-ex-muscle" value="">
+                <div class="pulse-drop-trigger" onclick="togglePulseDropdown('custom-ex-muscle')">
+                    <span id="custom-ex-muscle-label" style="color:var(--muted);">Seleciona o Músculo</span><span id="custom-ex-muscle-arrow" class="pulse-drop-arrow">▼</span>
+                </div>
+                <div id="custom-ex-muscle-options" class="pulse-drop-list">
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Peito', 'Peito')">Peito</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Costas', 'Costas')">Costas</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Pernas', 'Pernas')">Pernas</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Ombros', 'Ombros')">Ombros</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Braços', 'Braços')">Braços</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Core', 'Core')">Core</div>
+                </div>
+            </div>
+
+            <div class="pulse-drop-container" style="margin-bottom: 20px;">
+                <input type="hidden" id="custom-ex-tier" value="">
+                <div class="pulse-drop-trigger" onclick="togglePulseDropdown('custom-ex-tier')">
+                    <span id="custom-ex-tier-label" style="color:var(--muted);">Seleciona o Grau</span><span id="custom-ex-tier-arrow" class="pulse-drop-arrow">▼</span>
+                </div>
+                <div id="custom-ex-tier-options" class="pulse-drop-list">
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'S', 'Grau S (Forte/Composto)')">Grau S (Forte/Composto)</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'A', 'Grau A (Acessório/Máquina)')">Grau A (Acessório/Máquina)</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'B', 'Grau B (Isolamento/Cabo)')">Grau B (Isolamento/Cabo)</div>
+                </div>
+            </div>
+
             <div style="display: flex; gap: 10px;">
                 <button class="beast-action-btn" onclick="confirmCustomExercise()" style="background: var(--success); color: white; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Adicionar</button>
                 <button class="beast-action-btn" onclick="document.getElementById('custom-exercise-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
