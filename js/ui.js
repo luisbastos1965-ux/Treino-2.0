@@ -180,8 +180,7 @@ function showWorkoutInfo(type, index) {
     document.getElementById('info-modal-title').innerText = title; document.getElementById('info-modal-content').innerHTML = `<p style="color:var(--success); font-weight:bold; margin-bottom:15px; border-bottom:1px solid #334155; padding-bottom:10px;">⏱️ Tempo Estimado: ~${totalSets * 3} min</p>` + content; document.getElementById('workout-info-modal').style.display = 'flex';
 }
 function closeWorkoutInfo() { document.getElementById('workout-info-modal').style.display = 'none'; }
-function openWorkoutSlot(type, index = 0) {
-    if (deleteMode) return;
+function openWorkoutSlot(type, index = 0) { if (deleteMode) return; window.sessionStartTime = Date.now(); document.getElementById('fab-home').style.display = 'none'; document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block';
     
     // Se for o Titã, abre a caixa de perguntas em vez de ir logo para o treino
     if (type === 'TITAN') {
@@ -234,11 +233,7 @@ function openTitanSelectionModal() {
 }
 
 // A função que arranca o treino com a escolha feita (Sem Abas!)
-function startTitanDay(day) {
-    document.getElementById('titan-select-modal').style.display = 'none';
-    document.getElementById('fab-home').style.display = 'none'; 
-    document.getElementById('treino-slots-view').style.display = 'none'; 
-    document.getElementById('treino-active-view').style.display = 'block';
+function startTitanDay(day) { window.sessionStartTime = Date.now(); document.getElementById('titan-select-modal').style.display = 'none'; document.getElementById('fab-home').style.display = 'none'; document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block';
     
     isDeloadMode = false; 
     document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload'; 
@@ -395,7 +390,64 @@ function saveCurrentWorkout() {
     });
     history.push(workoutRecord); localStorage.setItem('gym_tracker_history', JSON.stringify(history)); 
     localStorage.removeItem('gym_active_session'); // Limpa o anti-crash
-    updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); if(typeof checkAchievements === 'function') checkAchievements(); renderDisciplineWall(); backToWorkoutSlots();
+
+    // --- CÁLCULO DE ESTATÍSTICAS PARA O RECAP ---
+    let sessionVol = 0; let sessionSets = 0; let sessionReps = 0;
+    let maxVolEx = { name: '--', vol: 0 }; let maxWeightEx = { name: '--', weight: 0 };
+    let hasFinisher = false;
+
+    Object.entries(workoutRecord.exercises).forEach(([exName, sets]) => {
+        if (exName.includes('CASTIGO')) hasFinisher = true;
+        let exVol = 0;
+        sets.forEach(s => {
+            if (s.type !== 'W') {
+                let w = parseFloat(s.weight || s.w || 0);
+                let r = parseInt(s.reps || s.r || 0);
+                sessionVol += (w * r);
+                exVol += (w * r);
+                sessionSets++;
+                sessionReps += r;
+                if (w > maxWeightEx.weight) { maxWeightEx.weight = w; maxWeightEx.name = exName; }
+            }
+        });
+        if (exVol > maxVolEx.vol) { maxVolEx.vol = exVol; maxVolEx.name = exName; }
+    });
+
+    // Duração real (ou estima se por algum motivo falhou)
+    let durationMins = window.sessionStartTime ? Math.round((Date.now() - window.sessionStartTime) / 60000) : (sessionSets * 3);
+    if (durationMins > 180) durationMins = 180; // Cap para não mostrar horas se esqueceu app aberta
+
+    // Atualizar funções em background
+    updateGamificationLogic(); updateHeatmap(); calculateRPGStats(); renderDisciplineWall();
+    if(typeof checkAchievements === 'function') checkAchievements(sessionVol, hasFinisher);
+
+    // Preparar e mostrar Recap
+    document.getElementById('recap-date').innerText = workoutRecord.date;
+    document.getElementById('recap-vol').innerText = sessionVol.toLocaleString('en-US') + ' kg';
+    document.getElementById('recap-time').innerText = durationMins + ' min';
+    document.getElementById('recap-sets').innerText = sessionSets;
+    document.getElementById('recap-mvp').innerText = maxVolEx.vol > 0 ? maxVolEx.name : '--';
+    
+    // Gerar a Comparação Absurda
+    let absurdList = getAbsurdComparisons(sessionVol, 2);
+    let absurdHtml = '';
+    absurdList.forEach((a, i) => {
+        let size = i === 0 ? '16px' : '13px';
+        let color = i === 0 ? 'white' : 'var(--muted)';
+        absurdHtml += `<div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:${size}; color:${color}; font-weight:bold;">
+            <span style="font-size:24px;">${a.emoji}</span> Aproximadamente ${a.count} ${a.name}
+        </div>`;
+    });
+    document.getElementById('recap-absurd').innerHTML = absurdHtml;
+    
+    // Mostrar Modal (Não chamamos backToWorkoutSlots aqui!)
+    document.getElementById('workout-recap-modal').style.display = 'flex';
+}
+
+function closeWorkoutRecap() {
+    document.getElementById('workout-recap-modal').style.display = 'none';
+    backToWorkoutSlots();
+    updateGlobalStats(); // Atualiza contador global no fim
 }
 function openReadinessModal() { if (painTracker.includes('Ombros')) document.getElementById('pain-ombros').checked = true; if (painTracker.includes('Lombar')) document.getElementById('pain-lombar').checked = true; if (painTracker.includes('Joelhos')) document.getElementById('pain-joelhos').checked = true; if (painTracker.includes('Cotovelos')) document.getElementById('pain-cotovelos').checked = true; document.getElementById('readiness-modal').style.display = 'flex'; }
 function closeReadinessModal() { let p = []; if(document.getElementById('pain-ombros').checked) p.push('Ombros'); if(document.getElementById('pain-lombar').checked) p.push('Lombar'); if(document.getElementById('pain-joelhos').checked) p.push('Joelhos'); if(document.getElementById('pain-cotovelos').checked) p.push('Cotovelos'); painTracker = p; localStorage.setItem('gym_pain_tracker', JSON.stringify(painTracker)); let slp = parseInt(document.getElementById('ready-sleep').value); let mus = parseInt(document.getElementById('ready-muscle').value); let nrg = parseInt(document.getElementById('ready-energy').value); if ((slp + mus + nrg) < 9) showPulseToast("⚠️ O teu SNC está sob stress.", true); document.getElementById('readiness-modal').style.display = 'none'; renderWorkout(); updateHeatmap(); }
@@ -517,7 +569,23 @@ function updateGlobalStats() {
     let totalWorkouts = history.length; let totalSets = 0, totalVolume = 0; let exercisesDone = {};
     history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([exercise, sets]) => { if (!exercisesDone[exercise]) exercisesDone[exercise] = 0; exercisesDone[exercise]++; sets.forEach(set => { if(set.type !== 'W') { totalSets++; totalVolume += (set.weight||set.w||0) * (set.reps||set.r||0); }}); }); });
     let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum';
-    document.getElementById('global-stats').innerHTML = `<h3>📊 Estatísticas Globais</h3><br><p><strong>Treinos:</strong> ${totalWorkouts}</p><p><strong>Séries de Trabalho:</strong> ${totalSets}</p><p><strong>Tonagem Total:</strong> ${Math.round(totalVolume)} kg</p><p><strong>Favorito:</strong> ${fav}</p>`; calculateRPGStats();
+    document.getElementById('global-stats').innerHTML = `<h3>📊 Estatísticas Globais</h3><br><p><strong>Treinos:</strong> ${totalWorkouts}</p><p><strong>Séries de Trabalho:</strong> ${totalSets}</p><p><strong>Tonagem Total:</strong> ${Math.round(totalVolume).toLocaleString('en-US')} kg</p><p><strong>Favorito:</strong> ${fav}</p>`; 
+    
+    // Atualizar o Dashboard Global (Legado de Aço)
+    let elTonnage = document.getElementById('global-tonnage-display');
+    if (elTonnage) {
+        elTonnage.innerText = Math.round(totalVolume).toLocaleString('en-US') + ' kg';
+        let absurdListGlobal = getAbsurdComparisons(totalVolume, 4); // Pede 4 comparações
+        let htmlGlobal = '';
+        absurdListGlobal.forEach(a => {
+            htmlGlobal += `<div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size:13px; color:var(--muted);">${a.emoji} ${a.name}</span>
+                <span style="font-weight:900; color:var(--accent);">${a.count.toLocaleString('en-US')}</span>
+            </div>`;
+        });
+        document.getElementById('global-absurd-list').innerHTML = htmlGlobal;
+    }
+    calculateRPGStats();
 }
 function calculateRPGStats() {
     const muscleXP = { 'Peito': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0, 'Core': 0 };
@@ -733,7 +801,15 @@ function updateProfileData() {
 
 function renderAchievements() {
     const container = document.getElementById('achievements-list'); if(!container) return; container.innerHTML = '';
-    allAchievements.forEach(ach => { const isUnlocked = achievementsUnlocked.includes(ach.id); const filter = isUnlocked ? 'none' : 'grayscale(100%) opacity(0.3)'; const color = isUnlocked ? 'var(--accent)' : 'var(--muted)'; container.innerHTML += `<div style="display:flex; align-items:center; gap:15px; padding:12px; background:var(--bg-color); border-radius:12px; margin-bottom:10px; filter:${filter}; transition:0.3s;"><div style="font-size:30px; background:#1e293b; padding:10px; border-radius:50%; border:2px solid ${color};">${ach.icon}</div><div><h4 style="color:white; margin:0; font-size:15px;">${ach.title}</h4><p style="color:var(--muted); font-size:12px; margin-top:3px;">${ach.desc}</p></div></div>`; });
+    allAchievements.forEach(ach => { 
+        const isUnlocked = achievementsUnlocked.includes(ach.id); 
+        if (ach.secret && !isUnlocked) {
+            container.innerHTML += `<div style="display:flex; align-items:center; gap:15px; padding:12px; background:#0f172a; border-radius:12px; margin-bottom:10px; border:1px dashed #334155;"><div style="font-size:30px; opacity:0.2;">❓</div><div><h4 style="color:var(--muted); margin:0; font-size:15px;">Conquista Secreta</h4><p style="color:#334155; font-size:11px; margin-top:3px;">Continua a levantar peso para descobrir.</p></div></div>`;
+            return;
+        }
+        const filter = isUnlocked ? 'none' : 'grayscale(100%) opacity(0.3)'; const color = isUnlocked ? 'var(--accent)' : 'var(--muted)'; 
+        container.innerHTML += `<div style="display:flex; align-items:center; gap:15px; padding:12px; background:var(--bg-color); border-radius:12px; margin-bottom:10px; filter:${filter}; transition:0.3s;"><div style="font-size:30px; background:#1e293b; padding:10px; border-radius:50%; border:2px solid ${color};">${ach.icon}</div><div><h4 style="color:white; margin:0; font-size:15px;">${ach.title}</h4><p style="color:var(--muted); font-size:12px; margin-top:3px;">${ach.desc}</p></div></div>`; 
+    });
 }
 
 // --- NUTRIÇÃO E LISTA DE COMPRAS ---
