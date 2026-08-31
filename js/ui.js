@@ -143,13 +143,10 @@ function renderWorkoutSlots() {
         else if (minVol === pull) sugg = { title: 'Titã (PULL)', desc: '💡 Costas recuperadas. Hora de puxar ferro.', action: `startTitanDay('PULL')`, color: '#22c55e' };
         else sugg = { title: 'Titã (LEGS)', desc: '💡 Pernas frescas. Hoje é dia de agachar pesado.', action: `startTitanDay('LEGS')`, color: '#f59e0b' };
 
-        container.innerHTML += `<div style="background:linear-gradient(135deg, rgba(15,23,42,1) 0%, rgba(30,41,59,1) 100%); border: 1px solid ${sugg.color}; padding:18px 20px; border-radius:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.4);" onclick="${sugg.action}">
-            <div>
-                <div style="font-size:11px; color:var(--accent); font-weight:900; margin-bottom:5px; text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:5px;"><span>🧠</span> Smart Coach</div>
-                <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:4px;">${sugg.title}</div>
-                <div style="color:var(--muted); font-size:12px; line-height:1.4;">${sugg.desc}</div>
-            </div>
-            <div style="background:${sugg.color}; color:#0f172a; min-width:40px; height:40px; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:900; font-size:18px; box-shadow: 0 0 15px ${sugg.color}40;">▶</div>
+        container.innerHTML += `<div style="background:linear-gradient(135deg, rgba(15,23,42,1) 0%, rgba(30,41,59,1) 100%); border: 1px solid ${sugg.color}; padding:18px 20px; border-radius:16px; margin-bottom:20px; display:block; cursor:pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.4);" onclick="${sugg.action}">
+            <div style="font-size:11px; color:var(--accent); font-weight:900; margin-bottom:5px; text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:5px;"><span>🧠</span> Smart Coach</div>
+            <div style="color:white; font-size:18px; font-weight:bold; margin-bottom:4px;">${sugg.title}</div>
+            <div style="color:var(--muted); font-size:12px; line-height:1.4;">${sugg.desc}</div>
         </div>`;
     }
     // --- FIM DA IA ---
