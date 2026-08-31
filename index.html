@@ -29,6 +29,17 @@
         .pulse-drop-option { padding: 12px 15px; color: #cbd5e1; font-size: 14px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #0f172a; text-align: left; }
         .pulse-drop-option:last-child { border-bottom: none; }
         .pulse-drop-option:active, .pulse-drop-option:hover { background: rgba(56,189,248,0.1); color: var(--accent); padding-left: 20px; transition: 0.2s; }
+
+        /* ANIMAÇÕES DO T-REX */
+        @keyframes dinoFall {
+            0% { top: -20px; transform: rotate(0deg); opacity: 1; }
+            100% { top: 110%; transform: rotate(360deg); opacity: 0; }
+        }
+        @keyframes pulseTRex {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -707,13 +718,21 @@
                 </div>
             </div>
 
-            <!-- Absurd Comparation -->
+            <!-- Absurd Comparation com T-Rex Reveal -->
             <div style="padding: 0 20px 20px;">
-                <div style="background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px;">
-                    <div style="font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">🤔 O Que Levantaste Hoje?</div>
-                    <div id="recap-absurd" style="color: white; font-size: 14px; line-height: 1.5;">
+                <div style="background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px; position: relative; overflow: hidden;" id="recap-absurd-box">
+                    <div style="font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; position: relative; z-index: 2;">🤔 O Que Levantaste Hoje?</div>
+                    
+                    <div id="recap-absurd" style="color: white; font-size: 14px; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2;">
                         <!-- Injetado por JS -->
                     </div>
+                    
+                    <!-- Botão de Revelação -->
+                    <button id="btn-trex-reveal" class="beast-action-btn" style="width: 100%; background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: var(--danger); padding: 10px; font-size: 12px; font-weight: bold; position: relative; z-index: 2; cursor: pointer; border-radius: 8px;" onclick="triggerTRexReveal()">🦖 Revelação Especial T-Rex</button>
+                    
+                    <!-- Ecrã Invisível para a Chuva e o Resultado -->
+                    <div id="trex-rain-area" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;"></div>
+                    <div id="trex-reveal-text" style="display:none; text-align:center; font-size: 24px; font-weight: 900; color: var(--danger); text-shadow: 0 0 20px rgba(239,68,68,0.6); position:relative; z-index:2; margin-top:5px;"></div>
                 </div>
             </div>
 
