@@ -138,8 +138,8 @@ function renderWorkoutSlots() {
         let minVol = Math.min(push, pull, legs);
         let sugg = {};
         
-        if (minVol > 20) sugg = { title: 'Mobilidade Activa', desc: '⚠️ Muito volume acumulado. Foca na recuperação do SNC.', action: `openWorkoutSlot('MOBILITY')`, color: 'var(--success)' };
-        else if (minVol === push) sugg = { title: 'Titã (PUSH)', desc: '💡 Peito e Ombros descansados. Bora destruir.', action: `startTitanDay('PUSH')`, color: '#38bdf8' };
+        if (minVol > 20) sugg = { title: 'Mobilidade Ativa', desc: '⚠️ Muito volume acumulado. Foca na recuperação do SNC.', action: `openWorkoutSlot('MOBILITY')`, color: 'var(--success)' };
+        else if (minVol === push) sugg = { title: 'Titã (PUSH)', desc: '💡 Peito e Ombros descansados.', action: `startTitanDay('PUSH')`, color: '#38bdf8' };
         else if (minVol === pull) sugg = { title: 'Titã (PULL)', desc: '💡 Costas recuperadas. Hora de puxar ferro.', action: `startTitanDay('PULL')`, color: '#22c55e' };
         else sugg = { title: 'Titã (LEGS)', desc: '💡 Pernas frescas. Hoje é dia de agachar pesado.', action: `startTitanDay('LEGS')`, color: '#f59e0b' };
 
