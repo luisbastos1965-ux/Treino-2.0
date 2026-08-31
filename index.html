@@ -354,11 +354,11 @@
                 <div class="form-group"><label>Nome</label><input type="text" id="prof-name" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
                 <div class="form-row">
                     <div class="form-group"><label>Idade</label><input type="number" id="prof-age" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                    <div class="form-group"><label>Género</label><select id="prof-gender" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
+                    <div class="form-group"><label>Género</label><select id="prof-gender" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="male">Masculino</option><option value="female">Feminino</option></select></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Atividade</label><select id="prof-activity" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">M. Ativo</option></select></div>
-                    <div class="form-group"><label>Objetivo</label><select id="prof-goal" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="cut">🔪 Secar</option><option value="maintain">⚡ Manter</option><option value="bulk">🔥 Bulk</option></select></div>
+                    <div class="form-group"><label>Atividade</label><select id="prof-activity" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="1.2">Sedentário</option><option value="1.375">Leve</option><option value="1.55">Moderado</option><option value="1.725">M. Ativo</option></select></div>
+                    <div class="form-group"><label>Objetivo</label><select id="prof-goal" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="updateProfileData()"><option value="cut">🔪 Secar</option><option value="maintain">⚡ Manter</option><option value="bulk">🔥 Bulk</option></select></div>
                 </div>
                 <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
                 <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
@@ -381,7 +381,7 @@
 
                 <div class="form-group" style="margin-top:15px; border-top: 1px dashed #334155; padding-top: 15px;">
                     <label>🎨 Tema da Pulse</label>
-                    <select id="theme-selector" style="width: 100%; box-sizing: border-box;" onchange="changeTheme(this.value)">
+                    <select id="theme-selector" class="pulse-dropdown" style="width: 100%; box-sizing: border-box;" onchange="changeTheme(this.value)">
                         <option value="default">Pulse Classic (Azul)</option>
                         <option value="spartan">Spartan Blood (Vermelho)</option>
                         <option value="cyberpunk">Cyberpunk (Néon Rosa)</option>
