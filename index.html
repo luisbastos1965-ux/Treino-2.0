@@ -158,20 +158,37 @@
                 </div>
                 
                 <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Foco Muscular</label>
-                <div style="position: relative;">
-                    <select id="auto-focus-select" class="modern-select">
-                        <option value="FULL">Corpo Inteiro</option>
-                        <option value="PUSH">Push (Peito, Ombro, Tríceps)</option>
-                        <option value="PULL">Pull (Costas, Bíceps)</option>
-                        <option value="LEGS">Legs (Pernas)</option>
-                        <option value="Peito">Isolado: Peito</option>
-                        <option value="Costas">Isolado: Costas</option>
-                        <option value="Ombros">Isolado: Ombros</option>
-                        <option value="Braços">Isolado: Braços</option>
-                        <option value="Core">Isolado: Core</option>
-                    </select>
-                    <span style="position: absolute; right: 15px; top: 15px; pointer-events: none; color: var(--accent);">▼</span>
+                
+                <!-- MENU DROPDOWN PERSONALIZADO -->
+                <div style="position: relative; margin-bottom: 25px;">
+                    <!-- Motor invisível que guarda a escolha para o gerador -->
+                    <input type="hidden" id="auto-focus-select" value="FULL">
+                    
+                    <!-- Botão visível -->
+                    <div id="custom-select-trigger" onclick="toggleCustomSelect()" style="width: 100%; padding: 15px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-sizing: border-box;">
+                        <span id="custom-select-label">Corpo Inteiro</span>
+                        <span id="custom-select-arrow" style="color: var(--accent); font-size: 12px; transition: transform 0.3s;">▼</span>
+                    </div>
+
+                    <!-- Lista de Opções Flutuante -->
+                    <div id="custom-select-options" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-top: 8px; z-index: 9999; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+                        <div class="custom-option" onclick="selectCustomOption('FULL', 'Corpo Inteiro')">Corpo Inteiro</div>
+                        <div class="custom-option" onclick="selectCustomOption('PUSH', 'Push (Peito, Ombro, Tríceps)')">Push (Peito, Ombro, Tríceps)</div>
+                        <div class="custom-option" onclick="selectCustomOption('PULL', 'Pull (Costas, Bíceps)')">Pull (Costas, Bíceps)</div>
+                        <div class="custom-option" onclick="selectCustomOption('LEGS', 'Legs (Pernas)')">Legs (Pernas)</div>
+                        <div class="custom-option" onclick="selectCustomOption('Peito', 'Isolado: Peito')">Isolado: Peito</div>
+                        <div class="custom-option" onclick="selectCustomOption('Costas', 'Isolado: Costas')">Isolado: Costas</div>
+                        <div class="custom-option" onclick="selectCustomOption('Ombros', 'Isolado: Ombros')">Isolado: Ombros</div>
+                        <div class="custom-option" onclick="selectCustomOption('Braços', 'Isolado: Braços')">Isolado: Braços</div>
+                        <div class="custom-option" onclick="selectCustomOption('Core', 'Isolado: Core')" style="border-bottom: none;">Isolado: Core</div>
+                    </div>
                 </div>
+
+                <!-- Estilos das opções do menu -->
+                <style>
+                    .custom-option { padding: 15px; color: #cbd5e1; font-size: 13px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #0f172a; transition: all 0.2s ease; }
+                    .custom-option:active, .custom-option:hover { background: rgba(56,189,248,0.1); color: var(--accent); padding-left: 20px; }
+                </style>
                 
                 <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px; border-radius:10px; text-transform: uppercase;" onclick="generateWorkout()">Gerar Treino</button>
                 
