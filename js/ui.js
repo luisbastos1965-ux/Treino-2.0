@@ -18,9 +18,8 @@ window.onload = () => {
                 navigateTo('view-treino');
                 document.getElementById('treino-slots-view').style.display = 'none';
                 document.getElementById('treino-active-view').style.display = 'block';
+                document.getElementById('fab-home').style.display = 'none';
                 renderWorkout();
-                document.getElementById('beast-mode-overlay').style.display = 'flex';
-                renderBeastMode();
             } else {
                 localStorage.removeItem('gym_active_session');
                 activeSessionBackup = null;
