@@ -54,11 +54,7 @@ function generateSundayDebrief() {
     return { volume: Math.round(weeklyVol), workouts: workouts };
 }
 
-function getSmartRestTime(exerciseName) {
-    let ex = exerciseLibrary.find(e => e.name === exerciseName); if (!ex) return 90;
-    if (ex.tier === 'S' && ex.type === 'free' && ['Costas', 'Pernas', 'Peito'].includes(ex.muscle)) return 180;
-    if (ex.tier === 'S') return 120; return 90;
-}
+function getSmartRestTime(exerciseName) { let ex = exerciseLibrary.find(e => e.name === exerciseName); if (!ex) return 90; if (ex.tier === 'S') return 120; return 90; }
 
 function checkPainWarning(exerciseName) {
     let muscle = getMuscleForExercise(exerciseName); let warnings = [];
