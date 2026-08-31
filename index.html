@@ -643,9 +643,12 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;"><div><h4 id="flex-card-name" style="color: white; font-size: 18px;"></h4><span id="flex-card-date" style="color: var(--muted); font-size: 11px;"></span></div><div style="background: rgba(56,189,248,0.1); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; color: var(--accent); font-size: 12px; font-weight: bold;">GYM TRACKER</div></div><div style="margin-bottom: 25px;"><span style="color: var(--muted); font-size: 11px; text-transform: uppercase;">Treino do Dia</span><h2 id="flex-card-workout" style="color: #38bdf8; font-size: 32px; font-weight: 900; margin-top: 5px;"></h2></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;"><div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Volume</span><div id="flex-card-volume" style="color: #22c55e; font-size: 24px; font-weight: bold;"></div></div><div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Séries Fritadas</span><div id="flex-card-sets" style="color: #f59e0b; font-size: 24px; font-weight: bold;"></div></div></div><div style="background: rgba(56,189,248,0.05); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent);"><p id="flex-card-quote" style="color: #cbd5e1; font-size: 13px; font-style: italic;"></p></div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-primary" style="flex:1; background: #38bdf8; color: black;" onclick="copyFlexText()">📋 Copiar</button>
-                <button class="btn-primary" style="flex:2; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; border:none;" onclick="shareToInstagram()">📸 Partilhar no IG</button>
-            </div>
+        <button class="btn-secondary" style="flex:1; background:linear-gradient(45deg, #f97316, #ef4444); color:white; border:none;" onclick="openModoFlex()">📸 Flex</button>
+        <button class="btn-primary" style="flex:2;" onclick="saveCurrentWorkout()">Gravar Treino</button>
+    </div>
+    
+    <!-- O nosso espaçador fantasma para o botão Pulse não tapar nada -->
+    <div style="height: 110px; width: 100%;"></div>
         </div>
     </div>
 
