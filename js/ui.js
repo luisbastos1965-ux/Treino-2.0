@@ -29,10 +29,10 @@ window.onload = () => {
     }
 };
 
-function goHome() { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-home').classList.add('active'); document.getElementById('fab-home').classList.remove('visible'); window.scrollTo(0, 0); checkSundayDebrief(); }
+function goHome() { document.getElementById('fab-home').style.display = ''; document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById('view-home').classList.add('active'); document.getElementById('fab-home').classList.remove('visible'); window.scrollTo(0, 0); checkSundayDebrief(); }
 
 function navigateTo(id) {
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('fab-home').classList.add('visible'); window.scrollTo(0, 0);
+    document.getElementById('fab-home').style.display = ''; document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('fab-home').classList.add('visible'); window.scrollTo(0, 0);
     if (id === 'view-evolucao') { setupChartSelect(); updateGlobalStats(); updateHeatmap(); renderAdvancedCharts(); renderSBD(); }
     if (id === 'view-calendario') { renderCalendar(); }
     if (id === 'view-perfil') { renderProfile(); renderAchievements(); renderMissionProfile(); document.getElementById('theme-selector').value = appTheme; renderDisciplineWall(); }
