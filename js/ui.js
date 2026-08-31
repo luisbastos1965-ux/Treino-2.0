@@ -147,12 +147,75 @@ function showWorkoutInfo(type, index) {
 }
 function closeWorkoutInfo() { document.getElementById('workout-info-modal').style.display = 'none'; }
 function openWorkoutSlot(type, index = 0) {
-    if (deleteMode) return; document.getElementById('fab-home').style.display = 'none'; document.getElementById('treino-slots-view').style.display = 'none'; document.getElementById('treino-active-view').style.display = 'block';
-    isDeloadMode = false; document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload'; document.getElementById('btn-deload-toggle').style.background = '#1e293b';
-    const tabsContainer = document.getElementById('active-workout-tabs'); const beastBtn = document.getElementById('main-beast-btn');
-    if (type === 'TITAN') { tabsContainer.style.display = 'flex'; tabsContainer.innerHTML = `<button class="tab-btn active" onclick="switchWorkout(event,'PUSH')">PUSH</button><button class="tab-btn" onclick="switchWorkout(event,'PULL')">PULL</button><button class="tab-btn" onclick="switchWorkout(event,'LEGS')">LEGS</button>`; currentDay = 'PUSH'; } else if (type === 'MOBILITY') { tabsContainer.style.display = 'none'; currentDay = 'MOBILITY'; } else if (type === 'SAVED') { tabsContainer.style.display = 'none'; workoutData.CUSTOM = JSON.parse(JSON.stringify(savedRoutines[index].routine)); currentDay = 'CUSTOM'; }
-    if (beastBtn) beastBtn.style.display = (currentDay === 'MOBILITY') ? 'none' : 'block';
-    openReadinessModal(); renderWorkout();
+    if (deleteMode) return;
+    
+    // Se for o Titã, abre a caixa de perguntas em vez de ir logo para o treino
+    if (type === 'TITAN') {
+        openTitanSelectionModal();
+        return;
+    }
+
+    // Código normal para os restantes treinos (MOBILITY e SAVED)
+    document.getElementById('fab-home').style.display = 'none'; 
+    document.getElementById('treino-slots-view').style.display = 'none'; 
+    document.getElementById('treino-active-view').style.display = 'block';
+    isDeloadMode = false; 
+    document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload'; 
+    document.getElementById('btn-deload-toggle').style.background = '#1e293b';
+    const tabsContainer = document.getElementById('active-workout-tabs');
+    
+    if (type === 'MOBILITY') { 
+        tabsContainer.style.display = 'none'; 
+        currentDay = 'MOBILITY'; 
+    } else if (type === 'SAVED') { 
+        tabsContainer.style.display = 'none'; 
+        workoutData.CUSTOM = JSON.parse(JSON.stringify(savedRoutines[index].routine)); 
+        currentDay = 'CUSTOM'; 
+    }
+    openReadinessModal(); 
+    renderWorkout();
+}
+
+// A nova função que abre o modal de escolha do Titã
+function openTitanSelectionModal() {
+    let modal = document.getElementById('titan-select-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'titan-select-modal';
+        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); justify-content:center; align-items:center; padding:20px; z-index:10030;';
+        modal.innerHTML = `
+            <div style="background:var(--card-bg); padding:30px; border-radius:20px; width:100%; max-width:350px; text-align:center; position:relative; border:1px solid var(--accent); box-shadow:0 10px 40px rgba(56,189,248,0.2);">
+                <button onclick="document.getElementById('titan-select-modal').style.display='none'" style="position:absolute; top:10px; right:15px; background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer;">✖</button>
+                <h3 style="color:var(--accent); margin-bottom:5px;">Divisão Titã</h3>
+                <p style="color:var(--muted); font-size:13px; margin-bottom:20px;">Que grupo muscular vais destruir hoje?</p>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button onclick="startTitanDay('PUSH')" class="beast-action-btn" style="background:#1e293b; color:white; border:1px solid #38bdf8; padding:15px; font-size:15px; font-weight:bold;">Push (Peito, Ombros, Tríceps)</button>
+                    <button onclick="startTitanDay('PULL')" class="beast-action-btn" style="background:#1e293b; color:white; border:1px solid #22c55e; padding:15px; font-size:15px; font-weight:bold;">Pull (Costas, Bíceps)</button>
+                    <button onclick="startTitanDay('LEGS')" class="beast-action-btn" style="background:#1e293b; color:white; border:1px solid #f59e0b; padding:15px; font-size:15px; font-weight:bold;">Legs (Pernas e Core)</button>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+    modal.style.display = 'flex';
+}
+
+// A função que arranca o treino com a escolha feita (Sem Abas!)
+function startTitanDay(day) {
+    document.getElementById('titan-select-modal').style.display = 'none';
+    document.getElementById('fab-home').style.display = 'none'; 
+    document.getElementById('treino-slots-view').style.display = 'none'; 
+    document.getElementById('treino-active-view').style.display = 'block';
+    
+    isDeloadMode = false; 
+    document.getElementById('btn-deload-toggle').innerHTML = '📉 Modo Deload'; 
+    document.getElementById('btn-deload-toggle').style.background = '#1e293b';
+    
+    // Esconde as Abas de vez!
+    document.getElementById('active-workout-tabs').style.display = 'none'; 
+    currentDay = day;
+    
+    openReadinessModal(); 
+    renderWorkout();
 }
 function backToWorkoutSlots() { document.getElementById('fab-home').style.display = ''; document.getElementById('treino-slots-view').style.display = 'block'; document.getElementById('treino-active-view').style.display = 'none'; }
 function switchWorkout(event, day) { currentDay = day; document.querySelectorAll('#active-workout-tabs .tab-btn').forEach(btn => btn.classList.remove('active')); event.currentTarget.classList.add('active'); const beastBtn = document.getElementById('main-beast-btn'); if (beastBtn) beastBtn.style.display = (day === 'MOBILITY') ? 'none' : 'block'; renderWorkout(); }
