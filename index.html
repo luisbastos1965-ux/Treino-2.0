@@ -105,7 +105,10 @@
             <div id="workout-slots-container" style="margin-top: 20px; padding-bottom: 20px;"></div>
         </div>
 
+        <!-- ZONA DO TREINO ATIVO -->
         <div id="treino-active-view" style="display: none;">
+            
+            <!-- 1. Cabeçalho (Voltar, SNC, Deload) -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <button onclick="backToWorkoutSlots()" style="background:transparent; border:none; color:var(--accent); font-size:14px; font-weight:bold; cursor:pointer;">◀ Voltar</button>
                 <div style="display: flex; gap: 8px;">
@@ -114,15 +117,19 @@
                 </div>
             </div>
             
+            <!-- 2. Tabs de Divisão (Push, Pull, Legs) -->
             <style>#active-workout-tabs:empty { display: none !important; }</style>
             <div class="tabs" id="active-workout-tabs" style="display: flex; margin-bottom: 15px;"></div>
-            
-            <div class="tabs" id="active-workout-tabs" style="display: flex;"></div>
+
+            <!-- 3. Zona dos Exercícios (A App injeta o treino aqui) -->
             <div id="workout-container"></div>
-            <div class="footer-action">
-                <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Flex</button>
-                <button class="btn-primary" onclick="saveCurrentWorkout()">Gravar Treino</button>
+            
+            <!-- 4. Botões de Ação (Com o espaçador incluído para o Pulse não tapar!) -->
+            <div style="display:flex; gap:10px; margin-top:20px; padding-bottom:120px;">
+                <button class="btn-secondary" style="flex:1; background:linear-gradient(45deg, #f97316, #ef4444); color:white; border:none;" onclick="openModoFlex()">📸 Flex</button>
+                <button class="btn-primary" style="flex:2;" onclick="saveCurrentWorkout()">Gravar Treino</button>
             </div>
+
         </div>
     </div>
 
