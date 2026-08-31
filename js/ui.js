@@ -440,7 +440,10 @@ function saveCurrentWorkout() {
     });
     document.getElementById('recap-absurd').innerHTML = absurdHtml;
     
-    // Mostrar Modal (Não chamamos backToWorkoutSlots aqui!)
+    // Reset da zona do T-Rex
+    window.lastSessionVol = sessionVol; let btnTrex = document.getElementById('btn-trex-reveal'); let textTrex = document.getElementById('trex-reveal-text'); let rainTrex = document.getElementById('trex-rain-area'); if(btnTrex) { btnTrex.style.display = 'block'; textTrex.style.display = 'none'; textTrex.innerHTML = ''; rainTrex.innerHTML = ''; }
+    
+    // Mostrar Modal
     document.getElementById('workout-recap-modal').style.display = 'flex';
 }
 
@@ -565,11 +568,7 @@ function update1RMPrediction(exerciseName, maxWeight, maxReps, totalVolume) {
     } else container.style.display = 'none';
     document.getElementById('pr-display').innerHTML = `<p style="margin-top:10px;"><strong>Maior carga:</strong> ${maxWeight} kg</p><p><strong>Maior reps:</strong> ${maxReps}</p><p><strong>Volume total:</strong> ${Math.round(totalVolume)} kg</p>`;
 }
-function updateGlobalStats() {
-    let totalWorkouts = history.length; let totalSets = 0, totalVolume = 0; let exercisesDone = {};
-    history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([exercise, sets]) => { if (!exercisesDone[exercise]) exercisesDone[exercise] = 0; exercisesDone[exercise]++; sets.forEach(set => { if(set.type !== 'W') { totalSets++; totalVolume += (set.weight||set.w||0) * (set.reps||set.r||0); }}); }); });
-    let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum';
-    document.getElementById('global-stats').innerHTML = `<h3>📊 Estatísticas Globais</h3><br><p><strong>Treinos:</strong> ${totalWorkouts}</p><p><strong>Séries de Trabalho:</strong> ${totalSets}</p><p><strong>Tonagem Total:</strong> ${Math.round(totalVolume).toLocaleString('en-US')} kg</p><p><strong>Favorito:</strong> ${fav}</p>`; 
+function updateGlobalStats() { let totalWorkouts = history.length; let totalSets = 0, totalVolume = 0; let exercisesDone = {}; history.forEach(log => { if(log.exercises) Object.entries(log.exercises).forEach(([exercise, sets]) => { if (!exercisesDone[exercise]) exercisesDone[exercise] = 0; exercisesDone[exercise]++; sets.forEach(set => { if(set.type !== 'W') { totalSets++; totalVolume += (set.weight||set.w||0) * (set.reps||set.r||0); }}); }); }); let fav = Object.keys(exercisesDone).length > 0 ? Object.keys(exercisesDone).reduce((a, b) => exercisesDone[a] > exercisesDone[b] ? a : b) : 'Nenhum'; document.getElementById('global-stats').innerHTML = `<h3>📊 Estatísticas Globais</h3><br><p><strong>Treinos:</strong> ${totalWorkouts}</p><p><strong>Séries de Trabalho:</strong> ${totalSets}</p><p><strong>Tonagem Total:</strong> ${Math.round(totalVolume).toLocaleString('en-US')} kg</p><p><strong>Favorito:</strong> ${fav}</p>`; let elTonnage = document.getElementById('global-tonnage-display'); if (elTonnage) { elTonnage.innerText = Math.round(totalVolume).toLocaleString('en-US') + ' kg'; let trexCount = (totalVolume / 7000).toFixed(2); let htmlGlobal = `<div style="background: linear-gradient(90deg, rgba(239,68,68,0.15) 0%, rgba(15,23,42,1) 100%); border-left: 4px solid var(--danger); padding: 12px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><span style="font-size:14px; font-weight:bold; color:white;">🦖 Total em T-Rex</span><span style="font-weight:900; font-size:18px; color:var(--danger);">${trexCount}x</span></div>`; let absurdListGlobal = getAbsurdComparisons(totalVolume, 3).filter(a => a.name !== 'T-Rex'); absurdListGlobal.forEach(a => { htmlGlobal += `<div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;"><span style="font-size:13px; color:var(--muted);">${a.emoji} ${a.name}</span><span style="font-weight:900; color:var(--accent);">${a.count.toLocaleString('en-US')}</span></div>`; }); document.getElementById('global-absurd-list').innerHTML = htmlGlobal; } if(typeof calculateRPGStats === 'function') calculateRPGStats(); }
     
     // Atualizar o Dashboard Global (Legado de Aço)
     let elTonnage = document.getElementById('global-tonnage-display');
@@ -1256,3 +1255,5 @@ document.addEventListener('click', function(event) {
         document.querySelectorAll('.pulse-drop-arrow').forEach(el => el.style.transform = 'rotate(0deg)');
     }
 });
+
+function triggerTRexReveal() { document.getElementById('btn-trex-reveal').style.display = 'none'; let rainArea = document.getElementById('trex-rain-area'); let textEl = document.getElementById('trex-reveal-text'); let trexCount = (window.lastSessionVol / 7000).toFixed(2); for(let i=0; i<30; i++) { let dino = document.createElement('div'); dino.innerText = '🦖'; dino.style.position = 'absolute'; dino.style.left = Math.floor(Math.random() * 90) + '%'; dino.style.fontSize = (Math.random() * 15 + 15) + 'px'; dino.style.animation = `dinoFall ${Math.random() * 1.5 + 1}s linear forwards`; dino.style.opacity = Math.random() * 0.5 + 0.5; rainArea.appendChild(dino); setTimeout(() => { dino.remove(); }, 2500); } setTimeout(() => { textEl.innerHTML = `<span style="font-size:12px; color:white; display:block; margin-bottom:2px; font-weight:bold;">ISSO EQUIVALE A</span> ${trexCount}x T-REXES!`; textEl.style.display = 'block'; textEl.style.animation = 'pulseTRex 0.8s ease-out forwards'; }, 1200); }
