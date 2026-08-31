@@ -1232,60 +1232,63 @@ function shareToInstagram() { if(typeof html2canvas === 'undefined') { showPulse
 
 setTimeout(() => { updateGamificationLogic(); }, 1000);
 
-// --- MOTOR DE DROPDOWNS PREMIUM (BLINDADO) ---
+// --- MOTOR DE DROPDOWNS PREMIUM (ULTRA BLINDADO) ---
 function togglePulseDropdown(id) {
+    // 1. A MAGIA: Impede que o clique fure a caixa e ative o fechamento global
+    if (window.event) { window.event.stopPropagation(); }
+    
     let optionsDiv = document.getElementById(id + '-options');
     let arrow = document.getElementById(id + '-arrow');
+    if (!optionsDiv) return; // Prevenção de erros
     
-    // Verifica se está fechado antes de forçar a limpeza
-    let isClosed = (optionsDiv && (optionsDiv.style.display === 'none' || optionsDiv.style.display === ''));
+    let isClosed = (optionsDiv.style.display === 'none' || optionsDiv.style.display === '');
     
-    // 1. Fecha TODOS os menus do ecrã por segurança
+    // 2. Fecha todos os outros primeiro
     document.querySelectorAll('.pulse-drop-list').forEach(el => { el.style.display = 'none'; });
     document.querySelectorAll('.pulse-drop-arrow').forEach(el => { el.style.transform = 'rotate(0deg)'; });
     document.querySelectorAll('.pulse-drop-container').forEach(el => { el.style.zIndex = '1'; });
     
-    // 2. Se o que clicaste estava fechado, abre-o e coloca-o na camada da frente!
-    if (isClosed && optionsDiv) { 
-        optionsDiv.style.display = 'block'; 
-        if (arrow) arrow.style.transform = 'rotate(180deg)'; 
-        
-        let parentContainer = document.getElementById(id).closest('.pulse-drop-container');
-        if (parentContainer) parentContainer.style.zIndex = '99999';
+    // 3. Se estava fechado, abre o clicado e puxa para a frente
+    if (isClosed) {
+        optionsDiv.style.display = 'block';
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+        let parent = document.getElementById(id).closest('.pulse-drop-container');
+        if (parent) parent.style.zIndex = '99999';
     }
 }
 
 function selectPulseOption(dropdownId, value, label, callbackName) {
+    if (window.event) { window.event.stopPropagation(); }
+    
     let elInput = document.getElementById(dropdownId);
     let elLabel = document.getElementById(dropdownId + '-label');
     let optionsDiv = document.getElementById(dropdownId + '-options');
     let arrow = document.getElementById(dropdownId + '-arrow');
-    let parentContainer = elInput ? elInput.closest('.pulse-drop-container') : null;
     
-    // Muda o valor e o texto
     if (elInput) elInput.value = value;
     if (elLabel) { elLabel.innerText = label; elLabel.style.color = "white"; }
     
-    // Fecha o menu atual
     if (optionsDiv) optionsDiv.style.display = 'none';
     if (arrow) arrow.style.transform = 'rotate(0deg)';
-    if (parentContainer) parentContainer.style.zIndex = '1';
     
-    // Corre a função associada (Ex: gerar gráficos, atualizar perfil, etc.)
+    let parent = elInput ? elInput.closest('.pulse-drop-container') : null;
+    if (parent) parent.style.zIndex = '1';
+    
+    // Dispara a função associada (ex: updateProfileData, changeTheme)
     if (callbackName && typeof window[callbackName] === 'function') { 
         window[callbackName](value); 
     }
 }
 
-// 3. LIMPEZA TOTAL DE CONFLITOS DE CLIQUES
-window.onclick = null; // Mata funções antigas perdidas
-document.onclick = function(event) { 
-    // Se o clique for FORA de um menu, fecha todos os que estiverem abertos
+// 4. Detetor global APENAS para cliques acidentais fora das caixas
+window.onclick = null; // Limpa lixo antigo
+document.addEventListener('click', function(event) {
     if (!event.target.closest('.pulse-drop-container')) {
         document.querySelectorAll('.pulse-drop-list').forEach(el => { el.style.display = 'none'; });
         document.querySelectorAll('.pulse-drop-arrow').forEach(el => { el.style.transform = 'rotate(0deg)'; });
         document.querySelectorAll('.pulse-drop-container').forEach(el => { el.style.zIndex = '1'; });
     }
-};
+});
 
+// A Função do T-Rex que pediste!
 function triggerTRexReveal() { document.getElementById('btn-trex-reveal').style.display = 'none'; let rainArea = document.getElementById('trex-rain-area'); let textEl = document.getElementById('trex-reveal-text'); let trexCount = (window.lastSessionVol / 7000).toFixed(2); for(let i=0; i<30; i++) { let dino = document.createElement('div'); dino.innerText = '🦖'; dino.style.position = 'absolute'; dino.style.left = Math.floor(Math.random() * 90) + '%'; dino.style.fontSize = (Math.random() * 15 + 15) + 'px'; dino.style.animation = `dinoFall ${Math.random() * 1.5 + 1}s linear forwards`; dino.style.opacity = Math.random() * 0.5 + 0.5; rainArea.appendChild(dino); setTimeout(() => { dino.remove(); }, 2500); } setTimeout(() => { textEl.innerHTML = `<span style="font-size:12px; color:white; display:block; margin-bottom:2px; font-weight:bold;">ISSO EQUIVALE A</span> ${trexCount}x T-REXES!`; textEl.style.display = 'block'; textEl.style.animation = 'pulseTRex 0.8s ease-out forwards'; }, 1200); }
