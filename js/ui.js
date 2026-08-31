@@ -661,7 +661,23 @@ function renderAchievements() {
 
 // --- NUTRIÇÃO E LISTA DE COMPRAS ---
 const commonFoodsDB = [
-    {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0}, {name: "Peito de Frango Cru (100g)", cals: 110, pro: 23, car: 0}, {name: "Peito de Frango Grelhado (100g)", cals: 165, pro: 31, car: 0}, {name: "Bife de Vaca Magro (100g)", cals: 150, pro: 26, car: 0}, {name: "Salmão Grelhado (100g)", cals: 205, pro: 22, car: 0}, {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28}, {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25}, {name: "Batata Doce (100g cozida)", cals: 86, pro: 1, car: 20}, {name: "Aveia (50g)", cals: 190, pro: 7, car: 33}, {name: "Whey Protein (1 scoop 30g)", cals: 120, pro: 24, car: 3}, {name: "Banana (1 média)", cals: 105, pro: 1, car: 27}, {name: "Maçã (1 média)", cals: 95, pro: 0, car: 25}, {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3}, {name: "Azeite (1 colher de sopa)", cals: 119, pro: 0, car: 0}, {name: "Atum em água (1 lata seca)", cals: 110, pro: 25, car: 0}, {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13}, {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
+    {name: "Ovo Cozido (1 uni)", cals: 70, pro: 6, car: 0},
+    {name: "Peito de Frango Cru (100g)", cals: 110, pro: 23, car: 0},
+    {name: "Peito de Frango Grelhado (100g)", cals: 165, pro: 31, car: 0},
+    {name: "Bife de Vaca Magro (100g)", cals: 150, pro: 26, car: 0},
+    {name: "Salmão Grelhado (100g)", cals: 205, pro: 22, car: 0},
+    {name: "Arroz Branco (100g cozido)", cals: 130, pro: 2, car: 28},
+    {name: "Massa (100g cozida)", cals: 130, pro: 5, car: 25},
+    {name: "Batata Doce (100g cozida)", cals: 86, pro: 1, car: 20},
+    {name: "Aveia (50g)", cals: 190, pro: 7, car: 33},
+    {name: "Whey Protein (1 scoop 30g)", cals: 120, pro: 24, car: 3},
+    {name: "Banana (1 média)", cals: 105, pro: 1, car: 27},
+    {name: "Maçã (1 média)", cals: 95, pro: 0, car: 25},
+    {name: "Manteiga de Amendoim (1 c.sopa)", cals: 95, pro: 4, car: 3},
+    {name: "Azeite (1 colher de sopa)", cals: 119, pro: 0, car: 0},
+    {name: "Atum em água (1 lata seca)", cals: 110, pro: 25, car: 0},
+    {name: "Pão Integral (1 fatia)", cals: 75, pro: 3, car: 13},
+    {name: "Leite Meio Gordo (250ml)", cals: 115, pro: 8, car: 12}
 ];
 
 function fillCommonFood() {
