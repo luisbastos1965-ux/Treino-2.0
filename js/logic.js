@@ -284,7 +284,24 @@ function exportToCSV() {
 }
 
 function exportData() { 
-    const data = { history: history, profile: userProfile, achievements: achievementsUnlocked, custom: customExercisesDB }; 
+    const data = { 
+        history: typeof history !== 'undefined' ? history : [], 
+        profile: typeof userProfile !== 'undefined' ? userProfile : {}, 
+        achievements: typeof achievementsUnlocked !== 'undefined' ? achievementsUnlocked : [], 
+        custom: typeof customExercisesDB !== 'undefined' ? customExercisesDB : [],
+        savedRoutines: typeof savedRoutines !== 'undefined' ? savedRoutines : [],
+        dailyIntake: typeof dailyIntake !== 'undefined' ? dailyIntake : { foods: [] },
+        water: typeof waterIntake !== 'undefined' ? waterIntake : { ml: 0 },
+        fasting: typeof fastingState !== 'undefined' ? fastingState : { active: false, start: null },
+        freqFoods: typeof frequentFoods !== 'undefined' ? frequentFoods : [],
+        punishment: typeof activePunishment !== 'undefined' ? activePunishment : null,
+        bodyStats: typeof bodyStatsHistory !== 'undefined' ? bodyStatsHistory : [],
+        profileHistory: JSON.parse(localStorage.getItem('gym_profile_history') || '[]'),
+        painTracker: typeof painTracker !== 'undefined' ? painTracker : [],
+        theme: typeof appTheme !== 'undefined' ? appTheme : 'default',
+        lastDebrief: typeof lastDebriefDate !== 'undefined' ? lastDebriefDate : '',
+        videos: JSON.parse(localStorage.getItem('gym_tracker_videos') || '{}')
+    }; 
     const dataStr = JSON.stringify(data, null, 2); 
     const blob = new Blob([dataStr], { type: "application/json" }); 
     const url = URL.createObjectURL(blob); 
@@ -293,6 +310,7 @@ function exportData() {
     a.href = url; 
     a.click(); 
     URL.revokeObjectURL(url); 
+    showPulseToast("📥 Backup guardado com sucesso!");
 }
 
 function importData(event) { 
@@ -302,14 +320,29 @@ function importData(event) {
     reader.onload = function(e) { 
         try { 
             const data = JSON.parse(e.target.result); 
-            if (data.history) { history = data.history; localStorage.setItem('gym_history', JSON.stringify(history)); } 
+            
+            if (data.history) { history = data.history; localStorage.setItem('gym_tracker_history', JSON.stringify(history)); } 
             if (data.profile) { userProfile = data.profile; localStorage.setItem('gym_profile', JSON.stringify(userProfile)); } 
             if (data.achievements) { achievementsUnlocked = data.achievements; localStorage.setItem('gym_achievements', JSON.stringify(achievementsUnlocked)); } 
-            if(data.custom) { customExercisesDB = data.custom; localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); } 
-            alert('✅ Backup carregado com sucesso!'); 
-            location.reload(); 
+            if (data.custom) { customExercisesDB = data.custom; localStorage.setItem('gym_custom_exercises', JSON.stringify(customExercisesDB)); } 
+            
+            if (data.savedRoutines) localStorage.setItem('gym_saved_routines', JSON.stringify(data.savedRoutines));
+            if (data.dailyIntake) localStorage.setItem('gym_daily_intake', JSON.stringify(data.dailyIntake));
+            if (data.water) localStorage.setItem('gym_water', JSON.stringify(data.water));
+            if (data.fasting) localStorage.setItem('gym_fasting', JSON.stringify(data.fasting));
+            if (data.freqFoods) localStorage.setItem('gym_freq_foods', JSON.stringify(data.freqFoods));
+            if (data.punishment !== undefined) localStorage.setItem('gym_punishment', JSON.stringify(data.punishment));
+            if (data.bodyStats) localStorage.setItem('gym_body_stats', JSON.stringify(data.bodyStats));
+            if (data.profileHistory) localStorage.setItem('gym_profile_history', JSON.stringify(data.profileHistory));
+            if (data.painTracker) localStorage.setItem('gym_pain_tracker', JSON.stringify(data.painTracker));
+            if (data.theme) localStorage.setItem('gym_theme', data.theme);
+            if (data.lastDebrief) localStorage.setItem('gym_last_debrief', data.lastDebrief);
+            if (data.videos) localStorage.setItem('gym_tracker_videos', JSON.stringify(data.videos));
+            
+            showPulseToast('✅ Backup carregado com sucesso!'); 
+            setTimeout(() => { location.reload(); }, 1500);
         } catch (error) { 
-            alert('❌ Erro a ler o ficheiro.'); 
+            showPulseToast('❌ Erro a ler o ficheiro.', true); 
         } 
     }; 
     reader.readAsText(file); 
