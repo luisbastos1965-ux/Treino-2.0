@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,56 +10,153 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="assets/img/logo.png">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/views.css">
 
     <style>
-        html, body { overscroll-behavior-y: none; }
+        html,
+        body {
+            overscroll-behavior-y: none;
+        }
 
         /* ESTILOS DOS DROPDOWNS PREMIUM (FALSOS SELECTS) */
-        .pulse-drop-container { position: relative; width: 100%; box-sizing: border-box; }
-        .pulse-drop-trigger { width: 100%; padding: 12px 15px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-sizing: border-box; }
-        .pulse-drop-trigger:active { border-color: var(--accent); box-shadow: 0 0 10px rgba(56,189,248,0.2); }
-        .pulse-drop-arrow { color: var(--accent); font-size: 12px; transition: transform 0.3s; }
-        .pulse-drop-list { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid #334155; border-radius: 8px; margin-top: 5px; z-index: 99999; max-height: 200px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: auto; }
-        .pulse-drop-option { padding: 12px 15px; color: #cbd5e1; font-size: 14px; font-weight: bold; cursor: pointer; border-bottom: 1px solid #0f172a; text-align: left; }
-        .pulse-drop-option:last-child { border-bottom: none; }
-        .pulse-drop-option:active, .pulse-drop-option:hover { background: rgba(56,189,248,0.1); color: var(--accent); padding-left: 20px; transition: 0.2s; }
+        .pulse-drop-container {
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .pulse-drop-trigger {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+            border: 1px solid #334155;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .pulse-drop-trigger:active {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        }
+
+        .pulse-drop-arrow {
+            color: var(--accent);
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .pulse-drop-list {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            margin-top: 5px;
+            z-index: 99999;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            pointer-events: auto;
+        }
+
+        .pulse-drop-option {
+            padding: 12px 15px;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 1px solid #0f172a;
+            text-align: left;
+        }
+
+        .pulse-drop-option:last-child {
+            border-bottom: none;
+        }
+
+        .pulse-drop-option:active,
+        .pulse-drop-option:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            padding-left: 20px;
+            transition: 0.2s;
+        }
 
         /* ANIMAÇÕES DO T-REX */
         @keyframes dinoFall {
-            0% { top: -20px; transform: rotate(0deg); opacity: 1; }
-            100% { top: 110%; transform: rotate(360deg); opacity: 0; }
+            0% {
+                top: -20px;
+                transform: rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                top: 110%;
+                transform: rotate(360deg);
+                opacity: 0;
+            }
         }
+
         @keyframes pulseTRex {
-            0% { transform: scale(0.5); opacity: 0; }
-            70% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <button id="fab-home" onclick="goHome()">🏠 PULSE</button>
 
     <!-- ECRÃ DE DESCANSO INTELIGENTE -->
-    <div id="rest-timer-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
-        <div class="rest-content" style="background:var(--card-bg); padding:40px 30px; border-radius:24px; text-align:center; border:1px solid var(--accent); box-shadow:0 10px 40px rgba(56,189,248,0.15); width:90%; max-width:320px;">
-            <h2 id="rest-time-display" style="font-size:85px; color:var(--accent); font-weight:900; margin:0 0 30px 0; text-shadow: 0 0 20px rgba(56,189,248,0.4); line-height:1;">90s</h2>
+    <div id="rest-timer-overlay"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+        <div class="rest-content"
+            style="background:var(--card-bg); padding:40px 30px; border-radius:24px; text-align:center; border:1px solid var(--accent); box-shadow:0 10px 40px rgba(56,189,248,0.15); width:90%; max-width:320px;">
+            <h2 id="rest-time-display"
+                style="font-size:85px; color:var(--accent); font-weight:900; margin:0 0 30px 0; text-shadow: 0 0 20px rgba(56,189,248,0.4); line-height:1;">
+                90s</h2>
             <div style="display:flex; gap:10px; width:100%;">
-                <button onclick="minimizeRestTimer()" style="flex:1; background:#1e293b; color:white; border:1px solid #334155; padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">↙ Minimizar</button>
-                <button onclick="skipRestTimer()" style="flex:1; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.3); padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">✖ Saltar</button>
+                <button onclick="minimizeRestTimer()"
+                    style="flex:1; background:#1e293b; color:white; border:1px solid #334155; padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">↙
+                    Minimizar</button>
+                <button onclick="skipRestTimer()"
+                    style="flex:1; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.3); padding:15px 10px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">✖
+                    Saltar</button>
             </div>
         </div>
     </div>
-    
+
     <!-- MINI TIMER FLUTUANTE -->
-    <div id="mini-rest-timer" onclick="maximizeRestTimer()" style="display:none; position:fixed; bottom:25px; left:50%; transform:translateX(-50%); background:var(--accent); color:#0f172a; padding:12px 30px; border-radius:30px; font-weight:900; font-size:20px; z-index:9998; cursor:pointer; box-shadow:0 10px 30px rgba(56,189,248,0.6); align-items:center; gap:10px; border:2px solid #fff;">
+    <div id="mini-rest-timer" onclick="maximizeRestTimer()"
+        style="display:none; position:fixed; bottom:25px; left:50%; transform:translateX(-50%); background:var(--accent); color:#0f172a; padding:12px 30px; border-radius:30px; font-weight:900; font-size:20px; z-index:9998; cursor:pointer; box-shadow:0 10px 30px rgba(56,189,248,0.6); align-items:center; gap:10px; border:2px solid #fff;">
         ⏱️ <span id="mini-rest-time-display">90s</span>
     </div>
 
@@ -69,12 +167,36 @@
         </div>
 
         <div id="menu-rack" class="rack-container">
-            <button class="rack-btn" onclick="navigateTo('view-treino')"><div class="db-end left"></div><div class="db-bar">TREINAR</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-construtor')"><div class="db-end left"></div><div class="db-bar">CONSTRUTOR</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-evolucao')"><div class="db-end left"></div><div class="db-bar">EVOLUÇÃO</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-dieta')"><div class="db-end left"></div><div class="db-bar">NUTRIÇÃO</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-calendario')"><div class="db-end left"></div><div class="db-bar">HISTÓRICO</div><div class="db-end right"></div></button>
-            <button class="rack-btn" onclick="navigateTo('view-perfil')"><div class="db-end left"></div><div class="db-bar">PERFIL</div><div class="db-end right"></div></button>
+            <button class="rack-btn" onclick="navigateTo('view-treino')">
+                <div class="db-end left"></div>
+                <div class="db-bar">TREINAR</div>
+                <div class="db-end right"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-construtor')">
+                <div class="db-end left"></div>
+                <div class="db-bar">CONSTRUTOR</div>
+                <div class="db-end right"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-evolucao')">
+                <div class="db-end left"></div>
+                <div class="db-bar">EVOLUÇÃO</div>
+                <div class="db-end right"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-dieta')">
+                <div class="db-end left"></div>
+                <div class="db-bar">NUTRIÇÃO</div>
+                <div class="db-end right"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-calendario')">
+                <div class="db-end left"></div>
+                <div class="db-bar">HISTÓRICO</div>
+                <div class="db-end right"></div>
+            </button>
+            <button class="rack-btn" onclick="navigateTo('view-perfil')">
+                <div class="db-end left"></div>
+                <div class="db-bar">PERFIL</div>
+                <div class="db-end right"></div>
+            </button>
         </div>
     </div>
 
@@ -87,20 +209,32 @@
         <div id="treino-active-view" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <button onclick="goHome()" style="background: #0f172a; border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px rgba(56,189,248,0.1); display: flex; align-items: center; gap: 6px;">🏠 PULSE</button>
+                    <button onclick="goHome()"
+                        style="background: #0f172a; border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px rgba(56,189,248,0.1); display: flex; align-items: center; gap: 6px;">🏠
+                        PULSE</button>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button onclick="openReadinessModal()" style="background:#1e293b; color:var(--success); border:1px solid var(--success); padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px;">🧠 SNC</button>
-                    <button id="btn-deload-toggle" onclick="toggleDeloadMode()" style="background:#1e293b; color:var(--muted); border:1px solid #334155; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px;">📉 Deload</button>
+                    <button onclick="openReadinessModal()"
+                        style="background:#1e293b; color:var(--success); border:1px solid var(--success); padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px;">🧠
+                        SNC</button>
+                    <button id="btn-deload-toggle" onclick="toggleDeloadMode()"
+                        style="background:#1e293b; color:var(--muted); border:1px solid #334155; padding:8px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size: 12px;">📉
+                        Deload</button>
                 </div>
             </div>
-            
-            <style>#active-workout-tabs:empty { display: none !important; }</style>
+
+            <style>
+                #active-workout-tabs:empty {
+                    display: none !important;
+                }
+            </style>
             <div class="tabs" id="active-workout-tabs" style="display: flex; margin-bottom: 15px;"></div>
-            
+
             <div id="workout-container"></div>
             <div class="footer-action">
-                <button class="btn-secondary" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;" onclick="openModoFlex()">📸 Flex</button>
+                <button class="btn-secondary"
+                    style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;"
+                    onclick="openModoFlex()">📸 Flex</button>
                 <button class="btn-primary" onclick="saveCurrentWorkout()">Gravar Treino</button>
             </div>
         </div>
@@ -108,52 +242,121 @@
 
     <!-- ABA 2: CONSTRUTOR -->
     <div id="view-construtor" class="view-section">
-        
+
         <style>
-            .modern-tab-btn { flex: 1; border-radius: 8px; border: none; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; background: transparent; color: var(--muted); }
-            .modern-tab-btn.active { background: #1e293b; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-            .modern-fatigue-btn { flex: 1; background: #0f172a; color: var(--muted); border: 1px solid #334155; border-radius: 10px; padding: 15px 5px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.3s; display:flex; flex-direction:column; align-items:center; gap:6px; }
-            .modern-fatigue-btn.active { background: rgba(56,189,248,0.1); color: var(--accent); border-color: var(--accent); }
+            .modern-tab-btn {
+                flex: 1;
+                border-radius: 8px;
+                border: none;
+                padding: 10px;
+                font-weight: bold;
+                font-size: 13px;
+                cursor: pointer;
+                transition: 0.3s;
+                background: transparent;
+                color: var(--muted);
+            }
+
+            .modern-tab-btn.active {
+                background: #1e293b;
+                color: white;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            }
+
+            .modern-fatigue-btn {
+                flex: 1;
+                background: #0f172a;
+                color: var(--muted);
+                border: 1px solid #334155;
+                border-radius: 10px;
+                padding: 15px 5px;
+                font-weight: bold;
+                font-size: 13px;
+                cursor: pointer;
+                transition: 0.3s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .modern-fatigue-btn.active {
+                background: rgba(56, 189, 248, 0.1);
+                color: var(--accent);
+                border-color: var(--accent);
+            }
         </style>
 
-        <div style="display: flex; background: #0f172a; padding: 6px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #334155;">
-            <button id="btn-mode-auto" class="mode-btn modern-tab-btn active" onclick="setBuilderMode('auto')">🤖 IA</button>
-            <button id="btn-mode-manual" class="mode-btn modern-tab-btn" onclick="setBuilderMode('manual')">🖐️ Manual</button>
-            <button id="btn-mode-directory" class="mode-btn modern-tab-btn" onclick="setBuilderMode('directory')">📖 Lista</button>
+        <div
+            style="display: flex; background: #0f172a; padding: 6px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #334155;">
+            <button id="btn-mode-auto" class="mode-btn modern-tab-btn active" onclick="setBuilderMode('auto')">🤖
+                IA</button>
+            <button id="btn-mode-manual" class="mode-btn modern-tab-btn" onclick="setBuilderMode('manual')">🖐️
+                Manual</button>
+            <button id="btn-mode-directory" class="mode-btn modern-tab-btn" onclick="setBuilderMode('directory')">📖
+                Lista</button>
         </div>
 
         <!-- PAINEL AUTO -->
         <div id="auto-focus-panel">
             <div style="background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155;">
-                <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Nível de Fadiga</label>
+                <label
+                    style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Nível
+                    de Fadiga</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 25px;">
-                    <button id="btn-fatigue-energized" class="fatigue-btn modern-fatigue-btn active" onclick="setFatigue('energized')"><span style="font-size:18px;">🔋</span>100%</button>
-                    <button id="btn-fatigue-normal" class="fatigue-btn modern-fatigue-btn" onclick="setFatigue('normal')"><span style="font-size:18px;">⚡</span>Normal</button>
-                    <button id="btn-fatigue-tired" class="fatigue-btn modern-fatigue-btn" onclick="setFatigue('tired')"><span style="font-size:18px;">🪫</span>Cansado</button>
+                    <button id="btn-fatigue-energized" class="fatigue-btn modern-fatigue-btn active"
+                        onclick="setFatigue('energized')"><span style="font-size:18px;">🔋</span>100%</button>
+                    <button id="btn-fatigue-normal" class="fatigue-btn modern-fatigue-btn"
+                        onclick="setFatigue('normal')"><span style="font-size:18px;">⚡</span>Normal</button>
+                    <button id="btn-fatigue-tired" class="fatigue-btn modern-fatigue-btn"
+                        onclick="setFatigue('tired')"><span style="font-size:18px;">🪫</span>Cansado</button>
                 </div>
-                
-                <label style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Foco Muscular</label>
-                
+
+                <label
+                    style="font-size:11px; color:var(--muted); text-transform:uppercase; font-weight:bold; margin-bottom:12px; display:block; text-align:center; letter-spacing: 1px;">Foco
+                    Muscular</label>
+
                 <!-- DROPDOWN FOCO MUSCULAR -->
                 <div class="pulse-drop-container" style="margin-bottom: 25px;">
                     <input type="hidden" id="auto-focus-select" value="FULL">
                     <div class="pulse-drop-trigger" onclick="togglePulseDropdown('auto-focus-select')">
-                        <span id="auto-focus-select-label">Corpo Inteiro</span><span id="auto-focus-select-arrow" class="pulse-drop-arrow">▼</span>
+                        <span id="auto-focus-select-label">Corpo Inteiro</span><span id="auto-focus-select-arrow"
+                            class="pulse-drop-arrow">▼</span>
                     </div>
                     <div id="auto-focus-select-options" class="pulse-drop-list">
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'FULL', 'Corpo Inteiro')">Corpo Inteiro</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'PUSH', 'Push (Peito, Ombro, Tríceps)')">Push (Peito, Ombro, Tríceps)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'PULL', 'Pull (Costas, Bíceps)')">Pull (Costas, Bíceps)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'LEGS', 'Legs (Pernas)')">Legs (Pernas)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Peito', 'Isolado: Peito')">Isolado: Peito</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Costas', 'Isolado: Costas')">Isolado: Costas</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Ombros', 'Isolado: Ombros')">Isolado: Ombros</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Braços', 'Isolado: Braços')">Isolado: Braços</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('auto-focus-select', 'Core', 'Isolado: Core')">Isolado: Core</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'FULL', 'Corpo Inteiro')">Corpo Inteiro
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'PUSH', 'Push (Peito, Ombro, Tríceps)')">
+                            Push (Peito, Ombro, Tríceps)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'PULL', 'Pull (Costas, Bíceps)')">Pull
+                            (Costas, Bíceps)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'LEGS', 'Legs (Pernas)')">Legs (Pernas)
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'Peito', 'Isolado: Peito')">Isolado: Peito
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'Costas', 'Isolado: Costas')">Isolado:
+                            Costas</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'Ombros', 'Isolado: Ombros')">Isolado:
+                            Ombros</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'Braços', 'Isolado: Braços')">Isolado:
+                            Braços</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('auto-focus-select', 'Core', 'Isolado: Core')">Isolado: Core
+                        </div>
                     </div>
                 </div>
-                
-                <button class="beast-action-btn" style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px; border-radius:10px; text-transform: uppercase;" onclick="generateWorkout()">Gerar Treino</button>
+
+                <button class="beast-action-btn"
+                    style="width: 100%; background: var(--accent); color: #0f172a; font-weight: 900; font-size: 15px; padding: 15px; border-radius:10px; text-transform: uppercase;"
+                    onclick="generateWorkout()">Gerar Treino</button>
             </div>
         </div>
 
@@ -164,58 +367,84 @@
                 <div class="pulse-drop-container" style="flex:1;">
                     <input type="hidden" id="filter-muscle" value="ALL">
                     <div class="pulse-drop-trigger" onclick="togglePulseDropdown('filter-muscle')">
-                        <span id="filter-muscle-label">Todos</span><span id="filter-muscle-arrow" class="pulse-drop-arrow">▼</span>
+                        <span id="filter-muscle-label">Todos</span><span id="filter-muscle-arrow"
+                            class="pulse-drop-arrow">▼</span>
                     </div>
                     <div id="filter-muscle-options" class="pulse-drop-list">
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Peito', 'Peito', 'renderLibrary')">Peito</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Costas', 'Costas', 'renderLibrary')">Costas</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Pernas', 'Pernas', 'renderLibrary')">Pernas</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Ombros', 'Ombros', 'renderLibrary')">Ombros</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Braços', 'Braços', 'renderLibrary')">Braços</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-muscle', 'Core', 'Core', 'renderLibrary')">Core</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Peito', 'Peito', 'renderLibrary')">Peito</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Costas', 'Costas', 'renderLibrary')">Costas
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Pernas', 'Pernas', 'renderLibrary')">Pernas
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Ombros', 'Ombros', 'renderLibrary')">Ombros
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Braços', 'Braços', 'renderLibrary')">Braços
+                        </div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-muscle', 'Core', 'Core', 'renderLibrary')">Core</div>
                     </div>
                 </div>
                 <!-- DROPDOWN TIER -->
                 <div class="pulse-drop-container" style="flex:1;">
                     <input type="hidden" id="filter-tier" value="ALL">
                     <div class="pulse-drop-trigger" onclick="togglePulseDropdown('filter-tier')">
-                        <span id="filter-tier-label">Grau</span><span id="filter-tier-arrow" class="pulse-drop-arrow">▼</span>
+                        <span id="filter-tier-label">Grau</span><span id="filter-tier-arrow"
+                            class="pulse-drop-arrow">▼</span>
                     </div>
                     <div id="filter-tier-options" class="pulse-drop-list">
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'S', 'S-Tier', 'renderLibrary')">S-Tier</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'A', 'A-Tier', 'renderLibrary')">A-Tier</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('filter-tier', 'B', 'B-Tier', 'renderLibrary')">B-Tier</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-tier', 'ALL', 'Todos', 'renderLibrary')">Todos</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-tier', 'S', 'S-Tier', 'renderLibrary')">S-Tier</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-tier', 'A', 'A-Tier', 'renderLibrary')">A-Tier</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('filter-tier', 'B', 'B-Tier', 'renderLibrary')">B-Tier</div>
                     </div>
                 </div>
             </div>
-            <div id="library-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="library-list"
+                style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <!-- PAINEL DIRETÓRIO -->
         <div id="directory-panel" class="goal-container" style="display: none;">
-            <div id="directory-list" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column;"></div>
+            <div id="directory-list"
+                style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column;"></div>
         </div>
 
         <!-- ESBOÇO / ROTINA ATUAL -->
         <div class="goal-container" style="margin-bottom: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <h3 style="color: white; font-size: 18px;">📋 O Teu Treino</h3>
-                <span id="workout-volume-badge" style="background: #1e293b; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight:bold; color: var(--accent);">0 Séries</span>
+                <span id="workout-volume-badge"
+                    style="background: #1e293b; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight:bold; color: var(--accent);">0
+                    Séries</span>
             </div>
-            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
-            
+            <div id="builder-routine-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+            </div>
+
             <div id="builder-action-buttons" style="display: none; gap: 10px; margin-top: 20px;">
-                <button class="beast-action-btn" style="flex: 1; background: #334155; color: white; padding: 14px; font-size:14px;" onclick="saveCurrentRoutine()">💾 Salvar</button>
-                <button class="beast-action-btn" style="flex: 2; background: var(--success); color: white; padding: 14px; font-size:14px; font-weight: bold;" onclick="applyBuiltWorkout()">Iniciar Treino</button>
+                <button class="beast-action-btn"
+                    style="flex: 1; background: #334155; color: white; padding: 14px; font-size:14px;"
+                    onclick="saveCurrentRoutine()">💾 Salvar</button>
+                <button class="beast-action-btn"
+                    style="flex: 2; background: var(--success); color: white; padding: 14px; font-size:14px; font-weight: bold;"
+                    onclick="applyBuiltWorkout()">Iniciar Treino</button>
             </div>
         </div>
     </div>
 
     <!-- ABA 3: EVOLUÇÃO -->
     <div id="view-evolucao" class="view-section">
-        
+
         <div class="tabs" style="display: flex; margin-bottom: 20px; gap: 5px;">
             <button class="tab-btn active" onclick="switchEvoTab(event, 'evo-corpo')">Físico</button>
             <button class="tab-btn" onclick="switchEvoTab(event, 'evo-forca')">Força & RPG</button>
@@ -226,7 +455,8 @@
         <div id="evo-corpo" class="evo-panel" style="display: block;">
             <div class="goal-container text-center">
                 <h3>🔥 Painel de Dano Muscular</h3>
-                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Fadiga acumulada nos últimos 7 dias.</p>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Fadiga acumulada nos últimos 7
+                    dias.</p>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
                     <div id="hm-peito" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
                     <div id="hm-costas" style="background:#1e293b; padding:10px; border-radius:10px;"></div>
@@ -238,7 +468,8 @@
             </div>
             <div class="goal-container text-center" style="margin-top: 20px;">
                 <h3>⚖️ Evolução Corporal</h3>
-                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">RFM = Massa Gorda Relativa Estimada</p>
+                <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">RFM = Massa Gorda Relativa
+                    Estimada</p>
                 <div style="position: relative; width: 100%;"><canvas id="bodyStatsChart"></canvas></div>
             </div>
             <div class="goal-container text-center" style="margin-top: 20px;">
@@ -249,20 +480,24 @@
 
         <!-- ABA: FORÇA & RPG -->
         <div id="evo-forca" class="evo-panel" style="display: none;">
-            
+
             <div class="goal-container text-center" style="margin-bottom: 20px;">
                 <h3 style="margin-bottom: 5px;">🏛️ Hall of Fame</h3>
-                <p style="font-size:11px; color:var(--muted); margin-bottom:15px;">Os teus 3 maiores levantamentos absolutos de sempre.</p>
+                <p style="font-size:11px; color:var(--muted); margin-bottom:15px;">Os teus 3 maiores levantamentos
+                    absolutos de sempre.</p>
                 <div id="hall-of-fame-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
 
             <div class="goal-container text-center">
                 <h3>🏋️ Powerlifting Total (SBD)</h3>
-                <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e Peso Morto.</p>
-                <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg</div>
-                <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso corporal</div>
+                <p style="font-size:12px; color:var(--muted); margin-bottom:5px;">A soma do teu Supino, Agachamento e
+                    Peso Morto.</p>
+                <div id="sbd-total-val" style="font-size: 32px; font-weight: 900; color: #a855f7; margin-top: 5px;">0 kg
+                </div>
+                <div id="sbd-ratio" style="color: var(--muted); font-size: 13px; font-weight:bold;">0x o teu peso
+                    corporal</div>
             </div>
-            
+
             <div class="goal-container" style="margin-top: 20px;">
                 <h3 class="text-center" style="margin-bottom: 15px;">🎮 Níveis Musculares (RPG)</h3>
                 <div id="rpg-stats-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
@@ -270,12 +505,13 @@
 
             <div class="goal-container text-center" style="margin-top: 20px;">
                 <h3 style="margin-bottom: 15px;">📈 Progressão de Carga</h3>
-                
+
                 <!-- DROPDOWN EVOLUÇÃO (Preenchido pelo JS) -->
                 <div class="pulse-drop-container" style="margin-bottom: 15px;">
                     <input type="hidden" id="exercise-select" value="">
                     <div class="pulse-drop-trigger" onclick="togglePulseDropdown('exercise-select')">
-                        <span id="exercise-select-label">Escolhe um exercício...</span><span id="exercise-select-arrow" class="pulse-drop-arrow">▼</span>
+                        <span id="exercise-select-label">Escolhe um exercício...</span><span id="exercise-select-arrow"
+                            class="pulse-drop-arrow">▼</span>
                     </div>
                     <div id="exercise-select-options" class="pulse-drop-list">
                         <!-- Gerado via JS -->
@@ -285,12 +521,15 @@
                 <div style="position: relative; width: 100%;">
                     <canvas id="progressChart"></canvas>
                 </div>
-                <p id="coach-message" style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;"></p>
+                <p id="coach-message"
+                    style="font-size: 13px; font-weight: bold; color: var(--accent); margin-top: 10px; text-align: center;">
+                </p>
             </div>
-            
+
             <div id="pr-display" class="goal-container" style="margin-top: 20px;">
                 <h3>🏆 Recordes Pessoais (PR)</h3>
-                <div id="onerm-container" style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;">
+                <div id="onerm-container"
+                    style="display: none; margin-top: 15px; padding: 15px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px;">
                     <div style="font-size: 11px; font-weight: bold; color: #d8b4fe;">1RM ESTIMADO</div>
                     <div id="onerm-value" style="font-size: 32px; font-weight: 900; color: #a855f7;"></div>
                     <div id="onerm-prediction" style="font-size: 13px; color: #cbd5e1; margin-top: 10px;"></div>
@@ -301,13 +540,18 @@
         <!-- ABA: VOLUME & STATS -->
         <div id="evo-volume" class="evo-panel" style="display: none;">
             <!-- LEGADO GLOBAL -->
-            <div class="goal-container text-center" style="margin-bottom: 20px; background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); border: 1px solid var(--accent);">
+            <div class="goal-container text-center"
+                style="margin-bottom: 20px; background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); border: 1px solid var(--accent);">
                 <h3 style="margin-bottom: 5px;">🌍 O Teu Legado de Aço</h3>
                 <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Volume Global Acumulado</p>
-                <div id="global-tonnage-display" style="font-size: 36px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px rgba(56,189,248,0.4);">0 kg</div>
-                
+                <div id="global-tonnage-display"
+                    style="font-size: 36px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px rgba(56,189,248,0.4);">
+                    0 kg</div>
+
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #334155; text-align: left;">
-                    <div style="font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Equivale a aproximadamente:</div>
+                    <div
+                        style="font-size: 11px; font-weight: bold; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">
+                        Equivale a aproximadamente:</div>
                     <div id="global-absurd-list" style="display: flex; flex-direction: column; gap: 8px;">
                         <!-- Injetado por JS -->
                     </div>
@@ -321,80 +565,136 @@
                 <h3>🏗️ Carga Total Movida (Mês)</h3>
                 <div style="position: relative; width: 100%;"><canvas id="tonnageChart"></canvas></div>
             </div>
-            <div id="global-stats" class="goal-container" style="margin-top: 20px;"><h3>📊 Estatísticas Globais</h3></div>
+            <div id="global-stats" class="goal-container" style="margin-top: 20px;">
+                <h3>📊 Estatísticas Globais</h3>
+            </div>
         </div>
     </div>
 
     <!-- ABA 4: CALENDÁRIO & HISTÓRICO -->
     <div id="view-calendario" class="view-section">
-        <div class="calendar-header"><button onclick="changeMonth(-1)">◀</button><h2 id="calendar-title">Mês</h2><button onclick="changeMonth(1)">▶</button></div>
-        <div class="weekdays"><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div></div>
+        <div class="calendar-header"><button onclick="changeMonth(-1)">◀</button>
+            <h2 id="calendar-title">Mês</h2><button onclick="changeMonth(1)">▶</button>
+        </div>
+        <div class="weekdays">
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+            <div>Dom</div>
+        </div>
         <div class="calendar-grid" id="calendar-grid"></div>
         <div class="goal-container" style="margin-top: 20px;">
             <h3 class="text-center">🧱 Muro da Disciplina</h3>
-            <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px; text-align:center;">O teu legado dos últimos 365 dias.</p>
+            <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px; text-align:center;">O teu legado dos
+                últimos 365 dias.</p>
             <div id="discipline-wall" class="discipline-wall"></div>
         </div>
     </div>
 
     <!-- ABA 5: PERFIL -->
     <div id="view-perfil" class="view-section">
-        
+
         <style>
-            .custom-details summary { list-style: none; display: flex; justify-content: space-between; align-items: center; }
-            .custom-details summary::-webkit-details-marker { display: none; }
-            .custom-details .acc-icon { transition: transform 0.3s ease; color: var(--muted); font-size: 14px; }
-            .custom-details[open] .acc-icon { transform: rotate(180deg); color: var(--accent); }
+            .custom-details summary {
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .custom-details summary::-webkit-details-marker {
+                display: none;
+            }
+
+            .custom-details .acc-icon {
+                transition: transform 0.3s ease;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .custom-details[open] .acc-icon {
+                transform: rotate(180deg);
+                color: var(--accent);
+            }
         </style>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 16px; margin-bottom: 20px;">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 15px 20px; border-radius: 16px; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div id="avatar-initials" style="width: 55px; height: 55px; background: var(--accent); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">--</div>
-                <div style="color: white; font-weight: bold; font-size: 16px; max-width: 120px; word-wrap: break-word;" id="profile-display-name">Titã Misterioso</div>
+                <div id="avatar-initials"
+                    style="width: 55px; height: 55px; background: var(--accent); color: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);">
+                    --</div>
+                <div style="color: white; font-weight: bold; font-size: 16px; max-width: 120px; word-wrap: break-word;"
+                    id="profile-display-name">Titã Misterioso</div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button id="btn-edit-profile" onclick="toggleProfileEdit()" style="background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--accent); padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; transition: 0.2s;">✏️ Editar</button>
-                <button onclick="requestPushPermissions()" style="background: var(--accent); color: black; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">🔔 Alertas</button>
+                <button id="btn-edit-profile" onclick="toggleProfileEdit()"
+                    style="background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--accent); padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; transition: 0.2s;">✏️
+                    Editar</button>
+                <button onclick="requestPushPermissions()"
+                    style="background: var(--accent); color: black; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px;">🔔
+                    Alertas</button>
             </div>
         </div>
 
         <details id="details-profile" class="exercise-card custom-details" style="margin-bottom: 20px;">
-            <summary style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; padding: 5px 0;">
+            <summary
+                style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; padding: 5px 0;">
                 <span>⚙️ Perfil e Medidas</span>
                 <span class="acc-icon">▼</span>
             </summary>
-            
-            <div id="profile-form-container" class="profile-form" style="opacity: 0.7; pointer-events: none; margin-top: 15px; border-top: 1px dashed #334155; padding-top: 15px;">
-                <div class="form-group"><label>Nome</label><input type="text" id="prof-name" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                
+
+            <div id="profile-form-container" class="profile-form"
+                style="opacity: 0.7; pointer-events: none; margin-top: 15px; border-top: 1px dashed #334155; padding-top: 15px;">
+                <div class="form-group"><label>Nome</label><input type="text" id="prof-name"
+                        style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
+
                 <div class="form-row">
-                    <div class="form-group"><label>Idade</label><input type="number" id="prof-age" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
+                    <div class="form-group"><label>Idade</label><input type="number" id="prof-age"
+                            style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
                     <div class="form-group"><label>Género</label>
                         <div class="pulse-drop-container">
                             <input type="hidden" id="prof-gender" value="male">
                             <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-gender')">
-                                <span id="prof-gender-label">Masculino</span><span id="prof-gender-arrow" class="pulse-drop-arrow">▼</span>
+                                <span id="prof-gender-label">Masculino</span><span id="prof-gender-arrow"
+                                    class="pulse-drop-arrow">▼</span>
                             </div>
                             <div id="prof-gender-options" class="pulse-drop-list">
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-gender', 'male', 'Masculino', 'updateProfileData')">Masculino</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-gender', 'female', 'Feminino', 'updateProfileData')">Feminino</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-gender', 'male', 'Masculino', 'updateProfileData')">
+                                    Masculino</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-gender', 'female', 'Feminino', 'updateProfileData')">
+                                    Feminino</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group"><label>Atividade</label>
                         <div class="pulse-drop-container">
                             <input type="hidden" id="prof-activity" value="1.55">
                             <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-activity')">
-                                <span id="prof-activity-label">Moderado</span><span id="prof-activity-arrow" class="pulse-drop-arrow">▼</span>
+                                <span id="prof-activity-label">Moderado</span><span id="prof-activity-arrow"
+                                    class="pulse-drop-arrow">▼</span>
                             </div>
                             <div id="prof-activity-options" class="pulse-drop-list">
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.2', 'Sedentário', 'updateProfileData')">Sedentário</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.375', 'Leve', 'updateProfileData')">Leve</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.55', 'Moderado', 'updateProfileData')">Moderado</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-activity', '1.725', 'M. Ativo', 'updateProfileData')">M. Ativo</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-activity', '1.2', 'Sedentário', 'updateProfileData')">
+                                    Sedentário</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-activity', '1.375', 'Leve', 'updateProfileData')">
+                                    Leve</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-activity', '1.55', 'Moderado', 'updateProfileData')">
+                                    Moderado</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-activity', '1.725', 'M. Ativo', 'updateProfileData')">
+                                    M. Ativo</div>
                             </div>
                         </div>
                     </div>
@@ -402,34 +702,69 @@
                         <div class="pulse-drop-container">
                             <input type="hidden" id="prof-goal" value="maintain">
                             <div class="pulse-drop-trigger" onclick="togglePulseDropdown('prof-goal')">
-                                <span id="prof-goal-label">⚡ Manter</span><span id="prof-goal-arrow" class="pulse-drop-arrow">▼</span>
+                                <span id="prof-goal-label">⚡ Manter</span><span id="prof-goal-arrow"
+                                    class="pulse-drop-arrow">▼</span>
                             </div>
                             <div id="prof-goal-options" class="pulse-drop-list">
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'cut', '🔪 Secar', 'updateProfileData')">🔪 Secar</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'maintain', '⚡ Manter', 'updateProfileData')">⚡ Manter</div>
-                                <div class="pulse-drop-option" onclick="selectPulseOption('prof-goal', 'bulk', '🔥 Bulk', 'updateProfileData')">🔥 Bulk</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-goal', 'cut', '🔪 Secar', 'updateProfileData')">🔪
+                                    Secar</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-goal', 'maintain', '⚡ Manter', 'updateProfileData')">
+                                    ⚡ Manter</div>
+                                <div class="pulse-drop-option"
+                                    onclick="selectPulseOption('prof-goal', 'bulk', '🔥 Bulk', 'updateProfileData')">🔥
+                                    Bulk</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span> cm</label><input type="range" id="prof-height" min="140" max="220" class="slider" oninput="updateProfileData()"></div>
-                <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span> kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider" oninput="updateProfileData()"></div>
 
-                <div style="display: flex; justify-content: space-around; background: #0f172a; padding: 15px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px;">
-                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">IMC</div><div id="calc-bmi" style="font-size: 20px; font-weight: bold; color: white; margin: 3px 0;">--</div><div id="calc-bmi-status" style="font-size: 10px;">--</div></div>
-                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">Kcal Base</div><div id="calc-cals" style="font-size: 20px; font-weight: bold; color: var(--success); margin: 3px 0;">--</div></div>
-                    <div class="text-center"><div style="color: var(--muted); font-size: 11px;">Massa Gorda</div><div id="calc-bf" style="font-size: 20px; font-weight: bold; color: var(--accent); margin: 3px 0;">--%</div></div>
+                <div class="form-group"><label>Altura: <span id="height-val" class="accent-text">170</span>
+                        cm</label><input type="range" id="prof-height" min="140" max="220" class="slider"
+                        oninput="updateProfileData()"></div>
+                <div class="form-group"><label>Peso: <span id="weight-val" class="accent-text">70</span>
+                        kg</label><input type="range" id="prof-weight" min="40" max="150" class="slider"
+                        oninput="updateProfileData()"></div>
+
+                <div
+                    style="display: flex; justify-content: space-around; background: #0f172a; padding: 15px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px;">
+                    <div class="text-center">
+                        <div style="color: var(--muted); font-size: 11px;">IMC</div>
+                        <div id="calc-bmi" style="font-size: 20px; font-weight: bold; color: white; margin: 3px 0;">--
+                        </div>
+                        <div id="calc-bmi-status" style="font-size: 10px;">--</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="color: var(--muted); font-size: 11px;">Kcal Base</div>
+                        <div id="calc-cals"
+                            style="font-size: 20px; font-weight: bold; color: var(--success); margin: 3px 0;">--</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="color: var(--muted); font-size: 11px;">Massa Gorda</div>
+                        <div id="calc-bf"
+                            style="font-size: 20px; font-weight: bold; color: var(--accent); margin: 3px 0;">--%</div>
+                    </div>
                 </div>
 
-                <label style="font-size: 13px; color: var(--muted); font-weight: bold; margin-bottom: 8px; display: block;">Rastreio Corporal (cm)</label>
+                <label
+                    style="font-size: 13px; color: var(--muted); font-weight: bold; margin-bottom: 8px; display: block;">Rastreio
+                    Corporal (cm)</label>
                 <div class="form-row">
-                    <div class="form-group"><label style="font-size: 11px;">💪 Braços</label><input type="number" id="meas-arm" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                    <div class="form-group"><label style="font-size: 11px;">🫁 Peito</label><input type="number" id="meas-chest" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
+                    <div class="form-group"><label style="font-size: 11px;">💪 Braços</label><input type="number"
+                            id="meas-arm" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()">
+                    </div>
+                    <div class="form-group"><label style="font-size: 11px;">🫁 Peito</label><input type="number"
+                            id="meas-chest" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()">
+                    </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label style="font-size: 11px;">⚡ Cintura</label><input type="number" id="meas-waist" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
-                    <div class="form-group"><label style="font-size: 11px;">🦵 Pernas</label><input type="number" id="meas-leg" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()"></div>
+                    <div class="form-group"><label style="font-size: 11px;">⚡ Cintura</label><input type="number"
+                            id="meas-waist" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()">
+                    </div>
+                    <div class="form-group"><label style="font-size: 11px;">🦵 Pernas</label><input type="number"
+                            id="meas-leg" style="width: 100%; box-sizing: border-box;" oninput="updateProfileData()">
+                    </div>
                 </div>
 
                 <div class="form-group" style="margin-top:15px; border-top: 1px dashed #334155; padding-top: 15px;">
@@ -437,137 +772,261 @@
                     <div class="pulse-drop-container">
                         <input type="hidden" id="theme-selector" value="default">
                         <div class="pulse-drop-trigger" onclick="togglePulseDropdown('theme-selector')">
-                            <span id="theme-selector-label">Pulse Classic (Azul)</span><span id="theme-selector-arrow" class="pulse-drop-arrow">▼</span>
+                            <span id="theme-selector-label">Pulse Classic (Azul)</span><span id="theme-selector-arrow"
+                                class="pulse-drop-arrow">▼</span>
                         </div>
                         <div id="theme-selector-options" class="pulse-drop-list">
-                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'default', 'Pulse Classic (Azul)', 'changeTheme')">Pulse Classic (Azul)</div>
-                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'spartan', 'Spartan Blood (Vermelho)', 'changeTheme')">Spartan Blood (Vermelho)</div>
-                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'cyberpunk', 'Cyberpunk (Néon Rosa)', 'changeTheme')">Cyberpunk (Néon Rosa)</div>
-                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'silverback', 'Silverback (Metálico)', 'changeTheme')">Silverback (Metálico)</div>
-                            <div class="pulse-drop-option" onclick="selectPulseOption('theme-selector', 'hulk', 'Mutant Serum (Verde)', 'changeTheme')">Mutant Serum (Verde)</div>
+                            <div class="pulse-drop-option"
+                                onclick="selectPulseOption('theme-selector', 'default', 'Pulse Classic (Azul)', 'changeTheme')">
+                                Pulse Classic (Azul)</div>
+                            <div class="pulse-drop-option"
+                                onclick="selectPulseOption('theme-selector', 'spartan', 'Spartan Blood (Vermelho)', 'changeTheme')">
+                                Spartan Blood (Vermelho)</div>
+                            <div class="pulse-drop-option"
+                                onclick="selectPulseOption('theme-selector', 'cyberpunk', 'Cyberpunk (Néon Rosa)', 'changeTheme')">
+                                Cyberpunk (Néon Rosa)</div>
+                            <div class="pulse-drop-option"
+                                onclick="selectPulseOption('theme-selector', 'silverback', 'Silverback (Metálico)', 'changeTheme')">
+                                Silverback (Metálico)</div>
+                            <div class="pulse-drop-option"
+                                onclick="selectPulseOption('theme-selector', 'hulk', 'Mutant Serum (Verde)', 'changeTheme')">
+                                Mutant Serum (Verde)</div>
                         </div>
                     </div>
                 </div>
             </div>
         </details>
-        
+
         <details class="goal-container custom-details" style="margin-bottom: 20px; padding: 15px;">
-            <summary style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; margin-bottom: 5px;">
+            <summary
+                style="font-size: 16px; font-weight: bold; color: white; cursor: pointer; outline: none; margin-bottom: 5px;">
                 <span>🏆 Conquistas & Desafios</span>
                 <span class="acc-icon">▼</span>
             </summary>
-            <div id="profile-mission-display" style="margin-top: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #334155;"></div>
+            <div id="profile-mission-display"
+                style="margin-top: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #334155;">
+            </div>
             <div id="achievements-list"></div>
         </details>
 
         <div class="goal-container text-center" style="margin-bottom: 20px;">
             <h3>💾 Dados & Backup</h3>
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap:wrap;">
-                <button class="beast-action-btn" onclick="exportData()" style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); padding: 12px; font-size: 13px;">📥 Exportar</button>
-                <label class="beast-action-btn" style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 12px; font-size: 13px;">📤 Importar<input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)"></label>
-                <button class="beast-action-btn" onclick="exportToCSV()" style="flex:100%; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); margin-top:5px; padding: 12px; font-size: 13px;">📋 Exportar CSV</button>
+                <button class="beast-action-btn" onclick="exportData()"
+                    style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); padding: 12px; font-size: 13px;">📥
+                    Exportar</button>
+                <label class="beast-action-btn"
+                    style="flex:1; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 12px; font-size: 13px;">📤
+                    Importar<input type="file" id="import-file" accept=".json" style="display:none;"
+                        onchange="importData(event)"></label>
+                <button class="beast-action-btn" onclick="exportToCSV()"
+                    style="flex:100%; background: #1e293b; color: var(--accent); border: 1px solid var(--accent); margin-top:5px; padding: 12px; font-size: 13px;">📋
+                    Exportar CSV</button>
             </div>
         </div>
     </div>
 
+    <!-- SECÇÃO DE NUVEM / SUPABASE -->
+    <div class="goal-container text-center" style="margin-bottom: 20px; border: 1px solid var(--accent);">
+        <h3>☁️ Nuvem & Sincronização</h3>
+        <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px;">Protege os teus dados contra limpeza de
+            cache.</p>
+
+        <div id="cloud-auth-buttons" style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="beast-action-btn" onclick="loginWithGoogle()"
+                style="background: white; color: black; font-weight: bold; padding: 12px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🌐 Entrar com Google
+            </button>
+            <button class="beast-action-btn" onclick="syncDataToCloud()"
+                style="background: #1e293b; color: var(--accent); border: 1px solid var(--accent); padding: 12px; font-size: 13px;">
+                🔄 Sincronizar Agora
+            </button>
+            <button class="beast-action-btn" onclick="logoutUser()"
+                style="background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid var(--danger); padding: 10px; font-size: 12px;">
+                🚪 Terminar Sessão
+            </button>
+        </div>
+    </div>
+
     <!-- NOTIFICAÇÃO FLUTUANTE (TOAST) -->
-    <div id="pulse-toast" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:12px 24px; border-radius:12px; font-weight:bold; z-index:20000; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; transition: opacity 0.3s; width: 90%; max-width: 350px;"></div>
+    <div id="pulse-toast"
+        style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:12px 24px; border-radius:12px; font-weight:bold; z-index:20000; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; transition: opacity 0.3s; width: 90%; max-width: 350px;">
+    </div>
 
     <!-- MODAL PARA REGISTAR HISTÓRICO VAZIO -->
-    <div id="manual-history-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+    <div id="manual-history-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
             <h3 style="color: white; margin-bottom: 10px;">📅 Registar Dia</h3>
             <p id="manual-history-date-text" style="color: var(--muted); font-size: 13px; margin-bottom: 20px;"></p>
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmManualHistory()" style="background: var(--success); flex: 1; padding: 12px; font-size: 14px;">Sim, Registar</button>
-                <button class="beast-action-btn" onclick="closeManualHistoryModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 14px;">Cancelar</button>
+                <button class="beast-action-btn" onclick="confirmManualHistory()"
+                    style="background: var(--success); flex: 1; padding: 12px; font-size: 14px;">Sim, Registar</button>
+                <button class="beast-action-btn" onclick="closeManualHistoryModal()"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 14px;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- ABA 6: DIETA -->
     <div id="view-dieta" class="view-section">
-        
+
         <div class="goal-container">
             <h3 class="text-center">📊 Dashboard Nutricional</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-                <div style="grid-column: span 2; background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent);">
+                <div
+                    style="grid-column: span 2; background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--accent);">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🔥 Calorias</div>
-                    <div style="font-weight: bold; font-size: 20px;"><span id="dash-cals-done" style="color: white;">0</span> <span style="color: var(--muted); font-size: 12px;">/ <span id="dash-cals-target">0</span> Kcal</span></div>
-                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-cals-bar" style="height:100%; width:0%; background:var(--accent); border-radius:3px; transition: 0.4s;"></div></div>
+                    <div style="font-weight: bold; font-size: 20px;"><span id="dash-cals-done"
+                            style="color: white;">0</span> <span style="color: var(--muted); font-size: 12px;">/ <span
+                                id="dash-cals-target">0</span> Kcal</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);">
+                        <div id="dash-cals-bar"
+                            style="height:100%; width:0%; background:var(--accent); border-radius:3px; transition: 0.4s;">
+                        </div>
+                    </div>
                 </div>
-                <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--success);">
+                <div
+                    style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid var(--success);">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🥩 Proteína</div>
-                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-pro-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-pro-target">0</span>g</span></div>
-                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-pro-bar" style="height:100%; width:0%; background:var(--success); border-radius:3px; transition: 0.4s;"></div></div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-pro-done"
+                            style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span
+                                id="dash-pro-target">0</span>g</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);">
+                        <div id="dash-pro-bar"
+                            style="height:100%; width:0%; background:var(--success); border-radius:3px; transition: 0.4s;">
+                        </div>
+                    </div>
                 </div>
                 <div style="background: #0f172a; padding: 12px; border-radius: 12px; border-left: 4px solid #3b82f6;">
                     <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">🍚 Hidratos</div>
-                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-car-done" style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span id="dash-car-target">0</span>g</span></div>
-                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);"><div id="dash-car-bar" style="height:100%; width:0%; background:#3b82f6; border-radius:3px; transition: 0.4s;"></div></div>
+                    <div style="font-weight: bold; font-size: 18px;"><span id="dash-car-done"
+                            style="color: white;">0</span>g <span style="color: var(--muted); font-size: 11px;">/ <span
+                                id="dash-car-target">0</span>g</span></div>
+                    <div class="progress-bar" style="height: 6px; margin-top: 8px; background: rgba(255,255,255,0.05);">
+                        <div id="dash-car-bar"
+                            style="height:100%; width:0%; background:#3b82f6; border-radius:3px; transition: 0.4s;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-            <div class="goal-container text-center" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="goal-container text-center"
+                style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
                 <h3>⏳ Jejum</h3>
-                <div id="fasting-ring" class="fasting-ring" style="margin: 15px auto;"><span id="fasting-time">00:00:00</span></div>
-                <button id="fasting-btn" onclick="toggleFasting()" style="width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; background:var(--success); color:white; cursor:pointer;">Iniciar</button>
+                <div id="fasting-ring" class="fasting-ring" style="margin: 15px auto;"><span
+                        id="fasting-time">00:00:00</span></div>
+                <button id="fasting-btn" onclick="toggleFasting()"
+                    style="width:100%; padding:12px; border-radius:12px; border:none; font-weight:bold; background:var(--success); color:white; cursor:pointer;">Iniciar</button>
             </div>
-            
-            <div class="goal-container text-center" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+
+            <div class="goal-container text-center"
+                style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
                 <h3>💧 Água</h3>
-                <div style="font-size: 18px; font-weight: bold; color: var(--accent); margin: 15px 0;" id="water-text">0 / 3000 ml</div>
-                <div class="progress-bar" style="height:8px; margin-bottom:15px;"><div id="water-fill" style="height:100%; width:0%; background:var(--accent); transition:0.3s;"></div></div>
+                <div style="font-size: 18px; font-weight: bold; color: var(--accent); margin: 15px 0;" id="water-text">0
+                    / 3000 ml</div>
+                <div class="progress-bar" style="height:8px; margin-bottom:15px;">
+                    <div id="water-fill" style="height:100%; width:0%; background:var(--accent); transition:0.3s;">
+                    </div>
+                </div>
                 <div style="display:flex; flex-direction: column; gap:5px;">
-                    <button class="water-btn" style="padding: 8px; background: rgba(56,189,248,0.1); border: 1px solid var(--accent); color: white;" onclick="openWaterModal('garrafas')">Garrafas</button>
-                    <button class="water-btn" style="padding: 8px; background: rgba(56,189,248,0.1); border: 1px solid var(--accent); color: white;" onclick="openWaterModal('copos')">Copos</button>
+                    <button class="water-btn"
+                        style="padding: 8px; background: rgba(56,189,248,0.1); border: 1px solid var(--accent); color: white;"
+                        onclick="openWaterModal('garrafas')">Garrafas</button>
+                    <button class="water-btn"
+                        style="padding: 8px; background: rgba(56,189,248,0.1); border: 1px solid var(--accent); color: white;"
+                        onclick="openWaterModal('copos')">Copos</button>
                 </div>
             </div>
         </div>
 
         <div class="goal-container" style="margin-top: 20px;">
             <h3>📝 Registo Alimentar</h3>
-            <div style="background:#0f172a; padding:15px; border-radius:12px; margin-top:15px; margin-bottom:15px; border: 1px dashed #334155;">
-                
-                <label style="font-size:11px; color:var(--accent); font-weight:bold; display:block; margin-bottom:5px;">Preenchimento Rápido</label>
-                
+            <div
+                style="background:#0f172a; padding:15px; border-radius:12px; margin-top:15px; margin-bottom:15px; border: 1px dashed #334155;">
+
+                <label
+                    style="font-size:11px; color:var(--accent); font-weight:bold; display:block; margin-bottom:5px;">Preenchimento
+                    Rápido</label>
+
                 <!-- DROPDOWN COMIDA -->
                 <div class="pulse-drop-container" style="margin-bottom: 15px;">
                     <input type="hidden" id="db-food-select" value="">
                     <div class="pulse-drop-trigger" onclick="togglePulseDropdown('db-food-select')">
-                        <span id="db-food-select-label" style="color:var(--muted);">Ingredientes Comuns...</span><span id="db-food-select-arrow" class="pulse-drop-arrow">▼</span>
+                        <span id="db-food-select-label" style="color:var(--muted);">Ingredientes Comuns...</span><span
+                            id="db-food-select-arrow" class="pulse-drop-arrow">▼</span>
                     </div>
                     <div id="db-food-select-options" class="pulse-drop-list">
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Ovo Cozido (1 uni)', 'Ovo Cozido (1 uni)', 'fillCommonFood')">Ovo Cozido (1 uni)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Peito de Frango Cru (100g)', 'Peito de Frango Cru (100g)', 'fillCommonFood')">Peito de Frango Cru (100g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Peito de Frango Grelhado (100g)', 'Peito de Frango Grelhado (100g)', 'fillCommonFood')">Peito de Frango Grelhado (100g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Bife de Vaca Magro (100g)', 'Bife de Vaca Magro (100g)', 'fillCommonFood')">Bife de Vaca Magro (100g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Salmão Grelhado (100g)', 'Salmão Grelhado (100g)', 'fillCommonFood')">Salmão Grelhado (100g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Arroz Branco (100g cozido)', 'Arroz Branco (100g cozido)', 'fillCommonFood')">Arroz Branco (100g cozido)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Massa (100g cozida)', 'Massa (100g cozida)', 'fillCommonFood')">Massa (100g cozida)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Batata Doce (100g cozida)', 'Batata Doce (100g cozida)', 'fillCommonFood')">Batata Doce (100g cozida)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Aveia (50g)', 'Aveia (50g)', 'fillCommonFood')">Aveia (50g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Whey Protein (1 scoop 30g)', 'Whey Protein (1 scoop 30g)', 'fillCommonFood')">Whey Protein (1 scoop 30g)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Banana (1 média)', 'Banana (1 média)', 'fillCommonFood')">Banana (1 média)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Maçã (1 média)', 'Maçã (1 média)', 'fillCommonFood')">Maçã (1 média)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Manteiga de Amendoim (1 c.sopa)', 'Manteiga de Amendoim (1 c.sopa)', 'fillCommonFood')">Manteiga de Amendoim (1 c.sopa)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Azeite (1 colher de sopa)', 'Azeite (1 colher de sopa)', 'fillCommonFood')">Azeite (1 colher de sopa)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Atum em água (1 lata seca)', 'Atum em água (1 lata seca)', 'fillCommonFood')">Atum em água (1 lata seca)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Pão Integral (1 fatia)', 'Pão Integral (1 fatia)', 'fillCommonFood')">Pão Integral (1 fatia)</div>
-                        <div class="pulse-drop-option" onclick="selectPulseOption('db-food-select', 'Leite Meio Gordo (250ml)', 'Leite Meio Gordo (250ml)', 'fillCommonFood')">Leite Meio Gordo (250ml)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Ovo Cozido (1 uni)', 'Ovo Cozido (1 uni)', 'fillCommonFood')">
+                            Ovo Cozido (1 uni)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Peito de Frango Cru (100g)', 'Peito de Frango Cru (100g)', 'fillCommonFood')">
+                            Peito de Frango Cru (100g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Peito de Frango Grelhado (100g)', 'Peito de Frango Grelhado (100g)', 'fillCommonFood')">
+                            Peito de Frango Grelhado (100g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Bife de Vaca Magro (100g)', 'Bife de Vaca Magro (100g)', 'fillCommonFood')">
+                            Bife de Vaca Magro (100g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Salmão Grelhado (100g)', 'Salmão Grelhado (100g)', 'fillCommonFood')">
+                            Salmão Grelhado (100g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Arroz Branco (100g cozido)', 'Arroz Branco (100g cozido)', 'fillCommonFood')">
+                            Arroz Branco (100g cozido)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Massa (100g cozida)', 'Massa (100g cozida)', 'fillCommonFood')">
+                            Massa (100g cozida)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Batata Doce (100g cozida)', 'Batata Doce (100g cozida)', 'fillCommonFood')">
+                            Batata Doce (100g cozida)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Aveia (50g)', 'Aveia (50g)', 'fillCommonFood')">
+                            Aveia (50g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Whey Protein (1 scoop 30g)', 'Whey Protein (1 scoop 30g)', 'fillCommonFood')">
+                            Whey Protein (1 scoop 30g)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Banana (1 média)', 'Banana (1 média)', 'fillCommonFood')">
+                            Banana (1 média)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Maçã (1 média)', 'Maçã (1 média)', 'fillCommonFood')">
+                            Maçã (1 média)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Manteiga de Amendoim (1 c.sopa)', 'Manteiga de Amendoim (1 c.sopa)', 'fillCommonFood')">
+                            Manteiga de Amendoim (1 c.sopa)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Azeite (1 colher de sopa)', 'Azeite (1 colher de sopa)', 'fillCommonFood')">
+                            Azeite (1 colher de sopa)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Atum em água (1 lata seca)', 'Atum em água (1 lata seca)', 'fillCommonFood')">
+                            Atum em água (1 lata seca)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Pão Integral (1 fatia)', 'Pão Integral (1 fatia)', 'fillCommonFood')">
+                            Pão Integral (1 fatia)</div>
+                        <div class="pulse-drop-option"
+                            onclick="selectPulseOption('db-food-select', 'Leite Meio Gordo (250ml)', 'Leite Meio Gordo (250ml)', 'fillCommonFood')">
+                            Leite Meio Gordo (250ml)</div>
                     </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-                    <input type="text" id="food-name" placeholder="Refeição..." style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
-                    <input type="number" id="food-cals" placeholder="🔥 Kcal Totais" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="text" id="food-name" placeholder="Refeição..."
+                        style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="number" id="food-cals" placeholder="🔥 Kcal Totais"
+                        style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;">
-                    <input type="number" id="food-pro" placeholder="🥩 Pro (g)" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
-                    <input type="number" id="food-car" placeholder="🍚 Car (g)" style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
-                    <button onclick="addDailyFood()" style="background:var(--success); color:white; padding:0 15px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button>
+                    <input type="number" id="food-pro" placeholder="🥩 Pro (g)"
+                        style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <input type="number" id="food-car" placeholder="🍚 Car (g)"
+                        style="padding:10px; border-radius:8px; border:none; background:#1e293b; color:white; width: 100%; box-sizing: border-box;">
+                    <button onclick="addDailyFood()"
+                        style="background:var(--success); color:white; padding:0 15px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">✚</button>
                 </div>
                 <div id="frequent-foods" class="freq-foods-container" style="margin-top: 12px;"></div>
             </div>
@@ -577,11 +1036,13 @@
         <div id="punishment-status" style="margin-top: 20px;"></div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-            <div onclick="openRecipesModal()" style="background: #1e293b; border: 1px solid var(--accent); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <div onclick="openRecipesModal()"
+                style="background: #1e293b; border: 1px solid var(--accent); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
                 <div style="font-size: 24px; margin-bottom: 5px;">📖</div>
                 <div style="color: white; font-size: 13px; font-weight: bold;">Receitas de<br>Hipertrofia</div>
             </div>
-            <div onclick="openPunishmentModal()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
+            <div onclick="openPunishmentModal()"
+                style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s;">
                 <div style="font-size: 24px; margin-bottom: 5px;">⚠️</div>
                 <div style="color: var(--danger); font-size: 13px; font-weight: bold;">Taxa do<br>Pecado</div>
             </div>
@@ -589,117 +1050,259 @@
     </div>
 
     <!-- MODAIS GLOBAIS -->
-    <div id="readiness-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10008;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-top: 4px solid var(--success); box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align:center;">
+    <div id="readiness-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10008;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-top: 4px solid var(--success); box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align:center;">
             <h3 style="color: white; margin-bottom: 5px;">🧠 Estado do SNC</h3>
-            <p style="color:var(--muted); font-size:12px; margin-bottom:20px;">Ajusta o teu treino à tua realidade hoje.</p>
-            <div style="text-align:left; margin-bottom:15px;"><label style="font-size:12px; color:var(--accent);">Sono (1-5)</label><input type="range" id="ready-sleep" min="1" max="5" value="3" class="slider" style="width:100%; margin-top:5px;"></div>
-            <div style="text-align:left; margin-bottom:15px;"><label style="font-size:12px; color:var(--accent);">Cansaço Muscular (1=Dor, 5=Zero)</label><input type="range" id="ready-muscle" min="1" max="5" value="3" class="slider" style="width:100%; margin-top:5px;"></div>
-            <div style="text-align:left; margin-bottom:25px;"><label style="font-size:12px; color:var(--accent);">Energia (1-5)</label><input type="range" id="ready-energy" min="1" max="5" value="3" class="slider" style="width:100%; margin-top:5px;"></div>
-            
-            <h4 style="color:white; font-size:13px; text-align:left; margin-bottom:10px;">Inventário de Dor (Marca se doer):</h4>
+            <p style="color:var(--muted); font-size:12px; margin-bottom:20px;">Ajusta o teu treino à tua realidade hoje.
+            </p>
+            <div style="text-align:left; margin-bottom:15px;"><label style="font-size:12px; color:var(--accent);">Sono
+                    (1-5)</label><input type="range" id="ready-sleep" min="1" max="5" value="3" class="slider"
+                    style="width:100%; margin-top:5px;"></div>
+            <div style="text-align:left; margin-bottom:15px;"><label
+                    style="font-size:12px; color:var(--accent);">Cansaço Muscular (1=Dor, 5=Zero)</label><input
+                    type="range" id="ready-muscle" min="1" max="5" value="3" class="slider"
+                    style="width:100%; margin-top:5px;"></div>
+            <div style="text-align:left; margin-bottom:25px;"><label
+                    style="font-size:12px; color:var(--accent);">Energia (1-5)</label><input type="range"
+                    id="ready-energy" min="1" max="5" value="3" class="slider" style="width:100%; margin-top:5px;">
+            </div>
+
+            <h4 style="color:white; font-size:13px; text-align:left; margin-bottom:10px;">Inventário de Dor (Marca se
+                doer):</h4>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; margin-bottom:20px;">
                 <label style="font-size:12px;"><input type="checkbox" id="pain-ombros"> Ombros</label>
                 <label style="font-size:12px;"><input type="checkbox" id="pain-lombar"> Lombar</label>
                 <label style="font-size:12px;"><input type="checkbox" id="pain-joelhos"> Joelhos</label>
                 <label style="font-size:12px;"><input type="checkbox" id="pain-cotovelos"> Cotovelos</label>
             </div>
-            <button class="btn-primary" style="width: 100%;" onclick="closeReadinessModal()">Confirmar Prontidão</button>
+            <button class="btn-primary" style="width: 100%;" onclick="closeReadinessModal()">Confirmar
+                Prontidão</button>
         </div>
     </div>
 
-    <div id="swap-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10010;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid #f97316; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
-            <button onclick="closeSwapModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
-            <h3 style="color: white; margin-bottom: 20px;">🔄 Substituir Exercício</h3><div id="swap-modal-content" style="max-height: 50vh; overflow-y: auto; display:flex; flex-direction:column; gap:8px;"></div>
+    <div id="swap-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10010;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid #f97316; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+            <button onclick="closeSwapModal()"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white; margin-bottom: 20px;">🔄 Substituir Exercício</h3>
+            <div id="swap-modal-content"
+                style="max-height: 50vh; overflow-y: auto; display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     </div>
 
-    <div id="workout-info-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10007;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid var(--accent);"><button onclick="closeWorkoutInfo()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 id="info-modal-title" style="color: white; margin-bottom: 20px;">Título</h3><div id="info-modal-content" style="color: var(--muted); font-size: 14px; line-height: 1.6; max-height: 50vh; overflow-y: auto;"></div><button class="btn-primary" style="width: 100%; margin-top: 25px; padding: 12px; background: #334155; color: white;" onclick="closeWorkoutInfo()">Voltar</button></div></div>
-    
-    <div id="recipes-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
-        <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative; overscroll-behavior: contain;">
-            <button onclick="closeRecipesModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+    <div id="workout-info-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10007;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; position: relative; border-left: 4px solid var(--accent);">
+            <button onclick="closeWorkoutInfo()"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 id="info-modal-title" style="color: white; margin-bottom: 20px;">Título</h3>
+            <div id="info-modal-content"
+                style="color: var(--muted); font-size: 14px; line-height: 1.6; max-height: 50vh; overflow-y: auto;">
+            </div><button class="btn-primary"
+                style="width: 100%; margin-top: 25px; padding: 12px; background: #334155; color: white;"
+                onclick="closeWorkoutInfo()">Voltar</button>
+        </div>
+    </div>
+
+    <div id="recipes-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
+        <div
+            style="background: var(--card-bg); padding: 20px; border-radius: 20px; max-width: 400px; width: 100%; max-height: 80vh; display: flex; flex-direction: column; position: relative; overscroll-behavior: contain;">
+            <button onclick="closeRecipesModal()"
+                style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h2 style="color: white; margin-bottom: 15px;">🥘 Receitas de Hipertrofia</h2>
-            <div id="recipes-list" style="overflow-y: auto; padding-right: 5px; flex: 1; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;"></div>
+            <div id="recipes-list"
+                style="overflow-y: auto; padding-right: 5px; flex: 1; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;">
+            </div>
         </div>
     </div>
-    
-    <div id="punishment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
-        <div style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4); overscroll-behavior: contain;">
-            <button onclick="closePunishmentModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+
+    <div id="punishment-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(239,68,68,0.2); justify-content: center; align-items: center; padding: 20px; z-index: 10005; overscroll-behavior: contain;">
+        <div
+            style="background: #1e293b; border: 2px solid #ef4444; padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(239,68,68,0.4); overscroll-behavior: contain;">
+            <button onclick="closePunishmentModal()"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h3 style="color: #ef4444; margin-bottom: 5px; font-size:24px;">⛔ A Taxa do Pecado</h3>
-            
+
             <!-- DROPDOWN PECADOS -->
             <div class="pulse-drop-container" style="margin-top: 15px; margin-bottom: 12px;">
                 <input type="hidden" id="sin-preset" value="">
                 <div class="pulse-drop-trigger" onclick="togglePulseDropdown('sin-preset')">
-                    <span id="sin-preset-label" style="color:var(--muted);">Seleciona o Pecado...</span><span id="sin-preset-arrow" class="pulse-drop-arrow">▼</span>
+                    <span id="sin-preset-label" style="color:var(--muted);">Seleciona o Pecado...</span><span
+                        id="sin-preset-arrow" class="pulse-drop-arrow">▼</span>
                 </div>
                 <div id="sin-preset-options" class="pulse-drop-list">
-                        <div class="pulse-drop-option" onclick="selectSinPreset('600', '25', '50', '🍕 Fatias de Pizza (2 fatias)')">🍕 Fatias de Pizza (2 fatias)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('800', '35', '60', '🍔 Hamburger c/ Queijo')">🍔 Hamburger c/ Queijo</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('350', '4', '40', '🍟 Batatas Fritas (Dose)')">🍟 Batatas Fritas (Dose)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('1200', '60', '100', '🥪 Francesinha (1 Inteira)')">🥪 Francesinha (1 Inteira)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('400', '5', '60', '🍩 Donut Recheado')">🍩 Donut Recheado</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('500', '10', '70', '🍦 Gelado Grande')">🍦 Gelado Grande</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('450', '5', '55', '🍰 Fatia de Bolo')">🍰 Fatia de Bolo</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('270', '3', '30', '🍫 Chocolate (Barra 50g)')">🍫 Chocolate (Barra 50g)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('120', '1', '10', '🍺 Cerveja / Fino (25cl)')">🍺 Cerveja / Fino (25cl)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('140', '0', '35', '🥤 Refrigerante Cola (33cl)')">🥤 Refrigerante Cola (33cl)</div>
-                        <div class="pulse-drop-option" onclick="selectSinPreset('250', '0', '30', '🍹 Bebida Branca c/ Sumo (Copo)')">🍹 Bebida Branca c/ Sumo (Copo)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('600', '25', '50', '🍕 Fatias de Pizza (2 fatias)')">🍕 Fatias de Pizza
+                        (2 fatias)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('800', '35', '60', '🍔 Hamburger c/ Queijo')">🍔 Hamburger c/ Queijo
                     </div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('350', '4', '40', '🍟 Batatas Fritas (Dose)')">🍟 Batatas Fritas (Dose)
+                    </div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('1200', '60', '100', '🥪 Francesinha (1 Inteira)')">🥪 Francesinha (1
+                        Inteira)</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('400', '5', '60', '🍩 Donut Recheado')">🍩
+                        Donut Recheado</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('500', '10', '70', '🍦 Gelado Grande')">🍦
+                        Gelado Grande</div>
+                    <div class="pulse-drop-option" onclick="selectSinPreset('450', '5', '55', '🍰 Fatia de Bolo')">🍰
+                        Fatia de Bolo</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('270', '3', '30', '🍫 Chocolate (Barra 50g)')">🍫 Chocolate (Barra 50g)
+                    </div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('120', '1', '10', '🍺 Cerveja / Fino (25cl)')">🍺 Cerveja / Fino (25cl)
+                    </div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('140', '0', '35', '🥤 Refrigerante Cola (33cl)')">🥤 Refrigerante Cola
+                        (33cl)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectSinPreset('250', '0', '30', '🍹 Bebida Branca c/ Sumo (Copo)')">🍹 Bebida Branca
+                        c/ Sumo (Copo)</div>
+                </div>
             </div>
 
-            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; background:#0f172a; padding:8px 12px; border-radius:8px;">
+            <div
+                style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; background:#0f172a; padding:8px 12px; border-radius:8px;">
                 <span style="font-size:12px; color:var(--muted); font-weight:bold;">Quantidade:</span>
-                <button onclick="adjustSinQty(-0.5)" style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">-</button>
-                <input type="number" id="sin-qty" value="1" step="0.5" min="0.5" max="10" oninput="updateSinValuesFromQty()" style="width:45px; text-align:center; background:transparent; border:none; color:var(--accent); font-weight:bold; font-size:16px;">
-                <button onclick="adjustSinQty(0.5)" style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">+</button>
+                <button onclick="adjustSinQty(-0.5)"
+                    style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">-</button>
+                <input type="number" id="sin-qty" value="1" step="0.5" min="0.5" max="10"
+                    oninput="updateSinValuesFromQty()"
+                    style="width:45px; text-align:center; background:transparent; border:none; color:var(--accent); font-weight:bold; font-size:16px;">
+                <button onclick="adjustSinQty(0.5)"
+                    style="background:#334155; color:white; border:none; width:28px; height:28px; border-radius:6px; font-weight:bold; cursor:pointer;">+</button>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:10px;">
-                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()" style="width:100%;"></div>
-                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()" style="width:100%;"></div>
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Carb
+                        (g)</label><input type="number" id="sin-car" oninput="calculateSinFromMacros()"
+                        style="width:100%;"></div>
+                <div class="input-group" style="flex-direction:column; gap:2px;"><label style="font-size:10px;">Prot
+                        (g)</label><input type="number" id="sin-pro" oninput="calculateSinFromMacros()"
+                        style="width:100%;"></div>
             </div>
-            
+
             <div class="input-group" style="justify-content:center; margin-bottom:20px; margin-top:10px;">
-                <input type="number" id="sin-cals" placeholder="Kcal Totais" style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a; text-align:center;">
+                <input type="number" id="sin-cals" placeholder="Kcal Totais"
+                    style="font-size: 20px; width:160px; padding:15px; font-weight:bold; color:#ef4444; border: 1px solid #ef4444; background:#0f172a; text-align:center;">
             </div>
-            <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;" onclick="triggerPunishment()">Aceitar Penitência</button>
+            <button class="beast-action-btn dropset" style="width: 100%; background: #ef4444;"
+                onclick="triggerPunishment()">Aceitar Penitência</button>
         </div>
     </div>
 
-    <div id="confess-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+    <div id="confess-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <h3 style="color: var(--danger); margin-bottom: 10px;">🩸 Confessar Pecado?</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Tens a certeza que queres limpar a penitência sem suar o Finisher no próximo treino?</p>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Tens a certeza que
+                queres limpar a penitência sem suar o Finisher no próximo treino?</p>
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmConfess()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Limpar</button>
-                <button class="beast-action-btn" onclick="closeConfessModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Voltar ao Aço</button>
+                <button class="beast-action-btn" onclick="confirmConfess()"
+                    style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim,
+                    Limpar</button>
+                <button class="beast-action-btn" onclick="closeConfessModal()"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Voltar ao
+                    Aço</button>
             </div>
         </div>
     </div>
-    
-    <div id="plate-math-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10002;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;"><button onclick="closePlateMath()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 style="color: white;">Calculadora de Discos</h3><p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span id="plate-target-weight"></span> KG</p><div style="display: flex; align-items: center; justify-content: center; height: 120px; margin-bottom: 20px;"><div style="width: 20px; height: 15px; background: #94a3b8; border-radius: 2px;"></div><div id="visual-plates" style="display: flex; align-items: center; gap: 2px;"></div><div style="width: 60px; height: 15px; background: #64748b; margin-left: 2px; position: relative;"><div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #cbd5e1;">BARRA</div></div></div><div id="plate-math-result" style="background: #0f172a; padding: 15px; border-radius: 12px; text-align: left; max-height: 180px; overflow-y: auto;"></div></div></div>
-    
-    <div id="warmup-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10003;"><div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;"><button onclick="closeWarmup()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button><h3 style="color: white; margin-bottom: 20px;">🔥 Aquecimento</h3><div id="warmup-results" style="display: flex; flex-direction: column; gap: 10px;"></div></div></div>
-    
-    <div id="flex-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px; z-index: 10004;">
+
+    <div id="plate-math-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10002;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
+            <button onclick="closePlateMath()"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white;">Calculadora de Discos</h3>
+            <p style="color: var(--accent); font-weight: bold; font-size: 28px; margin-bottom: 20px;"><span
+                    id="plate-target-weight"></span> KG</p>
+            <div
+                style="display: flex; align-items: center; justify-content: center; height: 120px; margin-bottom: 20px;">
+                <div style="width: 20px; height: 15px; background: #94a3b8; border-radius: 2px;"></div>
+                <div id="visual-plates" style="display: flex; align-items: center; gap: 2px;"></div>
+                <div style="width: 60px; height: 15px; background: #64748b; margin-left: 2px; position: relative;">
+                    <div
+                        style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #cbd5e1;">
+                        BARRA</div>
+                </div>
+            </div>
+            <div id="plate-math-result"
+                style="background: #0f172a; padding: 15px; border-radius: 12px; text-align: left; max-height: 180px; overflow-y: auto;">
+            </div>
+        </div>
+    </div>
+
+    <div id="warmup-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; padding: 20px; z-index: 10003;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative;">
+            <button onclick="closeWarmup()"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <h3 style="color: white; margin-bottom: 20px;">🔥 Aquecimento</h3>
+            <div id="warmup-results" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="flex-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px; z-index: 10004;">
         <div style="width: 100%; max-width: 360px; position: relative; text-align: center;">
-            <button onclick="closeModoFlex()" style="position: absolute; top: -40px; right: 10px; background: none; border: none; color: white; font-size: 28px; cursor: pointer;">✖</button>
-            <div id="flex-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 35px 25px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;"><div><h4 id="flex-card-name" style="color: white; font-size: 18px;"></h4><span id="flex-card-date" style="color: var(--muted); font-size: 11px;"></span></div><div style="background: rgba(56,189,248,0.1); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; color: var(--accent); font-size: 12px; font-weight: bold;">GYM TRACKER</div></div><div style="margin-bottom: 25px;"><span style="color: var(--muted); font-size: 11px; text-transform: uppercase;">Treino do Dia</span><h2 id="flex-card-workout" style="color: #38bdf8; font-size: 32px; font-weight: 900; margin-top: 5px;"></h2></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;"><div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Volume</span><div id="flex-card-volume" style="color: #22c55e; font-size: 24px; font-weight: bold;"></div></div><div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span style="color: var(--muted); font-size: 11px;">Séries Fritadas</span><div id="flex-card-sets" style="color: #f59e0b; font-size: 24px; font-weight: bold;"></div></div></div><div style="background: rgba(56,189,248,0.05); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent);"><p id="flex-card-quote" style="color: #cbd5e1; font-size: 13px; font-style: italic;"></p></div>
+            <button onclick="closeModoFlex()"
+                style="position: absolute; top: -40px; right: 10px; background: none; border: none; color: white; font-size: 28px; cursor: pointer;">✖</button>
+            <div id="flex-card"
+                style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border: 2px solid #38bdf8; border-radius: 24px; padding: 35px 25px; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5); overflow: hidden;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <div>
+                        <h4 id="flex-card-name" style="color: white; font-size: 18px;"></h4><span id="flex-card-date"
+                            style="color: var(--muted); font-size: 11px;"></span>
+                    </div>
+                    <div
+                        style="background: rgba(56,189,248,0.1); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 20px; color: var(--accent); font-size: 12px; font-weight: bold;">
+                        GYM TRACKER</div>
+                </div>
+                <div style="margin-bottom: 25px;"><span
+                        style="color: var(--muted); font-size: 11px; text-transform: uppercase;">Treino do Dia</span>
+                    <h2 id="flex-card-workout"
+                        style="color: #38bdf8; font-size: 32px; font-weight: 900; margin-top: 5px;"></h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span
+                            style="color: var(--muted); font-size: 11px;">Volume</span>
+                        <div id="flex-card-volume" style="color: #22c55e; font-size: 24px; font-weight: bold;"></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px;"><span
+                            style="color: var(--muted); font-size: 11px;">Séries Fritadas</span>
+                        <div id="flex-card-sets" style="color: #f59e0b; font-size: 24px; font-weight: bold;"></div>
+                    </div>
+                </div>
+                <div
+                    style="background: rgba(56,189,248,0.05); padding: 15px; border-radius: 16px; border-left: 4px solid var(--accent);">
+                    <p id="flex-card-quote" style="color: #cbd5e1; font-size: 13px; font-style: italic;"></p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL: WORKOUT RECAP (O QUE LEVANTASTE?) -->
-    <div id="workout-recap-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10050;">
-        <div style="background: var(--card-bg); padding: 0; border-radius: 24px; width: 100%; max-width: 380px; position: relative; border: 1px solid var(--accent); box-shadow: 0 15px 50px rgba(56,189,248,0.2); overflow: hidden;">
-            
+    <div id="workout-recap-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10050;">
+        <div
+            style="background: var(--card-bg); padding: 0; border-radius: 24px; width: 100%; max-width: 380px; position: relative; border: 1px solid var(--accent); box-shadow: 0 15px 50px rgba(56,189,248,0.2); overflow: hidden;">
+
             <!-- Header do Recap -->
-            <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 30px 20px 20px; text-align: center; border-bottom: 1px dashed #334155;">
+            <div
+                style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 30px 20px 20px; text-align: center; border-bottom: 1px dashed #334155;">
                 <div style="font-size: 40px; margin-bottom: 10px;">🔥</div>
                 <h2 style="color: white; margin: 0; font-size: 24px; font-weight: 900;">TREINO CONCLUÍDO</h2>
                 <p id="recap-date" style="color: var(--muted); font-size: 13px; margin-top: 5px;"></p>
@@ -707,173 +1310,264 @@
 
             <!-- Stats Rápidas -->
             <div style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
                     <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Volume Total</div>
-                    <div id="recap-vol" style="color: var(--accent); font-size: 20px; font-weight: 900; margin-top: 4px;">0 kg</div>
+                    <div id="recap-vol"
+                        style="color: var(--accent); font-size: 20px; font-weight: 900; margin-top: 4px;">0 kg</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
                     <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Duração</div>
-                    <div id="recap-time" style="color: var(--success); font-size: 20px; font-weight: 900; margin-top: 4px;">0 min</div>
+                    <div id="recap-time"
+                        style="color: var(--success); font-size: 20px; font-weight: 900; margin-top: 4px;">0 min</div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
                     <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">Séries Fritadas</div>
-                    <div id="recap-sets" style="color: white; font-size: 20px; font-weight: 900; margin-top: 4px;">0</div>
+                    <div id="recap-sets" style="color: white; font-size: 20px; font-weight: 900; margin-top: 4px;">0
+                    </div>
                 </div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; text-align: center;">
                     <div style="font-size: 11px; color: var(--muted); text-transform: uppercase;">MVP do Treino</div>
-                    <div id="recap-mvp" style="color: #f59e0b; font-size: 13px; font-weight: bold; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="Exercício">--</div>
+                    <div id="recap-mvp"
+                        style="color: #f59e0b; font-size: 13px; font-weight: bold; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                        title="Exercício">--</div>
                 </div>
             </div>
 
             <!-- Absurd Comparation com T-Rex Reveal -->
             <div style="padding: 0 20px 20px;">
-                <div style="background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px; position: relative; overflow: hidden;" id="recap-absurd-box">
-                    <div style="font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; position: relative; z-index: 2;">🤔 O Que Levantaste Hoje?</div>
-                    
-                    <div id="recap-absurd" style="color: white; font-size: 14px; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2;">
+                <div style="background: rgba(56,189,248,0.05); border-left: 4px solid var(--accent); padding: 15px; border-radius: 12px; position: relative; overflow: hidden;"
+                    id="recap-absurd-box">
+                    <div
+                        style="font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; position: relative; z-index: 2;">
+                        🤔 O Que Levantaste Hoje?</div>
+
+                    <div id="recap-absurd"
+                        style="color: white; font-size: 14px; line-height: 1.5; margin-bottom: 15px; position: relative; z-index: 2;">
                         <!-- Injetado por JS -->
                     </div>
-                    
+
                     <!-- Botão de Revelação -->
-                    <button id="btn-trex-reveal" class="beast-action-btn" style="width: 100%; background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: var(--danger); padding: 10px; font-size: 12px; font-weight: bold; position: relative; z-index: 2; cursor: pointer; border-radius: 8px;" onclick="triggerTRexReveal()">🦖 Revelação Especial T-Rex</button>
-                    
+                    <button id="btn-trex-reveal" class="beast-action-btn"
+                        style="width: 100%; background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: var(--danger); padding: 10px; font-size: 12px; font-weight: bold; position: relative; z-index: 2; cursor: pointer; border-radius: 8px;"
+                        onclick="triggerTRexReveal()">🦖 Revelação Especial T-Rex</button>
+
                     <!-- Ecrã Invisível para a Chuva e o Resultado -->
-                    <div id="trex-rain-area" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;"></div>
-                    <div id="trex-reveal-text" style="display:none; text-align:center; font-size: 24px; font-weight: 900; color: var(--danger); text-shadow: 0 0 20px rgba(239,68,68,0.6); position:relative; z-index:2; margin-top:5px;"></div>
+                    <div id="trex-rain-area"
+                        style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;">
+                    </div>
+                    <div id="trex-reveal-text"
+                        style="display:none; text-align:center; font-size: 24px; font-weight: 900; color: var(--danger); text-shadow: 0 0 20px rgba(239,68,68,0.6); position:relative; z-index:2; margin-top:5px;">
+                    </div>
                 </div>
             </div>
 
             <!-- Botão Fechar -->
             <div style="padding: 0 20px 20px;">
-                <button class="beast-action-btn" style="width: 100%; background: var(--success); color: white; padding: 15px; font-size: 15px; font-weight: bold;" onclick="closeWorkoutRecap()">Aceitar Legado</button>
+                <button class="beast-action-btn"
+                    style="width: 100%; background: var(--success); color: white; padding: 15px; font-size: 15px; font-weight: bold;"
+                    onclick="closeWorkoutRecap()">Aceitar Legado</button>
             </div>
         </div>
     </div>
-    
+
     <!-- MODAL DE DEBRIEF SEMANAL (DOMINGO) -->
-    <div id="sunday-debrief-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10015;">
+    <div id="sunday-debrief-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); justify-content: center; align-items: center; padding: 20px; z-index: 10015;">
         <div class="debrief-card" style="width: 100%; max-width: 360px; position: relative;">
-            <button onclick="closeDebrief()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+            <button onclick="closeDebrief()"
+                style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h2 style="color:var(--accent); font-size:24px; margin-bottom:20px;">📊 Relatório Semanal</h2>
-            <div class="debrief-stat"><span>Carga Movida:</span> <strong id="debrief-vol" style="color:var(--success);">0 kg</strong></div>
+            <div class="debrief-stat"><span>Carga Movida:</span> <strong id="debrief-vol"
+                    style="color:var(--success);">0 kg</strong></div>
             <div class="debrief-stat"><span>Treinos:</span> <strong id="debrief-work">0</strong></div>
-            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="closeDebrief()">Siga para a nova semana</button>
+            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="closeDebrief()">Siga para a nova
+                semana</button>
         </div>
     </div>
 
-    <div id="water-garrafas-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
-            <button onclick="closeWaterModal('garrafas')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+    <div id="water-garrafas-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
+            <button onclick="closeWaterModal('garrafas')"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h3 style="color: white; margin-bottom: 20px;">💧 Garrafas</h3>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="beast-action-btn" onclick="addWaterGarrafa(330)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Pequena (33 cl)</button>
-                <button class="beast-action-btn" onclick="addWaterGarrafa(500)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Média (50 cl)</button>
-                <button class="beast-action-btn" onclick="addWaterGarrafa(750)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Média-Grande (75 cl)</button>
-                <button class="beast-action-btn" onclick="addWaterGarrafa(1000)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Litro (1 L)</button>
-                <button class="beast-action-btn" onclick="addWaterGarrafa(1500)" style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Grande (1.5 L)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(330)"
+                    style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Pequena
+                    (33 cl)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(500)"
+                    style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Média (50
+                    cl)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(750)"
+                    style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Média-Grande
+                    (75 cl)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(1000)"
+                    style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Litro (1
+                    L)</button>
+                <button class="beast-action-btn" onclick="addWaterGarrafa(1500)"
+                    style="background: #1e293b; border: 1px solid var(--accent); color: white; padding: 12px;">Grande
+                    (1.5 L)</button>
             </div>
         </div>
     </div>
 
-    <div id="water-copos-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
-            <button onclick="closeWaterModal('copos')" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
+    <div id="water-copos-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10020;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 300px; text-align: center; position: relative; border-top: 4px solid var(--accent);">
+            <button onclick="closeWaterModal('copos')"
+                style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer;">✖</button>
             <h3 style="color: white; margin-bottom: 5px;">🥛 Copos de Água</h3>
             <p style="color: var(--muted); font-size: 11px; margin-bottom: 20px;">(~250 ml por copo)</p>
-            
+
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px;">
-                <button onclick="adjustGlasses(-1)" style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
-                <div id="glass-count" style="font-size: 32px; font-weight: bold; color: var(--accent); width: 40px;">1</div>
-                <button onclick="adjustGlasses(1)" style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
+                <button onclick="adjustGlasses(-1)"
+                    style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
+                <div id="glass-count" style="font-size: 32px; font-weight: bold; color: var(--accent); width: 40px;">1
+                </div>
+                <button onclick="adjustGlasses(1)"
+                    style="background: #334155; border: none; color: white; width: 40px; height: 40px; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
             </div>
-            
-            <button class="beast-action-btn" onclick="confirmGlasses()" style="background: var(--accent); color: black; width: 100%; padding: 12px; font-weight: bold;">Adicionar</button>
+
+            <button class="beast-action-btn" onclick="confirmGlasses()"
+                style="background: var(--accent); color: black; width: 100%; padding: 12px; font-weight: bold;">Adicionar</button>
         </div>
     </div>
 
     <!-- MODAL ESVAZIAR CONSTRUTOR -->
-    <div id="clear-builder-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+    <div id="clear-builder-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <h3 style="color: var(--danger); margin-bottom: 10px;">🗑️ Esvaziar Esboço?</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Vais apagar todos os exercícios que escolheste até agora.</p>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px; line-height: 1.5;">Vais apagar todos os
+                exercícios que escolheste até agora.</p>
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmClearBuilder()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Apagar</button>
-                <button class="beast-action-btn" onclick="closeClearBuilderModal()" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+                <button class="beast-action-btn" onclick="confirmClearBuilder()"
+                    style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim,
+                    Apagar</button>
+                <button class="beast-action-btn" onclick="closeClearBuilderModal()"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL GRAVAR ROTINA -->
-    <div id="save-routine-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--accent); box-shadow: 0 10px 40px rgba(56,189,248,0.2);">
+    <div id="save-routine-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--accent); box-shadow: 0 10px 40px rgba(56,189,248,0.2);">
             <h3 style="color: var(--accent); margin-bottom: 10px;">💾 Guardar Treino</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Dá um nome à tua nova rotina épica.</p>
-            <input type="text" id="routine-name-input" placeholder="Ex: Peito e Tríceps Fritados..." style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Dá um nome à tua nova rotina épica.
+            </p>
+            <input type="text" id="routine-name-input" placeholder="Ex: Peito e Tríceps Fritados..."
+                style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 20px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmSaveRoutine()" style="background: var(--accent); color: black; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Guardar</button>
-                <button class="beast-action-btn" onclick="document.getElementById('save-routine-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+                <button class="beast-action-btn" onclick="confirmSaveRoutine()"
+                    style="background: var(--accent); color: black; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Guardar</button>
+                <button class="beast-action-btn"
+                    onclick="document.getElementById('save-routine-modal').style.display='none'"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL ELIMINAR ROTINA -->
-    <div id="delete-routine-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
+    <div id="delete-routine-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--danger); box-shadow: 0 10px 40px rgba(239,68,68,0.4);">
             <h3 style="color: var(--danger); margin-bottom: 10px;">🗑️ Eliminar Treino?</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Esta ação é permanente. Tens a certeza, Titã?</p>
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 20px;">Esta ação é permanente. Tens a
+                certeza, Titã?</p>
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmDeleteRoutine()" style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim, Eliminar</button>
-                <button class="beast-action-btn" onclick="document.getElementById('delete-routine-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+                <button class="beast-action-btn" onclick="confirmDeleteRoutine()"
+                    style="background: var(--danger); color: white; flex: 1; padding: 12px; font-size: 13px;">Sim,
+                    Eliminar</button>
+                <button class="beast-action-btn"
+                    onclick="document.getElementById('delete-routine-modal').style.display='none'"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL CRIAR EXERCÍCIO -->
-    <div id="custom-exercise-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--success); box-shadow: 0 10px 40px rgba(34,197,94,0.2);">
+    <div id="custom-exercise-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); justify-content: center; align-items: center; padding: 20px; z-index: 10025;">
+        <div
+            style="background: var(--card-bg); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; position: relative; border: 1px solid var(--success); box-shadow: 0 10px 40px rgba(34,197,94,0.2);">
             <h3 style="color: var(--success); margin-bottom: 10px;">✚ Novo Exercício</h3>
-            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Adiciona uma nova variação à biblioteca.</p>
-            <input type="text" id="custom-ex-name" placeholder="Nome do exercício..." style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
-            
+            <p style="color: var(--muted); font-size: 13px; margin-bottom: 15px;">Adiciona uma nova variação à
+                biblioteca.</p>
+            <input type="text" id="custom-ex-name" placeholder="Nome do exercício..."
+                style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; text-align:center; font-weight:bold; outline:none;">
+
             <div class="pulse-drop-container" style="margin-bottom: 10px;">
                 <input type="hidden" id="custom-ex-muscle" value="">
                 <div class="pulse-drop-trigger" onclick="togglePulseDropdown('custom-ex-muscle')">
-                    <span id="custom-ex-muscle-label" style="color:var(--muted);">Seleciona o Músculo</span><span id="custom-ex-muscle-arrow" class="pulse-drop-arrow">▼</span>
+                    <span id="custom-ex-muscle-label" style="color:var(--muted);">Seleciona o Músculo</span><span
+                        id="custom-ex-muscle-arrow" class="pulse-drop-arrow">▼</span>
                 </div>
                 <div id="custom-ex-muscle-options" class="pulse-drop-list">
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Peito', 'Peito')">Peito</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Costas', 'Costas')">Costas</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Pernas', 'Pernas')">Pernas</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Ombros', 'Ombros')">Ombros</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Braços', 'Braços')">Braços</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Core', 'Core')">Core</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Peito', 'Peito')">
+                        Peito</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Costas', 'Costas')">
+                        Costas</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Pernas', 'Pernas')">
+                        Pernas</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Ombros', 'Ombros')">
+                        Ombros</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Braços', 'Braços')">
+                        Braços</div>
+                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-muscle', 'Core', 'Core')">Core
+                    </div>
                 </div>
             </div>
 
             <div class="pulse-drop-container" style="margin-bottom: 20px;">
                 <input type="hidden" id="custom-ex-tier" value="">
                 <div class="pulse-drop-trigger" onclick="togglePulseDropdown('custom-ex-tier')">
-                    <span id="custom-ex-tier-label" style="color:var(--muted);">Seleciona o Grau</span><span id="custom-ex-tier-arrow" class="pulse-drop-arrow">▼</span>
+                    <span id="custom-ex-tier-label" style="color:var(--muted);">Seleciona o Grau</span><span
+                        id="custom-ex-tier-arrow" class="pulse-drop-arrow">▼</span>
                 </div>
                 <div id="custom-ex-tier-options" class="pulse-drop-list">
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'S', 'Grau S (Forte/Composto)')">Grau S (Forte/Composto)</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'A', 'Grau A (Acessório/Máquina)')">Grau A (Acessório/Máquina)</div>
-                    <div class="pulse-drop-option" onclick="selectPulseOption('custom-ex-tier', 'B', 'Grau B (Isolamento/Cabo)')">Grau B (Isolamento/Cabo)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectPulseOption('custom-ex-tier', 'S', 'Grau S (Forte/Composto)')">Grau S
+                        (Forte/Composto)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectPulseOption('custom-ex-tier', 'A', 'Grau A (Acessório/Máquina)')">Grau A
+                        (Acessório/Máquina)</div>
+                    <div class="pulse-drop-option"
+                        onclick="selectPulseOption('custom-ex-tier', 'B', 'Grau B (Isolamento/Cabo)')">Grau B
+                        (Isolamento/Cabo)</div>
                 </div>
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button class="beast-action-btn" onclick="confirmCustomExercise()" style="background: var(--success); color: white; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Adicionar</button>
-                <button class="beast-action-btn" onclick="document.getElementById('custom-exercise-modal').style.display='none'" style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
+                <button class="beast-action-btn" onclick="confirmCustomExercise()"
+                    style="background: var(--success); color: white; flex: 1; padding: 12px; font-size: 13px; font-weight:bold;">Adicionar</button>
+                <button class="beast-action-btn"
+                    onclick="document.getElementById('custom-exercise-modal').style.display='none'"
+                    style="background: #334155; color: white; flex: 1; padding: 12px; font-size: 13px;">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- CARREGAMENTO DOS SCRIPTS -->
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="js/db.js"></script>
     <script src="js/logic.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/supabase-config.js"></script> <!-- NOVO -->
     <script src="js/main.js"></script>
     <script> if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); } </script>
 </body>
+
 </html>
