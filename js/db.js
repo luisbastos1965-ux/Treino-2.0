@@ -3,23 +3,121 @@
 // ==========================================
 
 let workoutData = {
-    PUSH: [{ name: 'Supino Plano com Barra', sets: 3 }, { name: 'Supino Inclinado c/ Halteres', sets: 3 }, { name: 'Press Militar c/ Halteres', sets: 3 }, { name: 'Elevações Laterais na Polia', sets: 4 }, { name: 'Tríceps à Testa', sets: 3 }, { name: 'Tríceps na Polia com Corda', sets: 3 }],
-    PULL: [{ name: 'Elevações (Pull-ups)', sets: 3 }, { name: 'Remada com Barra', sets: 3 }, { name: 'Puxada Vertical na Polia Alta', sets: 3 }, { name: 'Voos Posteriores (Rear Delt Fly)', sets: 4 }, { name: 'Curl de Bíceps Inclinado', sets: 3 }, { name: 'Curl Martelo', sets: 3 }],
-    LEGS: [{ name: 'Agachamento Livre', sets: 4 }, { name: 'Peso Morto Romeno (RDL)', sets: 3 }, { name: 'Leg Press 45º', sets: 3 }, { name: 'Flexão de Pernas (Leg Curl)', sets: 3 }, { name: 'Elevação de Gémeos em Pé', sets: 4 }],
-    MOBILITY: [{ name: 'Gato-Camelo (Cat-Cow)', sets: 2, reps: '10 reps' }, { name: 'Rotação Torácica no Chão', sets: 2, reps: '8 cada lado' }, { name: 'Alongamento de Flexores da Anca', sets: 2, reps: '30s cada' }, { name: 'Cão Olhando para Baixo', sets: 2, reps: '45s' }, { name: 'Ponte de Glúteos', sets: 2, reps: '15 reps' }],
+    // V1: Foco Clássico / Peso Livre / Força
+    PUSH_V1: [
+        { name: 'Supino Plano com Barra', sets: 3 }, 
+        { name: 'Supino Inclinado c/ Halteres', sets: 3 }, 
+        { name: 'Press Militar c/ Halteres', sets: 3 }, 
+        { name: 'Elevações Laterais na Polia', sets: 4 }, 
+        { name: 'Tríceps à Testa', sets: 3 }, 
+        { name: 'Tríceps na Polia com Corda', sets: 3 }
+    ],
+    PULL_V1: [
+        { name: 'Elevações (Pull-ups)', sets: 3 }, 
+        { name: 'Remada Curvada com Barra', sets: 3 }, 
+        { name: 'Puxada Vertical na Polia', sets: 3 }, 
+        { name: 'Face Pull na Polia', sets: 4 }, 
+        { name: 'Curl de Bíceps no Banco Scott', sets: 3 }, 
+        { name: 'Curl Martelo', sets: 3 }
+    ],
+    LEGS_V1: [
+        { name: 'Agachamento Livre', sets: 4 }, 
+        { name: 'Peso Morto Romeno (RDL)', sets: 3 }, 
+        { name: 'Lunge / Agachamento Búlgaro', sets: 3 }, 
+        { name: 'Flexora (Leg Curl)', sets: 3 }, 
+        { name: 'Elevação de Gémeos na Multipower', sets: 4 }
+    ],
+    
+    // V2: Foco Tensão Mecânica / Máquinas / Hipertrofia
+    PUSH_V2: [
+        { name: 'Press de Peito Iso-Lateral', sets: 4 }, 
+        { name: 'Supino Inclinado na Multipower', sets: 3 }, 
+        { name: 'Crossover na Polia', sets: 4 }, 
+        { name: 'Press de Ombros na Máquina', sets: 3 }, 
+        { name: 'Elevações Laterais c/ Halteres', sets: 4 }, 
+        { name: 'Extensão Tríceps Unilateral (Polia)', sets: 3 }
+    ],
+    PULL_V2: [
+        { name: 'Remada Articulada Iso-Lateral', sets: 4 }, 
+        { name: 'Puxada Vertical na Polia', sets: 3 }, 
+        { name: 'Remada Sentada com Cabo', sets: 3 }, 
+        { name: 'Pulldown com Corda (Braços Esticados)', sets: 3 }, 
+        { name: 'Curl de Bíceps Inclinado', sets: 3 }, 
+        { name: 'Curl de Bíceps no Banco Scott', sets: 3 }
+    ],
+    LEGS_V2: [
+        { name: 'Agachamento Hack', sets: 3 }, 
+        { name: 'Leg Press', sets: 4 }, 
+        { name: 'Extensora (Leg Extension)', sets: 3 }, 
+        { name: 'Flexora (Leg Curl)', sets: 3 }, 
+        { name: 'Elevação de Gémeos na Leg Press', sets: 4 }
+    ],
+    
+    MOBILITY: [
+        { name: 'Gato-Camelo (Cat-Cow)', sets: 2, reps: '10 reps' }, 
+        { name: 'Rotação Torácica no Chão', sets: 2, reps: '8 cada' }, 
+        { name: 'Alongamento de Flexores da Anca', sets: 2, reps: '30s cada' }, 
+        { name: 'Cão Olhando para Baixo', sets: 2, reps: '45s' }, 
+        { name: 'Ponte de Glúteos', sets: 2, reps: '15 reps' }
+    ],
     CUSTOM: []
 };
 
 let exerciseLibrary = [
-    { name: "Supino Plano com Barra", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, { name: "Supino Inclinado c/ Halteres", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, { name: "Supino Plano na Máquina", muscle: "Peito", tier: "A", type: "machine", defaultSets: 3 }, { name: "Peck Deck / Voador", muscle: "Peito", tier: "B", type: "machine", defaultSets: 3 }, { name: "Crossover na Polia", muscle: "Peito", tier: "A", type: "machine", defaultSets: 4 },
-    { name: "Elevações (Pull-ups)", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, { name: "Puxada Vertical na Polia Alta", muscle: "Costas", tier: "S", type: "machine", defaultSets: 3 }, { name: "Remada com Barra", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, { name: "Remada Sentada com Cabo", muscle: "Costas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Remada Inclinada c/ Halteres", muscle: "Costas", tier: "A", type: "free", defaultSets: 3 }, { name: "Pullover com Haltere", muscle: "Costas", tier: "B", type: "free", defaultSets: 3 },
-    { name: "Agachamento Livre", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 }, { name: "Agachamento Hack", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Leg Press 45º", muscle: "Pernas", tier: "S", type: "machine", defaultSets: 4 }, { name: "Peso Morto Romeno (RDL)", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 }, { name: "Extensão de Pernas", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Flexão de Pernas (Leg Curl)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, { name: "Elevação de Gémeos em Pé", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 }, { name: "Elevação de Gémeos Sentado", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 },
-    { name: "Press Militar c/ Halteres", muscle: "Ombros", tier: "S", type: "free", defaultSets: 3 }, { name: "Elevações Laterais na Polia", muscle: "Ombros", tier: "S", type: "free", defaultSets: 4 }, { name: "Elevações Laterais c/ Halteres", muscle: "Ombros", tier: "A", type: "free", defaultSets: 4 }, { name: "Voos Posteriores (Rear Delt Fly)", muscle: "Ombros", tier: "A", type: "machine", defaultSets: 4 },
-    { name: "Curl de Bíceps Inclinado", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, { name: "Curl Martelo", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, { name: "Curl de Bíceps na Polia", muscle: "Braços", tier: "B", type: "machine", defaultSets: 3 }, { name: "Tríceps à Testa", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, { name: "Tríceps na Polia com Corda", muscle: "Braços", tier: "S", type: "machine", defaultSets: 3 },
-    { name: "Crunch Abdominal na Polia", muscle: "Core", tier: "A", type: "machine", defaultSets: 3 }, { name: "Elevação de Pernas em Suspensão", muscle: "Core", tier: "S", type: "free", defaultSets: 3 }, { name: "Prancha Abdominal (Plank)", muscle: "Core", tier: "A", type: "free", defaultSets: 3 }
-];
+    // PEITO
+    { name: "Supino Plano com Barra", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Supino Inclinado c/ Halteres", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Press de Peito Iso-Lateral", muscle: "Peito", tier: "A", type: "machine", defaultSets: 4 }, 
+    { name: "Supino Inclinado na Multipower", muscle: "Peito", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Supino Plano na Multipower", muscle: "Peito", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Crossover na Polia", muscle: "Peito", tier: "B", type: "machine", defaultSets: 4 }, 
+    { name: "Aberturas c/ Halteres", muscle: "Peito", tier: "B", type: "free", defaultSets: 3 }, 
+    { name: "Fundos nas Paralelas (Dips)", muscle: "Peito", tier: "S", type: "free", defaultSets: 3 },
 
-const recipesDB = [ { name: "Papas de Aveia Titã", type: "Pequeno-Almoço", cals: 450, pro: 35, desc: "60g aveia, 1 scoop whey, 150ml leite, canela." }, { name: "Arroz de Frango Anabólico", type: "Pós-Treino", cals: 600, pro: 50, desc: "150g peito de frango, 100g arroz basmati, brócolos." } ];
+    // COSTAS
+    { name: "Elevações (Pull-ups)", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Remada Curvada com Barra", muscle: "Costas", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Puxada Vertical na Polia", muscle: "Costas", tier: "S", type: "machine", defaultSets: 3 }, 
+    { name: "Remada Articulada Iso-Lateral", muscle: "Costas", tier: "A", type: "machine", defaultSets: 4 }, 
+    { name: "Remada Sentada com Cabo", muscle: "Costas", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Serrote c/ Haltere", muscle: "Costas", tier: "A", type: "free", defaultSets: 3 }, 
+    { name: "Pulldown com Corda (Braços Esticados)", muscle: "Costas", tier: "B", type: "machine", defaultSets: 3 }, 
+    { name: "Pullover com Haltere", muscle: "Costas", tier: "B", type: "free", defaultSets: 3 },
+
+    // PERNAS
+    { name: "Agachamento Livre", muscle: "Pernas", tier: "S", type: "free", defaultSets: 4 }, 
+    { name: "Leg Press", muscle: "Pernas", tier: "S", type: "machine", defaultSets: 4 }, 
+    { name: "Agachamento Hack", muscle: "Pernas", tier: "S", type: "machine", defaultSets: 3 }, 
+    { name: "Peso Morto Romeno (RDL)", muscle: "Pernas", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Lunge / Agachamento Búlgaro", muscle: "Pernas", tier: "A", type: "free", defaultSets: 3 }, 
+    { name: "Hip Thrust na Máquina", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Extensora (Leg Extension)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Flexora (Leg Curl)", muscle: "Pernas", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Elevação de Gémeos na Leg Press", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 }, 
+    { name: "Elevação de Gémeos na Multipower", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 4 }, 
+    { name: "Máquina Adutora", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 3 }, 
+    { name: "Máquina Abdutora", muscle: "Pernas", tier: "B", type: "machine", defaultSets: 3 },
+
+    // OMBROS
+    { name: "Press Militar c/ Halteres", muscle: "Ombros", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Press de Ombros na Máquina", muscle: "Ombros", tier: "A", type: "machine", defaultSets: 3 }, 
+    { name: "Elevações Laterais na Polia", muscle: "Ombros", tier: "S", type: "machine", defaultSets: 4 }, 
+    { name: "Elevações Laterais c/ Halteres", muscle: "Ombros", tier: "A", type: "free", defaultSets: 4 }, 
+    { name: "Face Pull na Polia", muscle: "Ombros", tier: "A", type: "machine", defaultSets: 4 },
+
+    // BRAÇOS
+    { name: "Curl de Bíceps no Banco Scott", muscle: "Braços", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Curl de Bíceps Inclinado", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, 
+    { name: "Curl Martelo", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, 
+    { name: "Tríceps na Polia com Corda", muscle: "Braços", tier: "S", type: "machine", defaultSets: 3 }, 
+    { name: "Tríceps à Testa", muscle: "Braços", tier: "A", type: "free", defaultSets: 3 }, 
+    { name: "Extensão Tríceps Unilateral (Polia)", muscle: "Braços", tier: "B", type: "machine", defaultSets: 3 },
+
+    // CORE
+    { name: "Crunch no Banco Declinado", muscle: "Core", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Elevação de Pernas em Suspensão", muscle: "Core", tier: "S", type: "free", defaultSets: 3 }, 
+    { name: "Prancha Abdominal (Plank)", muscle: "Core", tier: "A", type: "free", defaultSets: 3 }
+];
 
 // NOVO SISTEMA MASSIVO DE CONQUISTAS
 const allAchievements = [
@@ -63,7 +161,7 @@ const allAchievements = [
     { id: 'd_200', title: 'Urso Pardo', desc: 'Levantaste 200kg no Peso Morto.', reqDeadlift: 200, icon: '🐻' }
 ];
 
-let currentDay = 'PUSH'; let currentCalendarDate = new Date(); let chartInstance;
+let currentDay = 'PUSH_V1'; let currentCalendarDate = new Date(); let chartInstance;
 let timerInterval, gameInterval, gameTicks = 0, barbellY = 50, barbellVelocity = 0, score = 0; let currentModalExercise = ""; let voiceCoachActive = false; let deleteMode = false; 
 let builderState = { fatigue: 'energized', mode: 'auto', routine: [] }; let beastState = { active: false, exIdx: 0, setIdx: 0 };
 let currentSwapIndex = -1; let fastingInterval = null;
@@ -82,11 +180,11 @@ let fastingState = JSON.parse(localStorage.getItem('gym_fasting')) || { active: 
 let activeMission = JSON.parse(localStorage.getItem('gym_mission')) || null;
 let painTracker = JSON.parse(localStorage.getItem('gym_pain_tracker')) || [];
 let customExercisesDB = JSON.parse(localStorage.getItem('gym_custom_exercises')) || [];
+
+// Injeta sempre os teus exercícios custom na Library no boot
 exerciseLibrary.push(...customExercisesDB);
 
-// Anti-Crash & Meal Prep
 let activeSessionBackup = JSON.parse(localStorage.getItem('gym_active_session')) || null;
-let groceryList = JSON.parse(localStorage.getItem('gym_groceries')) || [];
 
 let lastDebriefDate = localStorage.getItem('gym_last_debrief') || '';
 let dailyIntake = JSON.parse(localStorage.getItem('gym_daily_intake')) || { date: new Date().toLocaleDateString('pt-PT'), foods: [] };
@@ -98,9 +196,10 @@ function getMuscleForExercise(name) {
     let found = exerciseLibrary.find(ex => ex.name === name); if (found) return found.muscle; let lower = name.toLowerCase();
     if (lower.includes('supino') || lower.includes('chest') || lower.includes('crossover')) return 'Peito';
     if (lower.includes('puxada') || lower.includes('remada') || lower.includes('pull-up')) return 'Costas';
-    if (lower.includes('leg') || lower.includes('agachamento') || lower.includes('peso morto') || lower.includes('gémeos')) return 'Pernas';
-    if (lower.includes('press') || lower.includes('elevações laterais') || lower.includes('voos')) return 'Ombros';
-    if (lower.includes('curl') || lower.includes('tríceps') || lower.includes('testa') || lower.includes('pushdown')) return 'Braços';
+    if (lower.includes('leg') || lower.includes('agachamento') || lower.includes('peso morto') || lower.includes('gémeos') || lower.includes('hip thrust')) return 'Pernas';
+    if (lower.includes('press') || lower.includes('elevações laterais') || lower.includes('voos') || lower.includes('face pull')) return 'Ombros';
+    if (lower.includes('curl') || lower.includes('tríceps') || lower.includes('testa') || lower.includes('extensão')) return 'Braços';
     return 'Core';
 }
+
 function getLastPerformance(exerciseName) { for (let i = history.length - 1; i >= 0; i--) { if (history[i].exercises && history[i].exercises[exerciseName]) return history[i].exercises[exerciseName]; } return null; }
